@@ -1,0 +1,923 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * Shows a graph with customizable node content. It uses a force-based algorithm to spread the nodes on the screen, nicely.
+<span class='line'>  3</span>  * 
+<span class='line'>  4</span>  * @class
+<span class='line'>  5</span>  * @extends Biojs
+<span class='line'>  6</span>  * 
+<span class='line'>  7</span>  * @author &lt;a href="mailto:johncar@gmail.com">John Gomez&lt;/a>
+<span class='line'>  8</span>  * 
+<span class='line'>  9</span>  * @requires &lt;a href="../biojs/css/biojs.Graph.css">Graph CSS&lt;/a>
+<span class='line'> 10</span>  * @dependency &lt;link href="../biojs/css/biojs.Graph.css" rel="stylesheet" type="text/css">&lt;/link>
+<span class='line'> 11</span>  * 
+<span class='line'> 12</span>  * @requires &lt;a href='http://www.jquery.com'>jQuery 1.8.0+&lt;/a>
+<span class='line'> 13</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.8.1.js">&lt;/script>
+<span class='line'> 14</span>  * 
+<span class='line'> 15</span>  * @requires &lt;a href='http://www.jquery.com'>jQuery UI 1.8.23+&lt;/a>
+<span class='line'> 16</span>  * @dependency &lt;script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js">&lt;/script>
+<span class='line'> 17</span>  * 
+<span class='line'> 18</span>  * @requires &lt;a href='http://www.jquery.com'>jsPlumb 1.3.14&lt;/a>
+<span class='line'> 19</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery.jsPlumb-1.3.14-all.js">&lt;/script>
+<span class='line'> 20</span>  * 
+<span class='line'> 21</span>  * @param {Object} options 
+<span class='line'> 22</span>  *    An object with the options for Graph component.
+<span class='line'> 23</span>  *    
+<span class='line'> 24</span>  * @option {string} target 
+<span class='line'> 25</span>  *    Identifier of the DIV tag where the component should be displayed.
+<span class='line'> 26</span>  * 
+<span class='line'> 27</span>  * @example
+<span class='line'> 28</span>  *    var instance = new Biojs.Graph({
+<span class='line'> 29</span>  *       target: "YourOwnDivId",
+<span class='line'> 30</span>  *    });
+<span class='line'> 31</span>  *    
+<span class='line'> 32</span>  *    var e1 = instance.addNode('element1');
+<span class='line'> 33</span>  *    var e2 = instance.addNode('element2');
+<span class='line'> 34</span>  *    var e3 = instance.addNode('&lt;div id="element3">&lt;p>Node 3 created from an HTML string&lt;/p>&lt;/div>');
+<span class='line'> 35</span>  *
+<span class='line'> 36</span>  *    e1.append("Node 1, appended by using the returned object");
+<span class='line'> 37</span>  *    jQuery(e2).append("Node 3, using jQuery");
+<span class='line'> 38</span>  *    
+<span class='line'> 39</span>  *    instance.addLink(e1,'element2','Catalase');
+<span class='line'> 40</span>  *	  instance.addLink('element1','element2','Insulin');
+<span class='line'> 41</span>  * 	  instance.addLink('element1','element2','Progester');
+<span class='line'> 42</span>  *	  instance.addLink('element1','element2','LL2');
+<span class='line'> 43</span>  *	  instance.addLink('element2','element3','Catalase');
+<span class='line'> 44</span>  *
+<span class='line'> 45</span>  *
+<span class='line'> 46</span>  *    
+<span class='line'> 47</span>  */</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="NAME">Biojs.Graph</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.extend</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="COMM">/** @lends Biojs.Graph# */</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">	</span><span class="NAME">constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">		
+<span class='line'> 53</span> 		</span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'#'</span><span class="PUNC">+</span><span class="NAME">this.opt.target</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">		</span><span class="NAME">this._container.addClass</span><span class="PUNC">(</span><span class="STRN">'Graph'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">		
+<span class='line'> 56</span> 		</span><span class="NAME">this._init</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">	
+<span class='line'> 57</span> 		
+<span class='line'> 58</span> 		</span><span class="COMM">// TODO: reset funciton</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">		
+<span class='line'> 60</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">	
+<span class='line'> 62</span> 	</span><span class="NAME">_init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">		</span><span class="NAME">this._jsPlumb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jsPlumb.getInstance</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">		</span><span class="NAME">this._nodeIdCounter</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">		
+<span class='line'> 66</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">d</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._jsPlumb.Defaults</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">		
+<span class='line'> 68</span> 		</span><span class="NAME">d.Anchor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.anchor</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">		</span><span class="NAME">d.PaintStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.paintStyle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">		</span><span class="NAME">d.Endpoint</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.endPoint</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">		</span><span class="NAME">d.EndpointStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this.opt.endPointStyle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">		</span><span class="NAME">d.Scope</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._container.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">		</span><span class="NAME">d.Connector</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.connector</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">		</span><span class="NAME">d.HoverPaintStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.hoverPaintStyle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">		
+<span class='line'> 76</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">			</span><span class="NAME">this.opt.viewport</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'> 78</span> 				</span><span class="NAME">xMin</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this._container.offset</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">left</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'> 79</span> 				</span><span class="NAME">xMax</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this._container.offset</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">left</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._container.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">this._container.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'> 80</span> 				</span><span class="NAME">yMin</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this._container.offset</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">top</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'> 81</span> 				</span><span class="NAME">yMax</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this._container.offset</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">top</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._container.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">this._container.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 84</span> 
+<span class='line'> 85</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.attractionConstant</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.influenceConstant</span><span class="PUNC">/</span><span class="PUNC">(</span><span class="NAME">this.opt.normalDistance</span><span class="PUNC">*</span><span class="NAME">this.opt.normalDistance</span><span class="PUNC">*</span><span class="NAME">this.opt.normalDistance</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> 
+<span class='line'> 87</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">	
+<span class='line'> 89</span> 	</span><span class="COMM">/**
+<span class='line'> 90</span> 	 * Default values for the options
+<span class='line'> 91</span> 	 * @name Biojs.Graph-opt
+<span class='line'> 92</span> 	 */</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">	</span><span class="NAME">opt</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">		</span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"YourOwnDivId"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">		
+<span class='line'> 96</span> 		</span><span class="COMM">// Graph settings:</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">		</span><span class="NAME">anchor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"Continuous"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">		</span><span class="NAME">paintStyle</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">lineWidth</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">strokeStyle</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"#456"</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">		</span><span class="NAME">endPoint</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"Dot"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">		</span><span class="NAME">endPointStyle</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">fillStyle</span><span class="PUNC">:</span><span class="STRN">"myEndpoint"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">radius</span><span class="PUNC">:</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">		</span><span class="NAME">connector</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">"Bezier"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">curviness</span><span class="PUNC">:</span><span class="NUMB">50</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">		</span><span class="NAME">hoverPaintStyle</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">strokeStyle</span><span class="PUNC">:</span><span class="STRN">"#ec9f2e"</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">		
+<span class='line'>104</span> 		</span><span class="COMM">// Force-based algorithm options:</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">	    </span><span class="COMM">// normal distance in pixels</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">	    </span><span class="NAME">normalDistance</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">100</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">	    </span><span class="COMM">// adjusts the size of the influence square by this factor</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">	    </span><span class="NAME">influenceConstant</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">7</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">	    </span><span class="COMM">// 4 percent damping (simulated friction)</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">	    </span><span class="NAME">damping</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0.96</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">	    </span><span class="COMM">// stopping velocity is one tenth of a pixel per second</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">	    </span><span class="NAME">stoppingVelocity</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0.1</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">	    </span><span class="COMM">// minimum starting velocity is a whole pixel</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">	    </span><span class="NAME">minimumStartingVelocity</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">	    </span><span class="COMM">// maximum starting velocity is higher (to remove "twitching" when few nodes are moving)</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">	    </span><span class="NAME">maximumStartingVelocity</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">5</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">	    </span><span class="COMM">// calculated as influenceConstant/normalDistance^3, assuming that the repelling factor is -1</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">	    </span><span class="NAME">attractionConstant</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">7</span><span class="PUNC">/</span><span class="PUNC">(</span><span class="NUMB">100</span><span class="PUNC">*</span><span class="NUMB">100</span><span class="PUNC">*</span><span class="NUMB">100</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">	    </span><span class="COMM">// Repelling factor to calculate the repeling force</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">	    </span><span class="NAME">repellingFactor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">70</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">	    </span><span class="COMM">// frames per second</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">	    </span><span class="NAME">fps</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">100</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">	    </span><span class="COMM">// animation enable/disable flag</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">	    </span><span class="NAME">animate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">	    </span><span class="COMM">// visible square in the screen where the nodes will move into</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">	    </span><span class="NAME">viewport</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">  
+<span class='line'>129</span> 	</span><span class="COMM">/**
+<span class='line'>130</span> 	 * Array containing the supported event names
+<span class='line'>131</span> 	 * @name Biojs.Graph-eventTypes
+<span class='line'>132</span> 	 */</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">	</span><span class="NAME">eventTypes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">	    </span><span class="COMM">/**
+<span class='line'>135</span> 	     * @name Biojs.Graph#onClick
+<span class='line'>136</span> 	     * @event
+<span class='line'>137</span> 	     * @param {function} actionPerformed A function which receives an {@link Biojs.Event} object as argument.
+<span class='line'>138</span> 	     * @eventData {Object} source The component which did triggered the event.
+<span class='line'>139</span> 	     * @example 
+<span class='line'>140</span> 	     * instance.onLabelClicked(
+<span class='line'>141</span> 	     *    function( e ) {
+<span class='line'>142</span> 	     *       alert("Label "+ e.label.getLabel() + " clicked");
+<span class='line'>143</span> 	     *    }
+<span class='line'>144</span> 	     * ); 
+<span class='line'>145</span> 	     * 
+<span class='line'>146</span> 	     */</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">	    </span><span class="STRN">"onLabelClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">	    </span><span class="STRN">"onLinkOver"</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">	</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">	
+<span class='line'>151</span> 	
+<span class='line'>152</span> 	</span><span class="COMM">/**
+<span class='line'>153</span>      * Creates a new link into graph. Source and target nodes must exist.
+<span class='line'>154</span> 	 * 
+<span class='line'>155</span> 	 * @param {string|object} source 
+<span class='line'>156</span> 	 *	Starting point of the new link. If a string is provided, an identifier is expected; HTMLNode in other case.  
+<span class='line'>157</span> 	 *
+<span class='line'>158</span> 	 * @param {string|object} target 
+<span class='line'>159</span> 	 *	Target of the new link. If a string is provided, an identifier is expected; HTMLNode in other case.  
+<span class='line'>160</span> 	 *
+<span class='line'>161</span> 	 * @param {string} label 
+<span class='line'>162</span> 	 *  Label to be shown on mouseover event
+<span class='line'>163</span> 	 * 
+<span class='line'>164</span> 	 * @param {string} [id] 
+<span class='line'>165</span> 	 *  Optional identifier for the new link
+<span class='line'>166</span> 	 *
+<span class='line'>167</span> 	 * @returns {object} Reference to the link created. 	
+<span class='line'>168</span> 	 *
+<span class='line'>169</span> 	 * @example  
+<span class='line'>170</span> 	 * // Creates a link with label Catalase and id linkCatalase
+<span class='line'>171</span> 	 * instance.addLink('element1','element2','Catalase','linkCatalase');
+<span class='line'>172</span> 	 * 
+<span class='line'>173</span> 	 * @example
+<span class='line'>174</span> 	 * instance.addLink('element5','element6','Testing');
+<span class='line'>175</span> 	 * 
+<span class='line'>176</span> 	 */</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">	</span><span class="NAME">addLink</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">source</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">target</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">label</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">		
+<span class='line'>179</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">idSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">idTarget</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">link</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">settings</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>184</span> 
+<span class='line'>185</span> </span><span class="WHIT">		</span><span class="COMM">// Creates the new connection</span><span class="WHIT">
+<span class='line'>186</span> 
+<span class='line'>187</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"number"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">source</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">			</span><span class="NAME">idSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">source</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">			
+<span class='line'>190</span> 		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">source</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>191</span> 			</span><span class="NAME">idSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">source</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">		
+<span class='line'>194</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"number"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">target</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">			</span><span class="NAME">idTarget</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">target</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">			
+<span class='line'>197</span> 		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">target</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">			</span><span class="NAME">idTarget</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">target</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>200</span> 
+<span class='line'>201</span> </span><span class="WHIT">		</span><span class="NAME">settings</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">			</span><span class="NAME">source</span><span class="PUNC">:</span><span class="NAME">idSource</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>203</span> 			</span><span class="NAME">target</span><span class="PUNC">:</span><span class="NAME">idTarget</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">		
+<span class='line'>206</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">			</span><span class="NAME">settings.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">		
+<span class='line'>210</span> 		</span><span class="COMM">// Label</span><span class="WHIT">
+<span class='line'>211</span> </span><span class="WHIT">		</span><span class="NAME">settings.overlays</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> 
+<span class='line'>212</span> 			</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">"Label"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">													   					
+<span class='line'>213</span> 	   			</span><span class="NAME">cssClass</span><span class="PUNC">:</span><span class="STRN">"label"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>214</span> </span><span class="WHIT">	   			</span><span class="NAME">label</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">label</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>215</span> 	   			</span><span class="NAME">id</span><span class="PUNC">:</span><span class="STRN">"label"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">	   			</span><span class="NAME">events</span><span class="PUNC">:</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">					</span><span class="STRN">"click"</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">label</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">evt</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">						</span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="NAME">Biojs.Graph.EVT_ON_LABEL_CLICKED</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">							</span><span class="STRN">'label'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">label</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">						</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">	   				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">	   			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">			  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">			</span><span class="PUNC">]</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">		</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">		
+<span class='line'>227</span> 				
+<span class='line'>228</span> 		</span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="WHIT">			</span><span class="NAME">link</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._jsPlumb.connect</span><span class="PUNC">(</span><span class="NAME">settings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">			
+<span class='line'>231</span> 			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">overlay</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">link.getOverlay</span><span class="PUNC">(</span><span class="STRN">"label"</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">hide</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>232</span> </span><span class="WHIT">			
+<span class='line'>233</span> 			</span><span class="COMM">// Add behavior for the connection </span><span class="WHIT">
+<span class='line'>234</span> </span><span class="WHIT">			</span><span class="NAME">link.bind</span><span class="PUNC">(</span><span class="STRN">"mouseenter"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">conn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">					</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">overlay</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">conn.getOverlay</span><span class="PUNC">(</span><span class="STRN">"label"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">					</span><span class="COMM">// now you can show this Overlay:</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="WHIT">					</span><span class="NAME">overlay.show</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>238</span> </span><span class="WHIT">					</span><span class="COMM">// trigger the event on connection over </span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">					</span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="NAME">Biojs.Graph.EVT_ON_LINK_OVER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>240</span> </span><span class="WHIT">						</span><span class="STRN">'link'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">link</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">						</span><span class="STRN">'label'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">conn.getOverlay</span><span class="PUNC">(</span><span class="STRN">"label"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">						</span><span class="STRN">'source'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">idSource</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">						</span><span class="STRN">'target'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">idTarget</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">					
+<span class='line'>246</span> 				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">bind</span><span class="PUNC">(</span><span class="STRN">"mouseexit"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">conn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">					</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">overlay</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">conn.getOverlay</span><span class="PUNC">(</span><span class="STRN">"label"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>248</span> </span><span class="WHIT">					</span><span class="COMM">// now you can hide this Overlay:</span><span class="WHIT">
+<span class='line'>249</span> </span><span class="WHIT">					</span><span class="NAME">overlay.hide</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">			
+<span class='line'>252</span> 		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">			</span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">		
+<span class='line'>256</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">nodeSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">idSource</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>257</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">nodeTarget</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">idTarget</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">		
+<span class='line'>259</span> 		</span><span class="NAME">nodeSource.links</span><span class="PUNC">[</span><span class="NAME">idTarget</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">nodeTarget</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>260</span> </span><span class="WHIT">		</span><span class="NAME">nodeTarget.links</span><span class="PUNC">[</span><span class="NAME">idSource</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">nodeSource</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>261</span> </span><span class="WHIT">		
+<span class='line'>262</span> 		</span><span class="NAME">nodeSource.linksLength</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>263</span> </span><span class="WHIT">		</span><span class="NAME">nodeTarget.linksLength</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">		
+<span class='line'>265</span> 		</span><span class="NAME">nodeSource.moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">		</span><span class="NAME">nodeTarget.moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">		
+<span class='line'>268</span> 		</span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">		
+<span class='line'>270</span> 		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">link</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>271</span> 
+<span class='line'>272</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">	
+<span class='line'>274</span> 	</span><span class="COMM">/**
+<span class='line'>275</span>      * Removes a link from the graph.
+<span class='line'>276</span> 	 * 
+<span class='line'>277</span> 	 * @param {string|object} link 
+<span class='line'>278</span> 	 *	Can be either an identifier as string or the link object itself returned by the method addLink.  
+<span class='line'>279</span> 	 *
+<span class='line'>280</span> 	 * @returns {boolean} True on successful deletion, false in other case. 
+<span class='line'>281</span> 	 * 		
+<span class='line'>282</span> 	 * @example  
+<span class='line'>283</span> 	 * // Removes the link with linkCatalase as identifier.
+<span class='line'>284</span> 	 * instance.removeLink('linkCatalase');
+<span class='line'>285</span> 	 * 
+<span class='line'>286</span> 	 */</span><span class="WHIT">
+<span class='line'>287</span> </span><span class="WHIT">	</span><span class="NAME">removeLink</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">link</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>288</span> 
+<span class='line'>289</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cnn</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">link</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">		</span><span class="COMM">// If an identifier is provided</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">		</span><span class="COMM">// it will search for the connection object</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">link</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">			
+<span class='line'>294</span> 			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">conns</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._jsPlumb.getConnections</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">			
+<span class='line'>297</span> 			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">conns.length</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">link</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">conns</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">				</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// breaks on link found</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">			
+<span class='line'>301</span> 			</span><span class="NAME">cnn</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">conns.length</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">conns</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>303</span> 		
+<span class='line'>304</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">cnn.hasOwnProperty</span><span class="PUNC">(</span><span class="STRN">"removeOverlays"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>305</span> </span><span class="WHIT">			
+<span class='line'>306</span> 			</span><span class="COMM">//Remove references from involved nodes </span><span class="WHIT">
+<span class='line'>307</span> </span><span class="WHIT">			</span><span class="KEYW">delete</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">cnn.sourceId</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">links</span><span class="PUNC">[</span><span class="NAME">cnn.targetId</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">			</span><span class="KEYW">delete</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">cnn.targetId</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">links</span><span class="PUNC">[</span><span class="NAME">cnn.sourceId</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">			</span><span class="COMM">// Remove the labels</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">			</span><span class="NAME">cnn.removeOverlays</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">			</span><span class="COMM">// remove all endpoints</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">e</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">cnn.endpoints</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">				</span><span class="NAME">this._jsPlumb.deleteEndpoint</span><span class="PUNC">(</span><span class="NAME">cnn.endpoints</span><span class="PUNC">[</span><span class="NAME">e</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>315</span> </span><span class="WHIT">			
+<span class='line'>316</span> 			</span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> </span><span class="WHIT">			
+<span class='line'>318</span> 			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">		
+<span class='line'>321</span> 		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>324</span>      * Removes all the links from a node.
+<span class='line'>325</span> 	 * 
+<span class='line'>326</span> 	 * @param {string|object} node 
+<span class='line'>327</span> 	 *	Can be either and identifier as string or the node object itself, which is returned by the addNode method.	
+<span class='line'>328</span> 	 * 
+<span class='line'>329</span> 	 * @example
+<span class='line'>330</span> 	 * instance.removeLinksFromNode("element1");
+<span class='line'>331</span> 	 * 
+<span class='line'>332</span> 	 */</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">	</span><span class="NAME">removeLinksFromNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">		</span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Removing links from node "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">		</span><span class="COMM">// node can be either an identifier or the node object itself</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="WHIT">		</span><span class="COMM">// get all the connection objects of the node</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">conns</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._jsPlumb.getConnections</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="NAME">source</span><span class="PUNC">:</span><span class="NAME">id</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">concat</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._jsPlumb.getConnections</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="NAME">target</span><span class="PUNC">:</span><span class="NAME">id</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">		</span><span class="COMM">// remove every single connection</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">c</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">conns</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">			</span><span class="NAME">this.removeLink</span><span class="PUNC">(</span><span class="NAME">conns</span><span class="PUNC">[</span><span class="NAME">c</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">		
+<span class='line'>344</span> 		</span><span class="NAME">this._jsPlumb.removeAllEndpoints</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>347</span>      * Creates a new node into graph.
+<span class='line'>348</span> 	 * 
+<span class='line'>349</span> 	 * @param {string|object} data 
+<span class='line'>350</span> 	 *	Data could be either an identifier or an HTML element. 
+<span class='line'>351</span> 	 *	If it's an identifier, a DIV element with that identifier will be created as node. 
+<span class='line'>352</span> 	 *	In case of HTML element, can be either a string containing the HTML code or an instance of HTMLElement. 
+<span class='line'>353</span> 	 *
+<span class='line'>354</span> 	 * @returns {object} The node instance created/added to the graph.	
+<span class='line'>355</span> 	 *
+<span class='line'>356</span> 	 * @example  
+<span class='line'>357</span> 	 * // Creates a node with 'element1' as id
+<span class='line'>358</span> 	 * instance.addNode('element4');
+<span class='line'>359</span> 	 * 
+<span class='line'>360</span> 	 * @example 
+<span class='line'>361</span> 	 * // Creates a node with 'element1' as id and then it is assigned to var 'node' 
+<span class='line'>362</span> 	 * var node = instance.addNode('element5');
+<span class='line'>363</span> 	 * 
+<span class='line'>364</span> 	 * @example 
+<span class='line'>365</span> 	 * // Creates a node since the HTML string provided
+<span class='line'>366</span> 	 * instance.addNode('&lt;div id="element6">&lt;/div>');
+<span class='line'>367</span> 	 * 
+<span class='line'>368</span> 	 */</span><span class="WHIT">
+<span class='line'>369</span> </span><span class="WHIT">	</span><span class="NAME">addNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>370</span> </span><span class="WHIT">		
+<span class='line'>371</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div>&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>372</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>373</span> </span><span class="WHIT">		
+<span class='line'>374</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">			
+<span class='line'>376</span> 			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data.match</span><span class="PUNC">(</span><span class="REGX">/&lt;\/?.*(?=>|\s.*>)\/?.*?>/g</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>377</span> </span><span class="WHIT">				</span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>378</span> </span><span class="WHIT">				
+<span class='line'>379</span> 			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>380</span> </span><span class="WHIT">				</span><span class="NAME">node.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"node"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._nodeIdCounter</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>381</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>382</span> 
+<span class='line'>383</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"number"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>384</span> </span><span class="WHIT">			</span><span class="NAME">node.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>385</span> 
+<span class='line'>386</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>387</span> </span><span class="WHIT">			</span><span class="COMM">// Object is expected </span><span class="WHIT">
+<span class='line'>388</span> </span><span class="WHIT">			</span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>389</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>390</span> </span><span class="WHIT">		
+<span class='line'>391</span> 		</span><span class="COMM">// Setting id for the node</span><span class="WHIT">
+<span class='line'>392</span> </span><span class="WHIT">		</span><span class="NAME">node.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>393</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="NAME">node.id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>394</span> </span><span class="WHIT">			</span><span class="NAME">node.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"node"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._nodeIdCounter</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>395</span> </span><span class="WHIT">			</span><span class="NAME">node.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">,</span><span class="NAME">node.id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>396</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>397</span> </span><span class="WHIT">		
+<span class='line'>398</span> 		</span><span class="COMM">// TODO: improve positioning by Force-based algorithm</span><span class="WHIT">
+<span class='line'>399</span> </span><span class="WHIT">		</span><span class="COMM">// Randomly positioned at beginning</span><span class="WHIT">
+<span class='line'>400</span> </span><span class="WHIT">		</span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.xMin</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">Math.floor</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.xMax</span><span class="PUNC">/</span><span class="NUMB">3</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>401</span> </span><span class="WHIT">		</span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.yMin</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">Math.floor</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.yMax</span><span class="PUNC">/</span><span class="NUMB">3</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>402</span> </span><span class="WHIT">		
+<span class='line'>403</span> 		</span><span class="COMM">//Initilizing values for Force-based algorithm</span><span class="WHIT">
+<span class='line'>404</span> </span><span class="WHIT">		</span><span class="NAME">node.velocity</span><span class="PUNC">=</span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NAME">y</span><span class="PUNC">:</span><span class="NUMB">0</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">node.mass</span><span class="PUNC">=</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>405</span> </span><span class="WHIT">		</span><span class="NAME">node.fixed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>406</span> </span><span class="WHIT">		</span><span class="NAME">node.moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>407</span> </span><span class="WHIT">		</span><span class="NAME">node.links</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>408</span> </span><span class="WHIT">		</span><span class="NAME">node.linksLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>409</span> </span><span class="WHIT">		
+<span class='line'>410</span> 		</span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">node.id</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>411</span> </span><span class="WHIT">		</span><span class="COMM">//this._links[node.id] = [];</span><span class="WHIT">
+<span class='line'>412</span> 
+<span class='line'>413</span> </span><span class="WHIT">		</span><span class="NAME">node.css</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>414</span> </span><span class="WHIT">				</span><span class="NAME">position</span><span class="PUNC">:</span><span class="STRN">"absolute"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>415</span> </span><span class="WHIT">				</span><span class="NAME">top</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>416</span> </span><span class="WHIT">				</span><span class="NAME">left</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="WHIT"> 
+<span class='line'>417</span> 			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>418</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="STRN">'node'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>419</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="NAME">this._container</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>420</span> 
+<span class='line'>421</span> </span><span class="WHIT">		</span><span class="NAME">this._jsPlumb.draggable</span><span class="PUNC">(</span><span class="NAME">node.id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>422</span> </span><span class="WHIT">		
+<span class='line'>423</span> 		</span><span class="COMM">// Node close button</span><span class="WHIT">
+<span class='line'>424</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">closeButton</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;span class="close-btn-18" title="Close">Close&lt;/span>'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>425</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">click</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>426</span> </span><span class="WHIT">				</span><span class="NAME">self.removeNode</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>427</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>428</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">hide</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>429</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">prependTo</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>430</span> </span><span class="WHIT">		
+<span class='line'>431</span> 		</span><span class="COMM">//Update position in dragging 	</span><span class="WHIT">
+<span class='line'>432</span> </span><span class="WHIT">		</span><span class="NAME">node.mousedown</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>433</span> </span><span class="WHIT">	        </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">mousemove</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>434</span> </span><span class="WHIT">	        	</span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node.offset</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">left</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> </span><span class="WHIT">	        	</span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node.offset</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">top</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>436</span> </span><span class="WHIT">	        	
+<span class='line'>437</span> 	        	</span><span class="COMM">// Release other nodes</span><span class="WHIT">
+<span class='line'>438</span> </span><span class="WHIT">	        	</span><span class="NAME">self._setPivotNode</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">	        	
+<span class='line'>440</span> 	        	</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">node.links</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">	        		</span><span class="NAME">node.links</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> </span><span class="WHIT">	        	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>443</span> </span><span class="WHIT">	        	
+<span class='line'>444</span> 	        	</span><span class="NAME">self.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>445</span> </span><span class="WHIT">	        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>446</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>447</span> </span><span class="WHIT">	    </span><span class="PUNC">.</span><span class="NAME">mouseup</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>448</span> </span><span class="WHIT">	        </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">unbind</span><span class="PUNC">(</span><span class="STRN">"mousemove"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">	        </span><span class="NAME">self._releasePivotNode</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>450</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>451</span> </span><span class="WHIT">	    </span><span class="PUNC">.</span><span class="NAME">mouseover</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>452</span> </span><span class="WHIT">	    	</span><span class="NAME">closeButton.show</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>453</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>454</span> </span><span class="WHIT">	    </span><span class="PUNC">.</span><span class="NAME">mouseout</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">	    	</span><span class="NAME">closeButton.hide</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">		
+<span class='line'>458</span> 		</span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>459</span> 
+<span class='line'>460</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>461</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>462</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>463</span>      * Returns the node which holds a specified id
+<span class='line'>464</span> 	 * 
+<span class='line'>465</span> 	 * @param {string} node 
+<span class='line'>466</span> 	 *	Identifier of the node.	
+<span class='line'>467</span> 	 * 
+<span class='line'>468</span> 	 * @example 
+<span class='line'>469</span> 	 * instance.getNode("element1");
+<span class='line'>470</span> 	 * 
+<span class='line'>471</span> 	 */</span><span class="WHIT">
+<span class='line'>472</span> </span><span class="WHIT">	</span><span class="NAME">getNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>473</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">id</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>474</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>475</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>476</span>      * Returns all nodes in the graph	
+<span class='line'>477</span> 	 * 
+<span class='line'>478</span> 	 * @example 
+<span class='line'>479</span> 	 * instance.getAllNodes();
+<span class='line'>480</span> 	 * 
+<span class='line'>481</span> 	 */</span><span class="WHIT">
+<span class='line'>482</span> </span><span class="WHIT">	</span><span class="NAME">getAllNodes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>483</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>484</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>485</span> </span><span class="WHIT">	
+<span class='line'>486</span> 	</span><span class="COMM">/**
+<span class='line'>487</span>      * Removes a node from the graph.
+<span class='line'>488</span> 	 * 
+<span class='line'>489</span> 	 * @param {string|object} node 
+<span class='line'>490</span> 	 *	Can be either and identifier as string or the node object itself, which is returned by the addNode method.	
+<span class='line'>491</span> 	 * 
+<span class='line'>492</span> 	 * @example 
+<span class='line'>493</span> 	 * instance.removeNode("element1");
+<span class='line'>494</span> 	 * 
+<span class='line'>495</span> 	 */</span><span class="WHIT">
+<span class='line'>496</span> </span><span class="WHIT">	</span><span class="NAME">removeNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>497</span> </span><span class="WHIT">		</span><span class="COMM">// node can be either an identifier or the node object itself</span><span class="WHIT">
+<span class='line'>498</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">nodeObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">node</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>499</span> </span><span class="WHIT">		</span><span class="COMM">// Mark the current linked nodes as moving for animation</span><span class="WHIT">
+<span class='line'>500</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">nodeObj.links</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">			</span><span class="NAME">nodeObj.links</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>502</span> </span><span class="WHIT">    	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="WHIT">		</span><span class="COMM">// Removes all connections from the node drawing</span><span class="WHIT">
+<span class='line'>504</span> </span><span class="WHIT">		</span><span class="NAME">this.removeLinksFromNode</span><span class="PUNC">(</span><span class="NAME">nodeObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>505</span> 		</span><span class="COMM">// Removes the reference to the node object</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="WHIT">		</span><span class="KEYW">delete</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">nodeObj.id</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>507</span> </span><span class="WHIT">		</span><span class="COMM">// Removes the node object</span><span class="WHIT">
+<span class='line'>508</span> </span><span class="WHIT">		</span><span class="NAME">nodeObj.remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>509</span> </span><span class="WHIT">		</span><span class="COMM">// start animation </span><span class="WHIT">
+<span class='line'>510</span> </span><span class="WHIT">		</span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>511</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>512</span> </span><span class="WHIT">	
+<span class='line'>513</span> 	</span><span class="COMM">/**
+<span class='line'>514</span>      * Removes all the nodes in the graph	
+<span class='line'>515</span> 	 * 
+<span class='line'>516</span> 	 * @example 
+<span class='line'>517</span> 	 * instance.removeAllNodes();
+<span class='line'>518</span> 	 * 
+<span class='line'>519</span> 	 */</span><span class="WHIT">
+<span class='line'>520</span> </span><span class="WHIT">	</span><span class="NAME">removeAllNodes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>521</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>522</span> </span><span class="WHIT">			</span><span class="NAME">this.removeNode</span><span class="PUNC">(</span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>523</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>524</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>525</span> </span><span class="WHIT">	
+<span class='line'>526</span> 	</span><span class="COMM">/**
+<span class='line'>527</span>      * Removes all the links in the graph	
+<span class='line'>528</span> 	 * 
+<span class='line'>529</span> 	 * @example 
+<span class='line'>530</span> 	 * instance.removeAllLinks();
+<span class='line'>531</span> 	 * 
+<span class='line'>532</span> 	 */</span><span class="WHIT">
+<span class='line'>533</span> </span><span class="WHIT">	</span><span class="NAME">removeAllLinks</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>534</span> </span><span class="WHIT">		</span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Removing all the links"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>535</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">nodeID</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>536</span> </span><span class="WHIT">			</span><span class="NAME">this.removeLinksFromNode</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">nodeID</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>537</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>538</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>539</span> </span><span class="WHIT">	
+<span class='line'>540</span> 	
+<span class='line'>541</span> 	</span><span class="COMM">/**
+<span class='line'>542</span>      * Starts the nodes positioning animation by using a force-based algorithm. 
+<span class='line'>543</span>      * Stops automatically when the system reaches the equilibrium, i.e. all nodes are stopped.
+<span class='line'>544</span>      * 
+<span class='line'>545</span> 	 * @example 
+<span class='line'>546</span> 	 * instance.start();
+<span class='line'>547</span> 	 * 
+<span class='line'>548</span> 	 */</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="WHIT">	</span><span class="NAME">start</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>550</span> </span><span class="WHIT">    	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>551</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this._running</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.opt.animate</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>552</span> </span><span class="WHIT">            </span><span class="NAME">this._running</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>553</span> </span><span class="WHIT">            </span><span class="NAME">this._drawId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">setInterval</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">self._forceBasedAlgorithm</span><span class="PUNC">(</span><span class="NAME">self.opt</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">this.opt.fps</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>554</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>555</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>556</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>557</span>      * Stops the nodes positioning animation. 
+<span class='line'>558</span>      * 
+<span class='line'>559</span> 	 * @example 
+<span class='line'>560</span> 	 * instance.stop();
+<span class='line'>561</span> 	 * 
+<span class='line'>562</span> 	 */</span><span class="WHIT">
+<span class='line'>563</span> </span><span class="WHIT">    </span><span class="NAME">stop</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>564</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">this._running</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>565</span> </span><span class="WHIT">            </span><span class="NAME">clearInterval</span><span class="PUNC">(</span><span class="NAME">this._drawId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>566</span> </span><span class="WHIT">            </span><span class="NAME">this._running</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>567</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>568</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>570</span>      * Disables/enables node positioning animation. 
+<span class='line'>571</span>      * 
+<span class='line'>572</span> 	 * @example 
+<span class='line'>573</span> 	 * instance.animate(true);
+<span class='line'>574</span> 	 * 
+<span class='line'>575</span> 	 * @example 
+<span class='line'>576</span> 	 * instance.animate(false);
+<span class='line'>577</span> 	 * 
+<span class='line'>578</span> 	 */</span><span class="WHIT">
+<span class='line'>579</span> </span><span class="WHIT">    </span><span class="NAME">animate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>580</span> </span><span class="WHIT">    	</span><span class="NAME">this.stop</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>581</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.animate</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>582</span> </span><span class="WHIT">    	</span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>583</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>584</span> </span><span class="WHIT">    
+<span class='line'>585</span>     </span><span class="COMM">/**
+<span class='line'>586</span>      * Set the distance in pixels between nodes. 
+<span class='line'>587</span>      * 
+<span class='line'>588</span>      * @param {int} value 
+<span class='line'>589</span>      * 	Minimum separation distance, in pixels, allowed between each two nodes. 
+<span class='line'>590</span>      *  Use this setting to either disperse or compact the whole graph. 
+<span class='line'>591</span>      * 
+<span class='line'>592</span> 	 * @example 
+<span class='line'>593</span> 	 * instance.setDistance(200);
+<span class='line'>594</span> 	 * 
+<span class='line'>595</span> 	 */</span><span class="WHIT">
+<span class='line'>596</span> </span><span class="WHIT">    </span><span class="NAME">setDistance</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">distance</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>597</span> </span><span class="WHIT">    	</span><span class="NAME">this.stop</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>598</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.normalDistance</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">distance</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>599</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.attractionConstant</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.influenceConstant</span><span class="PUNC">/</span><span class="PUNC">(</span><span class="NAME">distance</span><span class="PUNC">*</span><span class="NAME">distance</span><span class="PUNC">*</span><span class="NAME">distance</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>600</span> </span><span class="WHIT">    	</span><span class="NAME">this._moveEveryThing</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>601</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>602</span>     </span><span class="COMM">/**
+<span class='line'>603</span>      * Sets the simulated damping value. 
+<span class='line'>604</span>      * 
+<span class='line'>605</span>      * @param {int} value
+<span class='line'>606</span>      *  Values from 0 to 100 to set the damping factor.
+<span class='line'>607</span>      *  Where, 0 means no damping and 100 means maximum damping, i.e. nodes cannot move.
+<span class='line'>608</span>      *  A value of 4 is acceptable.
+<span class='line'>609</span>      * 
+<span class='line'>610</span> 	 * @example 
+<span class='line'>611</span> 	 * instance.setDamping(4);
+<span class='line'>612</span> 	 * 
+<span class='line'>613</span> 	 */</span><span class="WHIT">
+<span class='line'>614</span> </span><span class="WHIT">    </span><span class="NAME">setDamping</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>615</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.damping</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">100</span><span class="PUNC">-</span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">/</span><span class="NUMB">100</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>616</span> </span><span class="WHIT">    	</span><span class="NAME">this._moveEveryThing</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>617</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>618</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>619</span>      * Sets the repelling factor to calculate the repelling force. 
+<span class='line'>620</span>      * 
+<span class='line'>621</span>      * @param {int} value
+<span class='line'>622</span>      *  Repelling factor as a positive number.
+<span class='line'>623</span>      *  By default, value is 5
+<span class='line'>624</span>      * 
+<span class='line'>625</span> 	 * @example 
+<span class='line'>626</span> 	 * instance.setRepellingFactor(7);
+<span class='line'>627</span> 	 * 
+<span class='line'>628</span> 	 */</span><span class="WHIT">
+<span class='line'>629</span> </span><span class="WHIT">    </span><span class="NAME">setRepellingFactor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">factor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>630</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.repellingFactor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">factor</span><span class="PUNC">;</span><span class="WHIT"> 	
+<span class='line'>631</span>     	</span><span class="NAME">this._moveEveryThing</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>632</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>633</span> </span><span class="WHIT">    
+<span class='line'>634</span>     </span><span class="COMM">/**
+<span class='line'>635</span>      * Sets the velocity of the animation in frames per second.
+<span class='line'>636</span>      * 
+<span class='line'>637</span>      * @param {int} fps
+<span class='line'>638</span>      *  Velocity of the animation in frames per second.
+<span class='line'>639</span>      *  This value is used to invoke the force-based algorithm fps times each second. 
+<span class='line'>640</span>      *  Take in account that more velocity means more usage of CPU.
+<span class='line'>641</span>      *  A value of 100 is a normal velocity.
+<span class='line'>642</span>      * 
+<span class='line'>643</span> 	 * @example 
+<span class='line'>644</span> 	 * instance.setVelocity(100);
+<span class='line'>645</span> 	 * 
+<span class='line'>646</span> 	 */</span><span class="WHIT">
+<span class='line'>647</span> </span><span class="WHIT">    </span><span class="NAME">setVelocity</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">fps</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>648</span> </span><span class="WHIT">    	</span><span class="NAME">this.stop</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>649</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.fps</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fps</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>650</span> </span><span class="WHIT">    	</span><span class="NAME">this._moveEveryThing</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>651</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>652</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>653</span>      * Sets the attraction constant to calculate the attraction force by Hooke's Law for strings.
+<span class='line'>654</span>      * 
+<span class='line'>655</span>      * @param {float} value
+<span class='line'>656</span>      *  Constant value to calculate the attraction force between nodes.
+<span class='line'>657</span>      *  By default, it's setted to 1/(normaldistance^3). 
+<span class='line'>658</span>      * 
+<span class='line'>659</span> 	 * @example 
+<span class='line'>660</span> 	 * instance.setAttractionConstant(0.00001);
+<span class='line'>661</span> 	 * 
+<span class='line'>662</span> 	 */</span><span class="WHIT">
+<span class='line'>663</span> </span><span class="WHIT">    </span><span class="NAME">setAttractionConstant</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>664</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.attractionConstant</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>665</span> </span><span class="WHIT">    	</span><span class="NAME">this._moveEveryThing</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>666</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>667</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>668</span>      * Sets the boundary of the graph. 
+<span class='line'>669</span>      * All the nodes will fall and move within this area
+<span class='line'>670</span>      * 
+<span class='line'>671</span>      * @param {object} window
+<span class='line'>672</span>      *  Boundary as object having the members: xMin, yMin, xMax, yMax.
+<span class='line'>673</span>      * 
+<span class='line'>674</span> 	 * @example 
+<span class='line'>675</span> 	 * instance.setViewPort({ xMin: 100, yMin: 100, xMax:400, yMax:500 });
+<span class='line'>676</span> 	 * 
+<span class='line'>677</span> 	 */</span><span class="WHIT">
+<span class='line'>678</span> </span><span class="WHIT">    </span><span class="NAME">setViewPort</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">window</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>679</span> </span><span class="WHIT">    	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">window</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>680</span> </span><span class="WHIT">			</span><span class="NAME">this.opt.viewport.xMin</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.xMin</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">window.xMin</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.xMin</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>681</span> </span><span class="WHIT">			</span><span class="NAME">this.opt.viewport.xMax</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.xMax</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">window.xMax</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.xMax</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>682</span> </span><span class="WHIT">			</span><span class="NAME">this.opt.viewport.yMin</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.yMin</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">window.yMin</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.yMin</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>683</span> </span><span class="WHIT">			</span><span class="NAME">this.opt.viewport.yMax</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.yMax</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">window.yMax</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport.yMax</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>684</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>685</span>     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>686</span> 
+<span class='line'>687</span> </span><span class="WHIT">    </span><span class="COMM">/* Private members */</span><span class="WHIT">
+<span class='line'>688</span> </span><span class="WHIT">    
+<span class='line'>689</span>     </span><span class="NAME">_nodes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>690</span> </span><span class="WHIT">	</span><span class="COMM">// Whenever a node is dragged, it must have a fixed-position </span><span class="WHIT">
+<span class='line'>691</span> </span><span class="WHIT">	</span><span class="COMM">// to avoid all the nodes move together </span><span class="WHIT">
+<span class='line'>692</span> </span><span class="WHIT">	</span><span class="NAME">_pivotNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>693</span> </span><span class="WHIT">	</span><span class="COMM">// when the layout has reached equilibrium</span><span class="WHIT">
+<span class='line'>694</span> </span><span class="WHIT">    </span><span class="NAME">_equilibrium</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>695</span> </span><span class="WHIT">	</span><span class="COMM">// animation running flag</span><span class="WHIT">
+<span class='line'>696</span> </span><span class="WHIT">    </span><span class="NAME">running</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>697</span> </span><span class="WHIT">    
+<span class='line'>698</span>     </span><span class="NAME">_moveEveryThing</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>699</span> </span><span class="WHIT">    	</span><span class="NAME">this.stop</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>700</span> </span><span class="WHIT">    	</span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>701</span> </span><span class="WHIT">    		</span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>702</span> </span><span class="WHIT">    	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>703</span> </span><span class="WHIT">    	</span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>704</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>705</span> </span><span class="WHIT">    
+<span class='line'>706</span> 	</span><span class="NAME">_setPivotNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>707</span> 
+<span class='line'>708</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._pivotNode</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>709</span> </span><span class="WHIT">			</span><span class="NAME">this._pivotNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>710</span> </span><span class="WHIT">			
+<span class='line'>711</span> 		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">this._pivotNode</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>712</span> </span><span class="WHIT">			</span><span class="COMM">// Release current pivot if there is any</span><span class="WHIT">
+<span class='line'>713</span> </span><span class="WHIT">			</span><span class="NAME">this._releasePivotNode</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._pivotNode</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>714</span> </span><span class="WHIT">			</span><span class="COMM">// Mark it as pivot</span><span class="WHIT">
+<span class='line'>715</span> </span><span class="WHIT">			</span><span class="NAME">this._pivotNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>716</span> </span><span class="WHIT">			
+<span class='line'>717</span> 		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>718</span> </span><span class="WHIT">			</span><span class="COMM">// Node is the current pivot already</span><span class="WHIT">
+<span class='line'>719</span> </span><span class="WHIT">			</span><span class="COMM">// just do cancel the timer if there is any</span><span class="WHIT">
+<span class='line'>720</span> </span><span class="WHIT">			</span><span class="NAME">this._cancelPivotTimer</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>721</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>722</span> </span><span class="WHIT">		
+<span class='line'>723</span> 		</span><span class="COMM">// Don't move this node</span><span class="WHIT">
+<span class='line'>724</span> </span><span class="WHIT">		</span><span class="NAME">node.fixed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>725</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>726</span> </span><span class="WHIT">	
+<span class='line'>727</span> 	</span><span class="NAME">_releasePivotNode</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>728</span> </span><span class="WHIT">		</span><span class="COMM">// time waiting to be released</span><span class="WHIT">
+<span class='line'>729</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>730</span> </span><span class="WHIT">		</span><span class="COMM">// wait?</span><span class="WHIT">
+<span class='line'>731</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">ms</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>732</span> </span><span class="WHIT">			</span><span class="COMM">// On releasing the node, keep fixed until equilibrium</span><span class="WHIT">
+<span class='line'>733</span> </span><span class="WHIT">	        </span><span class="COMM">// Otherwise, all nodes could move together for long time</span><span class="WHIT">
+<span class='line'>734</span> </span><span class="WHIT">			</span><span class="NAME">this._setPivotTimer</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ms</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>735</span> </span><span class="WHIT">			
+<span class='line'>736</span> 		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>737</span> </span><span class="WHIT">			</span><span class="COMM">// release it now! </span><span class="WHIT">
+<span class='line'>738</span> </span><span class="WHIT">			</span><span class="NAME">this._cancelPivotTimer</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>739</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>740</span> </span><span class="WHIT">		
+<span class='line'>741</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>742</span> </span><span class="WHIT">	
+<span class='line'>743</span> 	</span><span class="NAME">_setPivotTimer</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ms</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>744</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>745</span> </span><span class="WHIT">		</span><span class="NAME">this._cancelPivotTimer</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>746</span> </span><span class="WHIT">		</span><span class="NAME">node.fixed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>747</span> </span><span class="WHIT">		</span><span class="NAME">node.waitingReleaseId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">setInterval</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>748</span>         	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">self._equilibrium</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>749</span> </span><span class="WHIT">        		</span><span class="NAME">self._cancelPivotTimer</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>750</span> </span><span class="WHIT">        	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>751</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ms</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>752</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>753</span> </span><span class="WHIT">	
+<span class='line'>754</span> 	</span><span class="NAME">_cancelPivotTimer</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>755</span> </span><span class="WHIT">		</span><span class="NAME">node.fixed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>756</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node.waitingReleaseId</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>757</span> </span><span class="WHIT">    		</span><span class="NAME">clearInterval</span><span class="PUNC">(</span><span class="NAME">node.waitingReleaseId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>758</span> </span><span class="WHIT">    		</span><span class="NAME">node.waitingReleaseId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>759</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>760</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>761</span> </span><span class="WHIT">    
+<span class='line'>762</span>     </span><span class="COMM">// Moves every node until whole system is under equilibrium</span><span class="WHIT">
+<span class='line'>763</span> </span><span class="WHIT">    </span><span class="NAME">_forceBasedAlgorithm</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">o</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>764</span> </span><span class="WHIT">        
+<span class='line'>765</span>     	</span><span class="COMM">// assume equilibrium - set to false below if a node moves</span><span class="WHIT">
+<span class='line'>766</span> </span><span class="WHIT">        </span><span class="NAME">this._equilibrium</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>767</span> 
+<span class='line'>768</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">repellingForce</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">attractingForce</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">square</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">direction</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>769</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">numberOfNodes</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._nodes.length</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>770</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">numberOfStoppedNodes</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>771</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">startingVelocityDelta</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">o.maximumStartingVelocity</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">o.minimumStartingVelocity</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>772</span> 
+<span class='line'>773</span> </span><span class="WHIT">        </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>774</span> </span><span class="WHIT">        	
+<span class='line'>775</span>         	</span><span class="NAME">node</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>776</span> </span><span class="WHIT">        	
+<span class='line'>777</span>             </span><span class="NAME">square</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._createSquare</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">o.influenceConstant</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">o.normalDistance</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>778</span> </span><span class="WHIT">            
+<span class='line'>779</span>             </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>780</span> </span><span class="WHIT">            
+<span class='line'>781</span>             	</span><span class="NAME">otherNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._nodes</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>782</span> </span><span class="WHIT">            	
+<span class='line'>783</span>                 </span><span class="COMM">// not the same node</span><span class="WHIT">
+<span class='line'>784</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">j</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>785</span> </span><span class="WHIT">                    </span><span class="COMM">// for nodes within range, add the repelling velocity</span><span class="WHIT">
+<span class='line'>786</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">this._withinSquare</span><span class="PUNC">(</span><span class="NAME">otherNode</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">square</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>787</span> </span><span class="WHIT">                    	</span><span class="NAME">repellingForce</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._repelling</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>788</span> </span><span class="WHIT">                    	</span><span class="NAME">node.velocity.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">repellingForce.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>789</span> </span><span class="WHIT">                        </span><span class="NAME">node.velocity.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">repellingForce.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>790</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>791</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>792</span> </span><span class="WHIT">                </span><span class="COMM">// the first iteration we count the number of stopped nodes</span><span class="WHIT">
+<span class='line'>793</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">otherNode.moving</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">otherNode.fixed</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>794</span> </span><span class="WHIT">                    </span><span class="NAME">numberOfStoppedNodes</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>795</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>796</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>797</span> 
+<span class='line'>798</span> </span><span class="WHIT">            </span><span class="COMM">// for all links, add the attracting velocity</span><span class="WHIT">
+<span class='line'>799</span> </span><span class="WHIT">            </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">k</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">node.links</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>800</span> </span><span class="WHIT">                </span><span class="COMM">//if(link.visible) {</span><span class="WHIT">
+<span class='line'>801</span> </span><span class="WHIT">	            	</span><span class="NAME">attractingForce</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._attracting</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">node.links</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>802</span> </span><span class="WHIT">	            	</span><span class="NAME">node.velocity.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">attractingForce.x</span><span class="PUNC">/</span><span class="NAME">node.linksLength</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>803</span> </span><span class="WHIT">	                </span><span class="NAME">node.velocity.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">attractingForce.y</span><span class="PUNC">/</span><span class="NAME">node.linksLength</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>804</span> </span><span class="WHIT">                </span><span class="COMM">//}</span><span class="WHIT">
+<span class='line'>805</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>806</span> </span><span class="WHIT">            
+<span class='line'>807</span>             </span><span class="COMM">// apply damping</span><span class="WHIT">
+<span class='line'>808</span> </span><span class="WHIT">            </span><span class="NAME">node.velocity.x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">o.damping</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>809</span> </span><span class="WHIT">            </span><span class="NAME">node.velocity.y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">o.damping</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>810</span> </span><span class="WHIT">            </span><span class="NAME">node.velocityLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._absolute</span><span class="PUNC">(</span><span class="NAME">node.velocity.x</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._absolute</span><span class="PUNC">(</span><span class="NAME">node.velocity.y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>811</span> </span><span class="WHIT">            
+<span class='line'>812</span>             </span><span class="COMM">// check to see if the node has stopped moving</span><span class="WHIT">
+<span class='line'>813</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">node.velocityLength</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">o.stoppingVelocity</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>814</span> </span><span class="WHIT">            	</span><span class="NAME">node.moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>815</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>816</span> </span><span class="WHIT">                
+<span class='line'>817</span>             </span><span class="COMM">// the more nodes that have stopped, the larger the starting velocity must be</span><span class="WHIT">
+<span class='line'>818</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node.velocityLength</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">o.minimumStartingVelocity</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">startingVelocityDelta</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">numberOfStoppedNodes</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">numberOfNodes</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>819</span> </span><span class="WHIT">            	</span><span class="NAME">node.moving</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>820</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>821</span> </span><span class="WHIT">                
+<span class='line'>822</span>             </span><span class="COMM">// Check the node is inside viewport</span><span class="WHIT">
+<span class='line'>823</span> </span><span class="WHIT">            </span><span class="COMM">// otherwise change velocity's direction</span><span class="WHIT">
+<span class='line'>824</span> </span><span class="WHIT">            </span><span class="NAME">this._setNodeDirection</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.opt.viewport</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>825</span> </span><span class="WHIT">            
+<span class='line'>826</span>             </span><span class="COMM">// if the node is moving and not fixed then calculate the new position</span><span class="WHIT">
+<span class='line'>827</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">node.moving</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">node.fixed</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>828</span> </span><span class="WHIT">                </span><span class="NAME">this._equilibrium</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>829</span> </span><span class="WHIT">                </span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node.velocity.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>830</span> </span><span class="WHIT">                </span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">node.velocity.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>831</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>832</span> 
+<span class='line'>833</span> </span><span class="WHIT">            </span><span class="NAME">node.offset</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">left</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">top</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>834</span> </span><span class="WHIT">            </span><span class="NAME">this._jsPlumb.repaint</span><span class="PUNC">(</span><span class="NAME">node.id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>835</span> </span><span class="WHIT">            
+<span class='line'>836</span>         </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>837</span> </span><span class="WHIT">        
+<span class='line'>838</span>         </span><span class="COMM">//this._jsPlumb.repaintEverything();</span><span class="WHIT">
+<span class='line'>839</span> </span><span class="WHIT">        
+<span class='line'>840</span>         </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._equilibrium</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>841</span> </span><span class="WHIT">        	</span><span class="NAME">this.stop</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>842</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>843</span> </span><span class="WHIT">        
+<span class='line'>844</span>         </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._equilibrium</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>845</span> </span><span class="WHIT">        
+<span class='line'>846</span>     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>847</span> </span><span class="WHIT">	
+<span class='line'>848</span> 	</span><span class="COMM">// create the square of influence</span><span class="WHIT">
+<span class='line'>849</span> </span><span class="WHIT">    </span><span class="NAME">_createSquare</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>850</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>851</span> </span><span class="WHIT">            </span><span class="NAME">xMin</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>852</span> </span><span class="WHIT">            </span><span class="NAME">xMax</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">node.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>853</span> </span><span class="WHIT">            </span><span class="NAME">yMin</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>854</span> </span><span class="WHIT">            </span><span class="NAME">yMax</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">node.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>855</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>856</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>857</span> </span><span class="WHIT">    
+<span class='line'>858</span>     </span><span class="COMM">// is the node inside of the square of influence?</span><span class="WHIT">
+<span class='line'>859</span> </span><span class="WHIT">    </span><span class="NAME">_withinSquare</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">otherNode</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">square</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>860</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT">  </span><span class="NAME">otherNode.x</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">square.xMin</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
+<span class='line'>861</span> </span><span class="WHIT">                </span><span class="NAME">otherNode.x</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">square.xMax</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
+<span class='line'>862</span> </span><span class="WHIT">                </span><span class="NAME">otherNode.y</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">square.yMin</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
+<span class='line'>863</span> </span><span class="WHIT">                </span><span class="NAME">otherNode.y</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">square.yMax</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>864</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>865</span> </span><span class="WHIT">    
+<span class='line'>866</span>     </span><span class="NAME">_setNodeDirection</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">square</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>867</span> </span><span class="WHIT">    	
+<span class='line'>868</span>     	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">square.xMin</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.velocity.x</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>869</span> </span><span class="WHIT">    	     </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">node.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">square.xMax</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.velocity.x</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>870</span> </span><span class="WHIT">    		</span><span class="NAME">node.velocity.x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>871</span> 
+<span class='line'>872</span> </span><span class="WHIT">    	</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>873</span>     	
+<span class='line'>874</span>     	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">square.yMin</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.velocity.y</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>875</span> </span><span class="WHIT">    	     </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">node.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">square.yMax</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.velocity.y</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>876</span> </span><span class="WHIT">    		</span><span class="NAME">node.velocity.y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>877</span> </span><span class="WHIT">    		
+<span class='line'>878</span>     	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>879</span> 
+<span class='line'>880</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>881</span> </span><span class="WHIT">    
+<span class='line'>882</span>     </span><span class="NAME">_absolute</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>883</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>884</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>885</span> 
+<span class='line'>886</span> </span><span class="WHIT">    </span><span class="NAME">_square</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>887</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>888</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>889</span> </span><span class="WHIT">    
+<span class='line'>890</span>     </span><span class="NAME">_manhattanDistance</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>891</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">d</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._absolute</span><span class="PUNC">(</span><span class="NAME">otherNode.x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._absolute</span><span class="PUNC">(</span><span class="NAME">otherNode.y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>892</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">d</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">d</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>893</span> </span><span class="WHIT">        </span><span class="COMM">// move one node a pixel to the right if both nodes overlap</span><span class="WHIT">
+<span class='line'>894</span> </span><span class="WHIT">        </span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>895</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>896</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>897</span> </span><span class="WHIT">    
+<span class='line'>898</span>     </span><span class="NAME">_repelling</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>899</span> </span><span class="WHIT">    	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">repelling</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.repellingFactor</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">this._square</span><span class="PUNC">(</span><span class="NAME">this._manhattanDistance</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>900</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">repelling</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">otherNode.x</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>901</span>         	     </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">repelling</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node.y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">otherNode.y</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>902</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>903</span> </span><span class="WHIT">    
+<span class='line'>904</span>     </span><span class="NAME">_attracting</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>905</span> </span><span class="WHIT">    	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">attraction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.attractionConstant</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this._manhattanDistance</span><span class="PUNC">(</span><span class="NAME">node</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">otherNode</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>906</span> </span><span class="WHIT">    	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">otherNode.x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">node.x</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">attraction</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>907</span>     			 </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">otherNode.y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">node.y</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">attraction</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">        
+<span class='line'>908</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>909</span> </span><span class="WHIT">    
+<span class='line'>910</span>     </span><span class="COMM">// TODO: define static values for events and other constants </span><span class="WHIT">
+<span class='line'>911</span> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>912</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_LABEL_CLICKED</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onLabelClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>913</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_LINK_OVER</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onLinkOver"</span><span class="WHIT">
+<span class='line'>914</span> </span><span class="WHIT">	
+<span class='line'>915</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>916</span> </span></pre></body></html>

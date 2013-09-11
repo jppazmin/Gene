@@ -1,0 +1,252 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * Shows a cloud of tags in different sizes depending on the frequencies/weights.
+<span class='line'>  3</span>  * Colors for each tag can be applied as well.
+<span class='line'>  4</span>  * 
+<span class='line'>  5</span>  * @class
+<span class='line'>  6</span>  * @extends Biojs
+<span class='line'>  7</span>  * 
+<span class='line'>  8</span>  * @author &lt;a href="mailto:johncar@gmail.com">John Gomez&lt;/a>
+<span class='line'>  9</span>  * 
+<span class='line'> 10</span>  * @requires &lt;a href="../biojs/css/biojs.TagCloud.css">TagCloud CSS&lt;/a>
+<span class='line'> 11</span>  * @dependency &lt;link href="../biojs/css/biojs.TagCloud.css" rel="stylesheet" type="text/css">&lt;/link>
+<span class='line'> 12</span>  * 
+<span class='line'> 13</span>  * @param {Object} options 
+<span class='line'> 14</span>  *    An object with the options for TagCloud component.
+<span class='line'> 15</span>  *    
+<span class='line'> 16</span>  * @option {string} target 
+<span class='line'> 17</span>  *    Identifier of the DIV tag where the component should be displayed.
+<span class='line'> 18</span>  * 
+<span class='line'> 19</span>  * @example
+<span class='line'> 20</span>  *    // Lets do a list of synthetic values by using Random.
+<span class='line'> 21</span>  *    var tagList = [];
+<span class='line'> 22</span>  *    var colors = ["DarkBlue", "Chocolate", "FF0000", "#008500", "Silver", "#CD0074", "#FF7400"];
+<span class='line'> 23</span>  *    var randomFreq, randomColor;
+<span class='line'> 24</span>  *  
+<span class='line'> 25</span>  *    // Generates 40 tags with random frequency between 1..50 and random color
+<span class='line'> 26</span>  *    for (var i=0; i &lt; 40; i++ ) {
+<span class='line'> 27</span>  *       randomFreq = Math.floor( Math.random()*50 ) + 1;
+<span class='line'> 28</span>  *       randomColor = colors[ Math.floor( Math.random()*7 ) ];
+<span class='line'> 29</span>  *       tagList.push( { name: "tag" + i, freq: randomFreq, color: randomColor });
+<span class='line'> 30</span>  *    }
+<span class='line'> 31</span>  *    
+<span class='line'> 32</span>  *    // Instantiation of the TagCloud by using the synthetic data
+<span class='line'> 33</span>  *    var instance = new Biojs.TagCloud({
+<span class='line'> 34</span>  *       target: "YourOwnDivId",
+<span class='line'> 35</span>  *       tags: tagList
+<span class='line'> 36</span>  *    });
+<span class='line'> 37</span>  *    
+<span class='line'> 38</span>  */</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="NAME">Biojs.TagCloud</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.extend</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="COMM">/** @lends Biojs.TagCloud# */</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 42</span> </span><span class="WHIT">	</span><span class="NAME">constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 43</span> 
+<span class='line'> 44</span> </span><span class="WHIT">	    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">this.opt.target</span><span class="WHIT">  </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">        	</span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'#'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.opt.target</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 46</span> 
+<span class='line'> 47</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.target</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">            </span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">            
+<span class='line'> 50</span>         </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">            </span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">this.opt.target</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 53</span> 
+<span class='line'> 54</span> </span><span class="WHIT">		</span><span class="NAME">this._container.addClass</span><span class="PUNC">(</span><span class="STRN">"TagCloud"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">		</span><span class="NAME">this._initialize</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">		
+<span class='line'> 57</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.tags</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">			</span><span class="NAME">this.setTags</span><span class="PUNC">(</span><span class="NAME">this.opt.tags</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.opt.cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">		
+<span class='line'> 61</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 62</span> 
+<span class='line'> 63</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 64</span> 	 * Default values for the options
+<span class='line'> 65</span> 	 * @name Biojs.TagCloud-opt
+<span class='line'> 66</span> 	 */</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">	</span><span class="NAME">opt</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">		</span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"YourOwnDivId"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">		</span><span class="NAME">title</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">		</span><span class="NAME">tags</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">		</span><span class="NAME">cbRenderValue</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tagName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tagValueNode</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'> 74</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">  
+<span class='line'> 76</span> 	</span><span class="COMM">/**
+<span class='line'> 77</span> 	 * Array containing the supported event names
+<span class='line'> 78</span> 	 * @name Biojs.TagCloud-eventTypes
+<span class='line'> 79</span> 	 */</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">	</span><span class="NAME">eventTypes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">	    </span><span class="COMM">/**
+<span class='line'> 82</span> 	     * @name Biojs.TagCloud#onTagClicked
+<span class='line'> 83</span> 	     * @event
+<span class='line'> 84</span> 	     * @param {function} actionPerformed A function which receives an {@link Biojs.Event} object as argument.
+<span class='line'> 85</span> 	     * @eventData {Object} source The component which did triggered the event.
+<span class='line'> 86</span> 	     * @eventData {string} type The name of the event.
+<span class='line'> 87</span> 	     * @eventData {string} tagName Name of the clicked tag.
+<span class='line'> 88</span> 	     * @example 
+<span class='line'> 89</span> 	     * instance.onTagClicked(
+<span class='line'> 90</span> 	     *    function( e ) {
+<span class='line'> 91</span> 	     *       alert("Tag clicked: " + e.tagName );
+<span class='line'> 92</span> 	     *    }
+<span class='line'> 93</span> 	     * ); 
+<span class='line'> 94</span> 	     * 
+<span class='line'> 95</span> 	     */</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">	    </span><span class="STRN">"onTagClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">	    
+<span class='line'> 98</span> 	    </span><span class="COMM">/**
+<span class='line'> 99</span> 	     * @name Biojs.TagCloud#onTagOver
+<span class='line'>100</span> 	     * @event
+<span class='line'>101</span> 	     * @param {function} actionPerformed A function which receives an {@link Biojs.Event} object as argument.
+<span class='line'>102</span> 	     * @eventData {Object} source The component which did triggered the event.
+<span class='line'>103</span> 	     * @eventData {string} type The name of the event.
+<span class='line'>104</span> 	     * @eventData {string} tagName Name of the clicked tag.
+<span class='line'>105</span> 	     * @example 
+<span class='line'>106</span> 	     * instance.onTagOver(
+<span class='line'>107</span> 	     *    function( e ) {
+<span class='line'>108</span> 	     *       alert("Tag clicked: " + e.tagName );
+<span class='line'>109</span> 	     *    }
+<span class='line'>110</span> 	     * ); 
+<span class='line'>111</span> 	     * 
+<span class='line'>112</span> 	     */</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">	    </span><span class="STRN">"onTagOver"</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">	</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">  
+<span class='line'>116</span> 	</span><span class="NAME">_initialize</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">	  
+<span class='line'>118</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">opt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">		
+<span class='line'>120</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">opt.title</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">			</span><span class="NAME">this._title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div>'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">opt.title</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>123</span> 
+<span class='line'>124</span> </span><span class="WHIT">		</span><span class="NAME">this._tags</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;ul class="tags">&lt;/ul>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">	
+<span class='line'>127</span> 	</span><span class="COMM">/**
+<span class='line'>128</span>      * Description of the method
+<span class='line'>129</span> 	 * 
+<span class='line'>130</span> 	 * @param {object} tags As defined in the option called tags.
+<span class='line'>131</span> 	 *
+<span class='line'>132</span> 	 * @example 
+<span class='line'>133</span> 	 * instance.setTags([
+<span class='line'>134</span> 	 *    {  name: "tag1",
+<span class='line'>135</span> 	 *       freq: 1
+<span class='line'>136</span> 	 *    },
+<span class='line'>137</span> 	 *    {  name: "tag2",
+<span class='line'>138</span> 	 *       freq: 27,
+<span class='line'>139</span> 	 *       color: "red"
+<span class='line'>140</span> 	 *    },
+<span class='line'>141</span> 	 *    {  name: "tag3",
+<span class='line'>142</span> 	 *       freq: 10
+<span class='line'>143</span> 	 *    }
+<span class='line'>144</span> 	 * ]);
+<span class='line'>145</span> 	 * 
+<span class='line'>146</span> 	 * @example 
+<span class='line'>147</span> 	 * var tagList = [];
+<span class='line'>148</span> 	 * var colors = ["FF0000", "#008500", "Silver", "#CD0074", "#FF7400"];
+<span class='line'>149</span> 	 * var randomFreq, randomColor;
+<span class='line'>150</span> 	 *  
+<span class='line'>151</span> 	 * // Generates 40 tags with random frequency between 1..50 and random color
+<span class='line'>152</span> 	 * for (var i=0; i &lt; 40; i++ ) {
+<span class='line'>153</span> 	 *    randomFreq = Math.floor( Math.random()*50 ) + 1;
+<span class='line'>154</span> 	 *    randomColor = colors[ Math.floor( Math.random()*5 ) ];
+<span class='line'>155</span> 	 *    tagList.push( { name: "tag" + i, freq: randomFreq, color: randomColor });
+<span class='line'>156</span> 	 * }
+<span class='line'>157</span> 	 * 
+<span class='line'>158</span> 	 * instance.setTags( tagList );
+<span class='line'>159</span> 	 */</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">	</span><span class="NAME">setTags</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tags</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">		
+<span class='line'>162</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tagsNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._tags</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">		
+<span class='line'>165</span> 		</span><span class="NAME">tagsNode.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> 
+<span class='line'>167</span> </span><span class="WHIT">		</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tags</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tag</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">		  
+<span class='line'>168</span> 			</span><span class="NAME">self.addTag</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tag</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">		
+<span class='line'>171</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">	
+<span class='line'>173</span> 	</span><span class="COMM">/**
+<span class='line'>174</span>      * Removes all the tags from the cloud.
+<span class='line'>175</span> 	 * 
+<span class='line'>176</span> 	 * @example 
+<span class='line'>177</span> 	 * instance.removeAll();
+<span class='line'>178</span> 	 */</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">	</span><span class="NAME">removeAll</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">		</span><span class="NAME">this._tags.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">	
+<span class='line'>183</span> 	</span><span class="COMM">/**
+<span class='line'>184</span>      * Add a single tag to the cloud.
+<span class='line'>185</span> 	 * 
+<span class='line'>186</span> 	 * @param {object} tags As defined in the option called tags.
+<span class='line'>187</span> 	 *
+<span class='line'>188</span> 	 * @example 
+<span class='line'>189</span> 	 * instance.addTag( { name: "tag1", freq: 45, color: "#A52A2A" } );
+<span class='line'>190</span> 	 */</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">	</span><span class="NAME">addTag</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tag</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">		
+<span class='line'>193</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tagsNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._tags</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tagId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">tag.id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">'id="'</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">tag.id</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="STRN">'"'</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">		
+<span class='line'>197</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">oneTag</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;li class="tag" '</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">tagId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="STRN">' >&lt;/li>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tagsNode</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tagName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;span class="name">'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">tag.name.toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/span>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">oneTag</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tagValue</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;span class="value" style="display:none">&lt;/span>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">oneTag</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">		
+<span class='line'>201</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">			</span><span class="NAME">cbRenderValue</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tagId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tagName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tagValueNode</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>206</span> 
+<span class='line'>207</span> </span><span class="WHIT">		</span><span class="NAME">tagName.css</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">			</span><span class="STRN">"fontSize"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tag.freq</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">tag.freq</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"em"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">tag.freq</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">"2em"</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">tag.freq</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"em"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">			</span><span class="STRN">"cursor"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'pointer'</span><span class="WHIT">
+<span class='line'>210</span> 
+<span class='line'>211</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">click</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>212</span> 
+<span class='line'>213</span> </span><span class="WHIT">			</span><span class="NAME">tagsNode.find</span><span class="PUNC">(</span><span class="STRN">'.value:visible'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">hide</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>214</span> </span><span class="WHIT">			</span><span class="NAME">tagValue.html</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">cbRenderValue.call</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">oneTag</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tag.id</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tag.name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tagValue</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">			</span><span class="NAME">tagValue.show</span><span class="PUNC">(</span><span class="NUMB">1000</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>216</span> 
+<span class='line'>217</span> 			</span><span class="NAME">tagsNode.find</span><span class="PUNC">(</span><span class="STRN">'.name.active'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">removeClass</span><span class="PUNC">(</span><span class="STRN">'active'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">			</span><span class="NAME">tagName.addClass</span><span class="PUNC">(</span><span class="STRN">'active'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">			
+<span class='line'>220</span> 			</span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.TagCloud.EVT_ON_TAG_CLICKED</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">				</span><span class="NAME">tagName</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">tag.name</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">			
+<span class='line'>224</span> 		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">mouseover</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">		
+<span class='line'>226</span> 			</span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.TagCloud.EVT_ON_TAG_OVER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">				</span><span class="STRN">'tagName'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">tag.name</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>228</span> </span><span class="WHIT">				</span><span class="STRN">'tagId'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">tag.id</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="WHIT">				</span><span class="STRN">'tagValue'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">tagValue</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">			
+<span class='line'>232</span> 		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">append</span><span class="PUNC">(</span><span class="STRN">'&lt;span style="vertical-align:super; font-size:10px;">'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">tag.freq</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/super>'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">  
+<span class='line'>233</span> 		
+<span class='line'>234</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tag.color</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">			</span><span class="NAME">tagName.css</span><span class="PUNC">(</span><span class="STRN">'color'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">tag.color</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>238</span> 
+<span class='line'>239</span> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>240</span> </span><span class="WHIT">	
+<span class='line'>241</span> 	</span><span class="COMM">// Events </span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_TAG_CLICKED</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onTagClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_TAG_OVER</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onTagOver"</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">	
+<span class='line'>245</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="BioJS Library" name="author" value="John Gomez Carvajal <johncar@gmail.com>" />
+		
+        <title>BioJs: JavaScript components for biological data < EMBL-EBI</title>
+            
+        <meta content="width=device-width,initial-scale=1" name="viewport" />
+        
+        <!-- EBI's style sheets -->
+        <link href="style/normalize.css" rel="stylesheet" />
+        <link href="style/boilerplate-style.css" rel="stylesheet" />
+        <link href="style/ebi-custom.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/984-24-col-fixed.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/ebi-positioning.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/biojs.css" rel="stylesheet" type="text/css" />
+        <link href="style/biojs-colours_blue.css" rel="stylesheet" type="text/css" />
+        
+        <!-- jQuery Library -->
+		<script language="JavaScript" type="text/javascript" src="scripts/jquery-1.7.2.min.js"></script>
+            
+        <!-- core code -->
+		<script language="JavaScript" type="text/javascript" src="src/Biojs.js"></script>
+    
+        <!-- Using my own Biojs Toolip component in here ;P by John Gomez johncar@gmail.com -->
+        <script src="scripts/Biojs.Tooltip.js" language="JavaScript" type="text/javascript" ></script>
+        <link href="style/biojs.Tooltip.css" rel="stylesheet" type="text/css" />
+
+		<!-- dependencies -->
+		
+            
+                <link href="../biojs/css/biojs.Tooltip.css" rel="stylesheet" type="text/css"></link>
+            
+                <script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.6.4.js"></script>
+            
+	    
+        
+		<!-- component code -->
+		<script language="JavaScript" type="text/javascript" src="src/Biojs.Tooltip.js"></script>
+		
+		<script language="JavaScript" type="text/javascript">		
+        window.onload = function() {
+            
+                
+                       // These examples use the component's example div 'YourOwnDivId' to draw the links only.
+   jQuery('#YourOwnDivId')
+      .append('<a class="example" href="#" title="Simple example of Tooltip showing the title attribute">Pass the mouse over here.<a>')
+      .css({ 
+         'display': 'table-cell',
+         'vertical-align': 'middle',
+         'text-align': 'center',
+         'width': '730px',
+         'height': '400px'
+      });
+   
+   // Tooltip will come out whenever mouse enter to any anchor 'a' with class 'example'
+   var simpleTip = new Biojs.Tooltip({
+      targetSelector: "a.example"
+   });
+   
+   //
+   // Another example using rendering function instead of 'title' attribute
+   //
+   jQuery('#YourOwnDivId')
+      .append('<br/><br/><br/><br/><a class="example render" href="#">This example change the tooltip direction <br/> for each mouse entry.<a>');
+   
+   // Tooltip will come out whenever mouse enter to any anchor 'a' with class 'example'
+   var tipRendered = new Biojs.Tooltip({
+      targetSelector: "a.example.render",
+      cbRender: function( element ) {
+      	return "Tooltip type <strong>Biojs.Tooltip.ARROW_" + this.getArrowType().toUpperCase() + "</strong> using rendering function to build up content dynamically"
+      }
+   });
+   
+   // Changes the tooltip's direction 
+   var counter = 0;
+   var arrowTypes = [ 
+      Biojs.Tooltip.ARROW_LEFT_TOP,
+   	 Biojs.Tooltip.ARROW_LEFT_MIDDLE,
+      Biojs.Tooltip.ARROW_LEFT_BOTTOM,
+      Biojs.Tooltip.ARROW_TOP_LEFT,
+      Biojs.Tooltip.ARROW_TOP_MIDDLE,
+      Biojs.Tooltip.ARROW_TOP_RIGHT,
+      Biojs.Tooltip.ARROW_RIGHT_TOP,
+      Biojs.Tooltip.ARROW_RIGHT_MIDDLE,
+      Biojs.Tooltip.ARROW_RIGHT_BOTTOM,
+      Biojs.Tooltip.ARROW_BOTTOM_LEFT,
+      Biojs.Tooltip.ARROW_BOTTOM_MIDDLE,
+      Biojs.Tooltip.ARROW_BOTTOM_RIGHT
+   ];
+   
+   // Changes the Tooltip arrow type dynamically 
+   jQuery('#YourOwnDivId a.example.render').mouseover( function() {
+   	 var arrowType = arrowTypes[ counter++ % 12 ];
+      tipRendered.setArrowType( arrowType );
+   });
+   
+   //
+   // Another example using rich content 
+   //
+   jQuery('#YourOwnDivId')
+      .append('<br/><br/><br/><br/><a class="example rich" href="#">Rich content<a>');
+      
+   var richContent = 
+      '<div style="display: table-cell; width: 400px">'+
+      '<h3>Santiago de Cali</h3>' +
+      '<img src="http://www.ebi.ac.uk/~jgomez/cali.jpg" style="position:relative;float:left; padding:10px; margin:0px;"/>'+
+      '<p style="font-family:\'Bookman Old Style\', serif; font-size:1em; font-smooth:always;" > '+
+      'Simply referred to as Cali, is a city located in western <a href="http://en.wikipedia.org/wiki/Colombia">Colombia</a> '+
+      'It is the capital of the Valle del Cauca Department. With a population of 2.5 million, '+
+      'Cali is the third largest city in the country, after Bogota and Medellin. The city '+
+      'was founded on 25 July 1536.</p></div>';
+   
+   var tipRich = new Biojs.Tooltip({
+      targetSelector: "a.example.rich",
+      cbRender: function( element ) {
+      	return richContent;
+      }, 
+      arrowType: Biojs.Tooltip.ARROW_BOTTOM_MIDDLE
+   });
+   
+   //
+   // Last example using mouse position instead of element's 
+   //
+   jQuery('#YourOwnDivId')
+      .append('<br/><br/><br/><br/><a class="example position" href="#" title="I am a cat.">Tooltip changes with mouse positioning.<a>');
+   
+   var tipPosition = new Biojs.Tooltip({
+      targetSelector: "a.example.position",
+      position: Biojs.Tooltip.MOUSE_POSITION
+   });
+                
+            
+            
+            
+				
+                
+					
+						
+					
+						
+							
+							
+								
+								$("#getArrowType1")
+                                    .click( function() { 
+alert ( "First example is using " + simpleTip.getArrowType() + " arrow." ); })
+                                    .data('code', '%0Aalert%20%28%20%22First%20example%20is%20using%20%22%20+%20simpleTip.getArrowType%28%29%20+%20%22%20arrow.%22%20%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#getBodyContainer1")
+                                    .click( function() { 
+tipRendered.getBodyContainer(); })
+                                    .data('code', '%0AtipRendered.getBodyContainer%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#getContent1")
+                                    .click( function() { 
+simpleTip.getContent("Content as HTML string"); })
+                                    .data('code', '%0AsimpleTip.getContent%28%22Content%20as%20HTML%20string%22%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#getIdentifier1")
+                                    .click( function() { 
+alert ( "Identifier of the second example is " + tipRendered.getIdentifier() + "." ); })
+                                    .data('code', '%0Aalert%20%28%20%22Identifier%20of%20the%20second%20example%20is%20%22%20+%20tipRendered.getIdentifier%28%29%20+%20%22.%22%20%29%3B' );
+							
+						
+					
+						
+					
+						
+							
+							
+								
+								$("#setArrowType1")
+                                    .click( function() { 
+simpleTip.setArrowType(Biojs.Tooltip.ARROW_BOTTOM_RIGHT); })
+                                    .data('code', '%0AsimpleTip.setArrowType%28Biojs.Tooltip.ARROW_BOTTOM_RIGHT%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setContent1")
+                                    .click( function() { 
+simpleTip.setContent("Content as HTML string"); })
+                                    .data('code', '%0AsimpleTip.setContent%28%22Content%20as%20HTML%20string%22%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setIdentifier1")
+                                    .click( function() { 
+tipRendered.setIdentifier("MyIdentifier"); })
+                                    .data('code', '%0AtipRendered.setIdentifier%28%22MyIdentifier%22%29%3B' );
+							
+						
+					
+                
+            
+            
+            
+            
+				
+                
+                    
+                        
+                            
+                                $("#onShowUp").children().remove();								
+                                
+                                
+simpleTip.onShowUp(
+   function( e ) {
+      $("#onShowUp").text("Mouse has passed over the first example.");
+   }
+);
+                                $("#onShowUp").data('code', '%0AsimpleTip.onShowUp%28%0A%20%20%20function%28%20e%20%29%20%7B%0A%20%20%20%20%20%20%24%28%22%23onShowUp%22%29.text%28%22Mouse%20has%20passed%20over%20the%20first%20example.%22%29%3B%0A%20%20%20%7D%0A%29%3B' );
+                            
+                        
+                    
+                		
+            
+            
+            function selectMenuOption (){
+            
+                jQuery('#tabmenu ul li a').removeClass('selected');
+                jQuery(this).addClass('selected');
+            
+                jQuery('#content').children().hide();
+                jQuery( '#' + jQuery(this).attr('id').replace('Link','') ).show();
+            
+            };
+            
+            
+            jQuery('#tabmenu ul li a').click(function(){
+                selectMenuOption.call(this);
+            });
+
+            //
+            // Biojs.Tooltip component with syntax highlighter for the method's examples
+            //
+            // 
+            
+            // The highlighter
+            var myBrush = new SyntaxHighlighter.brushes.JScript();
+            myBrush.init({ toolbar: false });
+            
+            // function to render the code snippet
+            function drawJSCode (element) {
+                return myBrush.getHtml( unescape(jQuery(element).data('code')) );
+            }
+
+            // Create the tooltip
+            var biojsTooltip = new Biojs.Tooltip({
+                targetSelector: ".methodExample, .event",
+                cbRender: drawJSCode,
+                arrowType: Biojs.Tooltip.ARROW_RIGHT_MIDDLE
+            });
+            
+            //
+            // View the source code in a new window
+            //
+            var sourceCodeWindow; 
+            
+            jQuery('#viewInWindowButton').click(function() {
+            
+                sourceCodeWindow = window.open('', '', "width=700,height=600,menubar=0,toolbar=0,status=0,scrollbars=1,resizable=1,location=0" );
+            
+                // We get it?
+                if ( sourceCodeWindow ) {
+                
+                    sourceCodeWindow.document.writeln( unescape(window.exampleCode) );
+                    sourceCodeWindow.document.close();
+ 
+                } else {
+                    alert("Please allow pop-up windows for this site in your browser");
+                }
+            
+            });
+
+
+        };	
+			
+		</script>
+        
+        <!-- Syntax highlighting -->
+        <link href="style/shCore.css" rel="stylesheet" />
+        <link href="style/shCoreEclipse.css" rel="stylesheet" />
+        <link href="style/shThemeEclipse.css" rel="stylesheet" />
+        
+        <script src="scripts/shCore.js" type="text/javascript"></script>
+		<script src="scripts/shBrushJScript.js" type="text/javascript"></script>
+        <script src="scripts/shBrushXml.js" type="text/javascript"></script>
+        
+		<script language="JavaScript" type="text/javascript">
+		  	SyntaxHighlighter.all();
+		</script>
+
+	</head>
+
+	<body class="level2" id="biojs" screen_capture_injected="true">
+    
+        <div id="skip-to">
+            <ul>
+                <li><a href="#content" title="">Skip to main content</a></li>
+                <li><a href="#local-nav" title="">Skip to local navigation</a></li>
+                <li><a href="#global-nav" title="">Skip to EBI global navigation menu</a></li>
+                <li><a href="#global-nav-expanded" title="">Skip to expanded EBI global navigation menu (includes all sub-sections)</a></li>
+            </ul>
+        </div>
+<!-- ============================== main content ============================ -->
+        
+        <div class="container_24" id="wrapper"> 
+            <!-- ============================== header ================================= -->
+            <header>
+                <div class="masthead grid_24" id="global-masthead">
+                    <p class="logo-img"><a class="active" href="/" id="logo" style="border:none;" title="Return to the European Bioinformatics Institute home page"><img alt="European Bioinformatics Institute" src="images/logoebi.png" typeof="foaf:Image" /></a></p>
+                    <nav>
+                        <ul id="global-nav">
+                            <li class="first active" id="services"><a href="/services" title="">Services</a></li>
+                            <li id="research"><a href="/research" title="">Research</a></li>
+                            <li id="training"><a href="/training" title="">Training</a></li>
+                            <li id="industry"><a href="/industry" title="">Industry</a></li>
+                            <li class="last" id="about"><a href="/about-us" title="">About us</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <div class="masthead grid_24" id="local-masthead">
+                    <div class="grid_12 alpha" id="local-title-logo">
+                        <h1>BioJs | Home</h1>
+                        <p><a href="." style="border-bottom-width: 0px;" title=""><img alt="Biojs" class="logo" src="images/logo.png" /></a></p>
+                    </div>
+                    
+                    <nav>
+                        <ul class="grid_24" id="local-nav">
+                            <li class="first"><a href="./index.html" title="">Home</a></li>
+                            <li><a href="./components.html" title="">Components</a></li>
+                            <li><a href="./download.html" title="">Download</a></li>
+                            <li class="last"><a href="./about.html" title="">About BioJs</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header><!-- header end -->
+            
+            <div id="tabmenu" class="grid_24 alpha">
+                <h2 class="strapline title">Biojs.Tooltip showcase</h2>
+                <ul>
+                    <li><a href="#" id="overviewLink" class="selected">Overview</a></li>
+                    <li><a href="#" id="sourceLink">Installation</a></li>
+                    <li><a href="#" id="optionsLink">Options</a></li>
+                    <li><a href="#" id="methodsLink">Methods</a></li>
+                    <li><a href="#" id="eventsLink">Events</a></li>
+                </ul>
+            </div>
+            <!-- ============================== main section ============================ -->
+	
+            <div class="clearfix" id="content" role="main">
+
+                <!-- ============================== overview ============================ -->
+
+                <div id="overview" class="grid_24">
+                    
+                    <!-- ============================== component section ============================ -->
+
+                    <div class="grid_18 alpha"> 
+
+                        <div class="box_3dview" id="example">
+                            <div id="YourOwnDivId"></div>
+                        </div>
+                        <br/>
+                        <div style="text-align:right;">
+                            <p class="warning">
+                                PLEASE NOTE: the above example is being affected by the CSS rules of this site. 
+                                Click on 'view in window' to see the component by using its own CSS stylesheet(s) only.
+                            </p>
+                            <a id="viewInWindowButton" class="main_button" href="#">View in window</a>
+                        </div>
+            
+                        <div> 
+                            <h3>Overview</h3>
+                            <div class="intro">
+                                <p>Tooltip for general purpose.
+                                    <br/>Version
+                                        1.0.0.<br/>
+                                    
+                                </p>
+                            </div>
+                        </div>
+            
+                    </div> <!-- component section end  -->
+           
+                    <!-- ============================== side bar ============================ -->	
+
+                    <div class="grid_6 omega">
+                        <aside>
+                            
+                            
+                                <div class="main-right-box-no">                                     
+                                    <div class="right_title"><span class="version">Events</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                
+                                                    
+                                                        <li>onShowUp<pre class="event" id="onShowUp"/></li>
+                                                    
+                                                
+                                                                        
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                            
+                                <div class="main-right-box-no">
+                                    <div class="right_title"><span class="version">Methods</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="getArrowType1" class="methodExample">
+                                                            getArrowType</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="getBodyContainer1" class="methodExample">
+                                                            getBodyContainer</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="getContent1" class="methodExample">
+                                                            getContent</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="getIdentifier1" class="methodExample">
+                                                            getIdentifier</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setArrowType1" class="methodExample">
+                                                            setArrowType</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setContent1" class="methodExample">
+                                                            setContent</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setIdentifier1" class="methodExample">
+                                                            setIdentifier</a>
+                                                        </li>
+                                                    
+                                                
+                                                                      
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                            
+                                <div class="main-right-box-no">
+                                    <div class="right_title"><span class="version">Dependencies</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                <li><a href="../biojs/css/biojs.Tooltip.css">Tooltip CSS</a></li>
+                                            
+                                                <li><a href='http://blog.jquery.com/2011/09/12/jquery-1-6-4-released/'>jQuery Core 1.6.4</a></li>
+                                                                       
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                        </aside>
+                    </div> <!-- side bar end -->
+                    
+                </div> <!-- overview -->
+                
+                <!-- ============================= installation ======================== -->
+                    
+                <div id="source" class="grid_24" style="display:none;"> 
+                    <p>To get the above Biojs.Tooltip to work on your page, you need to do the following:</p>
+                    
+                    <ol>
+                        <li>Include the file <a href="src/Biojs.Tooltip.js">Biojs.Tooltip.js</a> and its dependencies to your page header.
+                            
+                            
+                                
+                                    
+                                
+                                    
+                                
+                              
+                            
+                            
+                            
+                                <h4>Biojs scripts</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;script language="JavaScript" type="text/javascript" src="src/Biojs.js"&gt;</script>
+<script language="JavaScript" type="text/javascript" src="src/Biojs.Tooltip.js"></script></pre>
+                                
+                            
+                            
+                            
+                                <h4>External script(s)</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.6.4.js"&gt;</script>
+</pre>
+                                
+                            
+
+                            
+                                <h4>CSS stylesheet(s)</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;link href="../biojs/css/biojs.Tooltip.css" rel="stylesheet" type="text/css"&gt;</link>
+</pre>
+                                
+                            
+                            
+                            
+                        </li>    
+                        
+                        <li>Create a div tag which holds an unique identifier.
+                            <pre class="brush: html; toolbar: false">
+                                &lt;body&gt;
+                                ...
+                                &lt;div id="YourOwnDivId" /&gt;
+                                ...
+                                &lt;/body&gt;
+                            </pre>
+                        </li>
+                        
+                        <li>Create a code snippet within a &lt;script&gt; tag and instance Biojs.Tooltip into.
+                            
+                                
+                                    
+                                    <pre class="brush: js; toolbar: false" >window.onload = function() {
+   // These examples use the component's example div 'YourOwnDivId' to draw the links only.
+   jQuery('#YourOwnDivId')
+      .append('<a class="example" href="#" title="Simple example of Tooltip showing the title attribute">Pass the mouse over here.<a>')
+      .css({ 
+         'display': 'table-cell',
+         'vertical-align': 'middle',
+         'text-align': 'center',
+         'width': '730px',
+         'height': '400px'
+      });
+   
+   // Tooltip will come out whenever mouse enter to any anchor 'a' with class 'example'
+   var simpleTip = new Biojs.Tooltip({
+      targetSelector: "a.example"
+   });
+   
+   //
+   // Another example using rendering function instead of 'title' attribute
+   //
+   jQuery('#YourOwnDivId')
+      .append('<br/><br/><br/><br/><a class="example render" href="#">This example change the tooltip direction <br/> for each mouse entry.<a>');
+   
+   // Tooltip will come out whenever mouse enter to any anchor 'a' with class 'example'
+   var tipRendered = new Biojs.Tooltip({
+      targetSelector: "a.example.render",
+      cbRender: function( element ) {
+      	return "Tooltip type <strong>Biojs.Tooltip.ARROW_" + this.getArrowType().toUpperCase() + "</strong> using rendering function to build up content dynamically"
+      }
+   });
+   
+   // Changes the tooltip's direction 
+   var counter = 0;
+   var arrowTypes = [ 
+      Biojs.Tooltip.ARROW_LEFT_TOP,
+   	 Biojs.Tooltip.ARROW_LEFT_MIDDLE,
+      Biojs.Tooltip.ARROW_LEFT_BOTTOM,
+      Biojs.Tooltip.ARROW_TOP_LEFT,
+      Biojs.Tooltip.ARROW_TOP_MIDDLE,
+      Biojs.Tooltip.ARROW_TOP_RIGHT,
+      Biojs.Tooltip.ARROW_RIGHT_TOP,
+      Biojs.Tooltip.ARROW_RIGHT_MIDDLE,
+      Biojs.Tooltip.ARROW_RIGHT_BOTTOM,
+      Biojs.Tooltip.ARROW_BOTTOM_LEFT,
+      Biojs.Tooltip.ARROW_BOTTOM_MIDDLE,
+      Biojs.Tooltip.ARROW_BOTTOM_RIGHT
+   ];
+   
+   // Changes the Tooltip arrow type dynamically 
+   jQuery('#YourOwnDivId a.example.render').mouseover( function() {
+   	 var arrowType = arrowTypes[ counter++ % 12 ];
+      tipRendered.setArrowType( arrowType );
+   });
+   
+   //
+   // Another example using rich content 
+   //
+   jQuery('#YourOwnDivId')
+      .append('<br/><br/><br/><br/><a class="example rich" href="#">Rich content<a>');
+      
+   var richContent = 
+      '<div style="display: table-cell; width: 400px">'+
+      '<h3>Santiago de Cali</h3>' +
+      '<img src="http://www.ebi.ac.uk/~jgomez/cali.jpg" style="position:relative;float:left; padding:10px; margin:0px;"/>'+
+      '<p style="font-family:\'Bookman Old Style\', serif; font-size:1em; font-smooth:always;" > '+
+      'Simply referred to as Cali, is a city located in western <a href="http://en.wikipedia.org/wiki/Colombia">Colombia</a> '+
+      'It is the capital of the Valle del Cauca Department. With a population of 2.5 million, '+
+      'Cali is the third largest city in the country, after Bogota and Medellin. The city '+
+      'was founded on 25 July 1536.</p></div>';
+   
+   var tipRich = new Biojs.Tooltip({
+      targetSelector: "a.example.rich",
+      cbRender: function( element ) {
+      	return richContent;
+      }, 
+      arrowType: Biojs.Tooltip.ARROW_BOTTOM_MIDDLE
+   });
+   
+   //
+   // Last example using mouse position instead of element's 
+   //
+   jQuery('#YourOwnDivId')
+      .append('<br/><br/><br/><br/><a class="example position" href="#" title="I am a cat.">Tooltip changes with mouse positioning.<a>');
+   
+   var tipPosition = new Biojs.Tooltip({
+      targetSelector: "a.example.position",
+      position: Biojs.Tooltip.MOUSE_POSITION
+   });
+
+};</pre>
+                                    
+                                
+                             
+                        </li>
+                        <script language="JavaScript" type="text/javascript">
+                            window.exampleCode = escape('<html><head><title>Biojs.Tooltip</title>');
+                            window.exampleCode += '%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22src/Biojs.js%22%3E%3C/script%3E%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22src/Biojs.Tooltip.js%22%3E%3C/script%3E%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22../biojs/dependencies/jquery/jquery-1.6.4.js%22%3E%3C/script%3E%0A%3Clink%20href%3D%22../biojs/css/biojs.Tooltip.css%22%20rel%3D%22stylesheet%22%20type%3D%22text/css%22%3E%3C/link%3E%0A%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%3Ewindow.onload%20%3D%20function%28%29%20%7B%0A%20%20%20//%20These%20examples%20use%20the%20component%27s%20example%20div%20%27YourOwnDivId%27%20to%20draw%20the%20links%20only.%0A%20%20%20jQuery%28%27%23YourOwnDivId%27%29%0A%20%20%20%20%20%20.append%28%27%3Ca%20class%3D%22example%22%20href%3D%22%23%22%20title%3D%22Simple%20example%20of%20Tooltip%20showing%20the%20title%20attribute%22%3EPass%20the%20mouse%20over%20here.%3Ca%3E%27%29%0A%20%20%20%20%20%20.css%28%7B%20%0A%20%20%20%20%20%20%20%20%20%27display%27%3A%20%27table-cell%27%2C%0A%20%20%20%20%20%20%20%20%20%27vertical-align%27%3A%20%27middle%27%2C%0A%20%20%20%20%20%20%20%20%20%27text-align%27%3A%20%27center%27%2C%0A%20%20%20%20%20%20%20%20%20%27width%27%3A%20%27730px%27%2C%0A%20%20%20%20%20%20%20%20%20%27height%27%3A%20%27400px%27%0A%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%0A%20%20%20//%20Tooltip%20will%20come%20out%20whenever%20mouse%20enter%20to%20any%20anchor%20%27a%27%20with%20class%20%27example%27%0A%20%20%20var%20simpleTip%20%3D%20new%20Biojs.Tooltip%28%7B%0A%20%20%20%20%20%20targetSelector%3A%20%22a.example%22%0A%20%20%20%7D%29%3B%0A%20%20%20%0A%20%20%20//%0A%20%20%20//%20Another%20example%20using%20rendering%20function%20instead%20of%20%27title%27%20attribute%0A%20%20%20//%0A%20%20%20jQuery%28%27%23YourOwnDivId%27%29%0A%20%20%20%20%20%20.append%28%27%3Cbr/%3E%3Cbr/%3E%3Cbr/%3E%3Cbr/%3E%3Ca%20class%3D%22example%20render%22%20href%3D%22%23%22%3EThis%20example%20change%20the%20tooltip%20direction%20%3Cbr/%3E%20for%20each%20mouse%20entry.%3Ca%3E%27%29%3B%0A%20%20%20%0A%20%20%20//%20Tooltip%20will%20come%20out%20whenever%20mouse%20enter%20to%20any%20anchor%20%27a%27%20with%20class%20%27example%27%0A%20%20%20var%20tipRendered%20%3D%20new%20Biojs.Tooltip%28%7B%0A%20%20%20%20%20%20targetSelector%3A%20%22a.example.render%22%2C%0A%20%20%20%20%20%20cbRender%3A%20function%28%20element%20%29%20%7B%0A%20%20%20%20%20%20%09return%20%22Tooltip%20type%20%3Cstrong%3EBiojs.Tooltip.ARROW_%22%20+%20this.getArrowType%28%29.toUpperCase%28%29%20+%20%22%3C/strong%3E%20using%20rendering%20function%20to%20build%20up%20content%20dynamically%22%0A%20%20%20%20%20%20%7D%0A%20%20%20%7D%29%3B%0A%20%20%20%0A%20%20%20//%20Changes%20the%20tooltip%27s%20direction%20%0A%20%20%20var%20counter%20%3D%200%3B%0A%20%20%20var%20arrowTypes%20%3D%20%5B%20%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_LEFT_TOP%2C%0A%20%20%20%09%20Biojs.Tooltip.ARROW_LEFT_MIDDLE%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_LEFT_BOTTOM%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_TOP_LEFT%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_TOP_MIDDLE%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_TOP_RIGHT%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_RIGHT_TOP%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_RIGHT_MIDDLE%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_RIGHT_BOTTOM%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_BOTTOM_LEFT%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_BOTTOM_MIDDLE%2C%0A%20%20%20%20%20%20Biojs.Tooltip.ARROW_BOTTOM_RIGHT%0A%20%20%20%5D%3B%0A%20%20%20%0A%20%20%20//%20Changes%20the%20Tooltip%20arrow%20type%20dynamically%20%0A%20%20%20jQuery%28%27%23YourOwnDivId%20a.example.render%27%29.mouseover%28%20function%28%29%20%7B%0A%20%20%20%09%20var%20arrowType%20%3D%20arrowTypes%5B%20counter++%20%25%2012%20%5D%3B%0A%20%20%20%20%20%20tipRendered.setArrowType%28%20arrowType%20%29%3B%0A%20%20%20%7D%29%3B%0A%20%20%20%0A%20%20%20//%0A%20%20%20//%20Another%20example%20using%20rich%20content%20%0A%20%20%20//%0A%20%20%20jQuery%28%27%23YourOwnDivId%27%29%0A%20%20%20%20%20%20.append%28%27%3Cbr/%3E%3Cbr/%3E%3Cbr/%3E%3Cbr/%3E%3Ca%20class%3D%22example%20rich%22%20href%3D%22%23%22%3ERich%20content%3Ca%3E%27%29%3B%0A%20%20%20%20%20%20%0A%20%20%20var%20richContent%20%3D%20%0A%20%20%20%20%20%20%27%3Cdiv%20style%3D%22display%3A%20table-cell%3B%20width%3A%20400px%22%3E%27+%0A%20%20%20%20%20%20%27%3Ch3%3ESantiago%20de%20Cali%3C/h3%3E%27%20+%0A%20%20%20%20%20%20%27%3Cimg%20src%3D%22http%3A//www.ebi.ac.uk/%7Ejgomez/cali.jpg%22%20style%3D%22position%3Arelative%3Bfloat%3Aleft%3B%20padding%3A10px%3B%20margin%3A0px%3B%22/%3E%27+%0A%20%20%20%20%20%20%27%3Cp%20style%3D%22font-family%3A%5C%27Bookman%20Old%20Style%5C%27%2C%20serif%3B%20font-size%3A1em%3B%20font-smooth%3Aalways%3B%22%20%3E%20%27+%0A%20%20%20%20%20%20%27Simply%20referred%20to%20as%20Cali%2C%20is%20a%20city%20located%20in%20western%20%3Ca%20href%3D%22http%3A//en.wikipedia.org/wiki/Colombia%22%3EColombia%3C/a%3E%20%27+%0A%20%20%20%20%20%20%27It%20is%20the%20capital%20of%20the%20Valle%20del%20Cauca%20Department.%20With%20a%20population%20of%202.5%20million%2C%20%27+%0A%20%20%20%20%20%20%27Cali%20is%20the%20third%20largest%20city%20in%20the%20country%2C%20after%20Bogota%20and%20Medellin.%20The%20city%20%27+%0A%20%20%20%20%20%20%27was%20founded%20on%2025%20July%201536.%3C/p%3E%3C/div%3E%27%3B%0A%20%20%20%0A%20%20%20var%20tipRich%20%3D%20new%20Biojs.Tooltip%28%7B%0A%20%20%20%20%20%20targetSelector%3A%20%22a.example.rich%22%2C%0A%20%20%20%20%20%20cbRender%3A%20function%28%20element%20%29%20%7B%0A%20%20%20%20%20%20%09return%20richContent%3B%0A%20%20%20%20%20%20%7D%2C%20%0A%20%20%20%20%20%20arrowType%3A%20Biojs.Tooltip.ARROW_BOTTOM_MIDDLE%0A%20%20%20%7D%29%3B%0A%20%20%20%0A%20%20%20//%0A%20%20%20//%20Last%20example%20using%20mouse%20position%20instead%20of%20element%27s%20%0A%20%20%20//%0A%20%20%20jQuery%28%27%23YourOwnDivId%27%29%0A%20%20%20%20%20%20.append%28%27%3Cbr/%3E%3Cbr/%3E%3Cbr/%3E%3Cbr/%3E%3Ca%20class%3D%22example%20position%22%20href%3D%22%23%22%20title%3D%22I%20am%20a%20cat.%22%3ETooltip%20changes%20with%20mouse%20positioning.%3Ca%3E%27%29%3B%0A%20%20%20%0A%20%20%20var%20tipPosition%20%3D%20new%20Biojs.Tooltip%28%7B%0A%20%20%20%20%20%20targetSelector%3A%20%22a.example.position%22%2C%0A%20%20%20%20%20%20position%3A%20Biojs.Tooltip.MOUSE_POSITION%0A%20%20%20%7D%29%3B%0A%0A%7D%3B%3C/script%3E';
+                            window.exampleCode += escape('</head><body><div id="YourOwnDivId"></div></body></html>');
+                        </script>
+                        
+                    </ol>
+                </div>
+                    
+                <!-- ============================== options ============================ -->
+                
+                <div id="options" class="grid_24" style="display:none;">
+                    
+                    
+                    <div class="required">
+                        <h3>Required Parameters</h3>
+                        <ul>
+                        
+                        </ul>
+                    </div>
+                    
+                    <div class="optional">
+                        <h3>Optional Parameters</h3>
+                        <ul>
+                        
+                        </ul>
+                    </div>
+
+                </div> <!-- options end -->
+                
+                <!-- ============================== methods ============================ -->
+                        
+                <div id="methods" class="grid_24" style="display:none;">
+                    
+                    
+                        
+                        
+                            
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">getArrowType</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Returns the actual arrow type.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <b>arrowType</b>
+                                                    
+                                                    <br/>
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+alert ( "First example is using " + simpleTip.getArrowType() + " arrow." );</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{static}</span> Static Biojs.Tooltip.ARROW_[TYPE] value.</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">getBodyContainer</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Returns the div element of the body.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{HTMLElement}</span> <b>body</b>
+                                                    
+                                                    <br/>Container of the tip' body
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+tipRendered.getBodyContainer();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">getContent</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Gets the content element of this tip.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+simpleTip.getContent("Content as HTML string");</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{HTMLElement}</span> content Element which contains the content.</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">getIdentifier</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Returns the actual id attribute value.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+alert ( "Identifier of the second example is " + tipRendered.getIdentifier() + "." );</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{string}</span> DOM element identifier of this component.</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">remove</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        
+                                    </p>
+
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setArrowType</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Changes the Tooltip direction. The point of reference is the arrow's type.
+Choose one of the following available types:
+  <ul>
+      <li>Biojs.Tooltip.ARROW_LEFT_TOP</li>
+      <li>Biojs.Tooltip.ARROW_LEFT_MIDDLE</li>
+      <li>Biojs.Tooltip.ARROW_LEFT_BOTTOM</li>
+      <li>Biojs.Tooltip.ARROW_TOP_LEFT</li>
+      <li>Biojs.Tooltip.ARROW_TOP_MIDDLE</li>
+      <li>Biojs.Tooltip.ARROW_TOP_RIGHT</li>
+      <li>Biojs.Tooltip.ARROW_RIGHT_TOP</li>
+      <li>Biojs.Tooltip.ARROW_RIGHT_MIDDLE</li>
+      <li>Biojs.Tooltip.ARROW_RIGHT_BOTTOM</li>
+      <li>Biojs.Tooltip.ARROW_BOTTOM_LEFT</li>
+      <li>Biojs.Tooltip.ARROW_BOTTOM_MIDDLE</li>
+      <li>Biojs.Tooltip.ARROW_BOTTOM_RIGHT</li>
+  <ul>
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{static}</span> <b>arrowType</b>
+                                                    
+                                                    <br/>Static Biojs.Tooltip.ARROW_[TYPE] value.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+simpleTip.setArrowType(Biojs.Tooltip.ARROW_BOTTOM_RIGHT);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setContent</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the content of this tip.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|HTMLElement}</span> <b>content</b>
+                                                    
+                                                    <br/>Content to be setted.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+simpleTip.setContent("Content as HTML string");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setIdentifier</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the id attribute value.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>DOM</b>
+                                                    
+                                                    <br/>element identifier for this component.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+tipRendered.setIdentifier("MyIdentifier");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                        
+                    
+                    
+                </div> <!-- methods section end -->
+                        
+                <!-- ============================== events ============================ -->
+                
+                
+                    
+                    <div id="events" class="grid_24" style="display:none;">
+                        
+                            
+                                
+                                <h3 class="method_name">onShowUp</h3><!-------------- Begin of event -->
+
+                                <p></p>
+                                    
+                                
+                                    <h4>Parameters:</h4>
+                                    <ul>
+                                        
+                                            <li>
+                                                <span class="dataType">{function}</span> <b>actionPerformed</b>
+                                                
+                                                <br/>A function which receives an <a href="../symbols/Biojs.Event.html">Biojs.Event</a> object as argument.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    <h4>Returned data in the Biojs.Event object:</h4>
+                                    <ul>
+                                        	
+                                            <li>
+                                                <span class="dataType">{Object}</span>  
+                                                <b></b>
+                                                
+                                                <br/>source The component which did triggered the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{string}</span>  
+                                                <b></b>
+                                                
+                                                <br/>type The name of the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{string}</span>  
+                                                <b></b>
+                                                
+                                                <br/>target Target element.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    
+                                    
+                                        
+                                        <br/>
+                                        <h4>Example :</h4>
+                                        <pre class="brush: js">
+simpleTip.onShowUp(
+   function( e ) {
+      alert("Mouse has passed over the first example.");
+   }
+);</pre>
+                                    
+                                <!------------------- End of event -->
+                            
+                        
+                    </div> <!-- events section end -->
+                
+                
+            </div> <!-- main section end -->
+
+            <!-- ============================== footer section ============================ -->
+        
+            <footer><!-- ============================== footer ======================================= -->
+
+            <div class="grid_24" id="global-footer">
+                <div class="grid_4 alpha">
+                    <h3>EMBL-EBI</h3>
+                    <ul>
+                        <li class="first"><a href="/your-privacy" title="">Your privacy</a></li>
+                        <li><a href="/cookies">Cookies</a></li>
+                        <li><a href="/ethics">Ethics</a></li>
+                        <li><a href="/terms-use-0">Terms of use</a></li>
+                    </ul>
+                </div>
+                
+                <section id="global-nav-expanded">
+                    <div class="grid_4">
+                        <h3>Services</h3>
+                        <ul>
+                            <li class="first"><a href="/services" title="">Overview</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="grid_4">
+                        <h3>Research</h3>
+                        <ul>
+                            <li><a href="/research">Overview</a></li>
+                            <li><a href="/research/groups">Research groups</a></li>
+                            <li><a href="/research/publications">Publications</a></li> 
+                        </ul>
+                    </div>
+                    
+                    <div class="grid_4">
+                        <h3>Industry</h3>
+                        <ul>
+                            <li class="first"><a href="/industry">Overview</a></li>
+                            <li><a href="/industry/sme-forum"><abbr title="Small Medium Enterprise">SME</abbr> Forum</a></li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <div class="grid_4">
+                        <h3>Training</h3>
+                        <ul>
+                            <li class="first"><a href="/training">Overview</a></li>
+                            <li><a href="/training/events">Events</a></li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <div class="grid_4 omega">
+                        <h3>About us</h3>
+                        <ul>
+                            <li class="first"><a href="/about-us">Overview</a></li>
+                            <li><a href="/about-us/history">History</a></li>
+                            <li><a href="/about-us/funding">Funding</a></li>
+                            <li><a href="/about-us/staff-list">People</a></li>
+                            <li><a href="/about-us/ebi-news" title="">News</a></li>
+                            <li><a href="/about-us/jobs">Jobs</a></li>
+                            <li><a href="/about-us/events">Events</a></li>
+                            <li><a href="/about-us/publications">Publications</a></li>
+                            <li><a href="/about-us/visit-us">Visit us</a></li>
+                            <li class="last"><a href="/about-us/contact-us">Contact us</a></li>
+                        </ul>
+                    </div>
+                </section>
+                
+            </div>
+            
+            <div style="text-align: center; font-size: 0.75em;">
+                Registry generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Jul 26 2013 00:30:02 GMT-0500 (COT)
+            </div>
+            
+        </footer><!-- footer end -->
+        
+        </div> <!--  main content end -->
+            
+        <div id="toolTip" style="display:none">
+            <div class="body"></div>
+            <i class="rightArrow"></i>
+        </div>
+                
+    </body>
+</html>

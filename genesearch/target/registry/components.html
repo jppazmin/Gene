@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="BioJS Library" name="author" value="John Gomez Carvajal <johncar@gmail.com>" />
+		
+		
+        <title>BioJs: JavaScript components for biological data < EMBL-EBI</title>
+        
+        <meta content="width=device-width,initial-scale=1" name="viewport" />
+            
+        <!-- EBI's style sheets -->
+        <link href="style/normalize.css" rel="stylesheet" />
+        <link href="style/boilerplate-style.css" rel="stylesheet" />
+        <link href="style/ebi-custom.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/984-24-col-fixed.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/ebi-positioning.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/biojs.css" rel="stylesheet" type="text/css" />
+        <link href="style/biojs-colours_blue.css" rel="stylesheet" type="text/css" />
+        
+        <!-- jQuery Library -->
+        <script language="JavaScript" type="text/javascript" src="scripts/jquery-1.7.2.min.js"></script>
+        <script language="JavaScript" type="text/javascript" src="scripts/jquery-ui-1.8.2.custom.min.js"></script>
+        
+        <!-- core code -->
+        <script language="JavaScript" type="text/javascript" src="src/Biojs.js"></script>
+        
+        <!-- Using my own Biojs Table component in here as well ;P by John Gomez johncar@gmail.com -->
+        <script src="scripts/jquery.dataTables.min.js" type="text/javascript"></script>
+        <script src="scripts/jquery.multiselect.min.js" type="text/javascript"></script>
+        <script src="scripts/Biojs.Table.js" language="JavaScript" type="text/javascript"></script>
+        <link href="style/biojs.Table.css" rel="stylesheet" type="text/css"/>
+		
+        
+        <script language="JavaScript" type="text/javascript">
+            window.onload = function() {
+            
+                function renderCenteredText (col, dataRow, value) {
+                    return '<p style="text-align:center;">'+ value + '</p>' ;
+                };
+            
+                var myTable = new Biojs.Table({
+                    target: "biojsTable",
+                    orderBy:  [ [0,'asc'] ],
+                    
+                    columns: [
+                        { name:"Component", width: "230px" },
+                        { name:"Description", width: "480px" },
+                        { name:"Author(s)", width: "100px" },
+                        { name:"Current Version", width: "80px", render: renderCenteredText }
+                    ],
+                    
+                    dataSet: [
+                        
+                        
+                            
+                            [
+                                '<a href="Biojs.Annotations.html">Annotations</a>', 
+                                'Utility class to manage annotations', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.AnnotationsCloud.html">AnnotationsCloud</a>', 
+                                'Shows a list of annotations as a cloud in different sizes and colors depending on the size of ...', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.AreaSelector.html">AreaSelector</a>', 
+                                'This component visualize a div in a upper layer that can be used to select an area of other component. Although is not biological related component, it is generic enough to be used in other components, that require to select a region, see chromosome example. Just one selector can be used for a HTML component.<p class="warning">WARNING: The CSS value for the position will be changed to relative.</p>', 
+                                '<a href="gustavoadolfo.salazar@gmail.com">Gustavo A. Salazar</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Article.html">Article</a>', 
+                                'Shows the article information.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.ChEBICompound.html">ChEBICompound</a>', 
+                                '', 
+                                '',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.GeneExpressionSummary.html">GeneExpressionSummary</a>', 
+                                'Gene expression summary', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>, <a href="mailto:rafael@ebi.ac.uk">Rafael Jimenez</a>',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Graph.html">Graph</a>', 
+                                'Shows a graph with customizable node content. It uses a force-based algorithm to spread the nodes on the screen, nicely.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.HelloWorld.html">HelloWorld</a>', 
+                                'This is the description of the HelloWorld component. Here you can set any HTML text for putting on the generated documentation.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.InteractionsTable.html">InteractionsTable</a>', 
+                                'Table to show binary molecular interactions.', 
+                                '',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.PDBLogos.html">PDBLogos</a>', 
+                                'PDBLogos shows a set of icons to give a quick summary of salient features of a PDB entry.See more info on PDBLogos at http://pdbe.org/prints', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez-Carvajal</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Protein3D.html">Protein3D</a>', 
+                                'Pdb file 3D viewer component using JMol', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>, <a href="mailto:christine.jandrasits@gmail.com">Christine Jandrasits</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Protein3DUniprot.html">Protein3DUniprot</a>', 
+                                'Protein viewer to show the pdb files aligned to an Uniprot Accession', 
+                                '',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Protein3DWS.html">Protein3DWS</a>', 
+                                'Extension of the pdb file viewer getting data from a web service', 
+                                '',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.ProteinPortafolio.html">ProteinPortafolio</a>', 
+                                'ProteinPortafolio component shows the description of a protein as well as its PDB alignments if there is any.Component shows the PDBLogos of the selected alignment and ables to play with the sequence andthe 3D draw of the alignment.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.ResultsGraph.html">ResultsGraph</a>', 
+                                'Shows a set of RDF papers in a graph.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.ResultsTable.html">ResultsTable</a>', 
+                                'Table to show binary molecular interactions.', 
+                                '',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Sequence.html">Sequence</a>', 
+                                'Sequence component', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>, <a href="mailto:secevalliv@gmail.com">Jose Villaveces</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Table.html">Table</a>', 
+                                'Table.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.TagCloud.html">TagCloud</a>', 
+                                'Shows a cloud of tags in different sizes depending on the frequencies/weights.Colors for each tag can be applied as well.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                ''
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.Tooltip.html">Tooltip</a>', 
+                                'Tooltip for general purpose.', 
+                                '<a href="mailto:johncar@gmail.com">John Gomez</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                            ,
+                            [
+                                '<a href="Biojs.UniProtFeaturePainter.html">UniProtFeaturePainter</a>', 
+                                'This component takes a JSON data object and paints it as a Raphael object. The expected JSON format is specified under the option json of the UniProtFeaturePainter options.   Please remember to use jQuery in <a href="http://docs.jquery.com/Using_jQuery_with_Other_Libraries">compatibility mode</a>, particularly a good idea if you use other libraries.', 
+                                '<a href="mailto:ljgarcia@ebi.ac.uk">Leyla Jael Garcia Castro</a>',
+                                '1.0.0'
+                            ]
+                            
+                        
+                    ],
+                    rowSelection: false,
+                    showColumnSelector: false
+                });
+            
+                SyntaxHighlighter.all();
+            };
+        </script>
+
+        <!-- Syntax highlighting -->
+        <link href="style/shCore.css" rel="stylesheet" />
+        <link href="style/shCoreEclipse.css" rel="stylesheet" />
+        <link href="style/shThemeEclipse.css" rel="stylesheet" />
+        
+        <script src="scripts/shCore.js" type="text/javascript"></script>
+        <script src="scripts/shBrushJScript.js" type="text/javascript"></script>
+        <script src="scripts/shBrushXml.js" type="text/javascript"></script>
+		
+	</head>
+
+	<body class="level2" id="biojs" >
+    
+        <div id="skip-to">
+            <ul>
+                <li><a href="#content" title="">Skip to main content</a></li>
+                <li><a href="#local-nav" title="">Skip to local navigation</a></li>
+                <li><a href="#global-nav" title="">Skip to EBI global navigation menu</a></li>
+                <li><a href="#global-nav-expanded" title="">Skip to expanded EBI global navigation menu (includes all sub-sections)</a></li>
+            </ul>
+        </div>
+        
+        
+        <div class="container_24" id="wrapper">
+        
+            <!-- ============================== header ================================= -->
+        
+            <header>
+                <div class="masthead grid_24" id="global-masthead">
+                    <p class="logo-img"><a class="active" href="/" id="logo" style="border:none;" title="Return to the European Bioinformatics Institute home page"><img alt="European Bioinformatics Institute" src="images/logoebi.png" typeof="foaf:Image" /></a></p>
+                    <nav>
+                        <ul id="global-nav">
+                            <li class="first active" id="services"><a href="/services" title="">Services</a></li>
+                            <li id="research"><a href="/research" title="">Research</a></li>
+                            <li id="training"><a href="/training" title="">Training</a></li>
+                            <li id="industry"><a href="/industry" title="">Industry</a></li>
+                            <li class="last" id="about"><a href="/about-us" title="">About us</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <div class="masthead grid_24" id="local-masthead">
+                    <div class="grid_12 alpha" id="local-title-logo">
+                        <h1>BioJs | Home</h1>
+                        <p><a href="." style="border-bottom-width: 0px;" title=""><img alt="Biojs" class="logo" src="images/logo.png" /></a></p>
+                    </div>
+                    
+                    <!--
+                    
+                    <div class="grid_12 omega">
+                        <form action="search" id="local-search">
+                            <fieldset>
+                                <div class="form">
+                                    <label>
+                                        <input class="field" id="local-searchbox" name="q" onblur="displaySearchInterPro(this);" onfocus="hideSearchInterPro(this);" size="30" type="text" value="" />
+                                    </label>
+                                    <input alt="Search InterPro" class="submit" id="searchsubmit" title="Search InterPro" type="submit" value="Search" />
+                                    
+                                    
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    
+                     -->
+                    
+                    <nav>
+                        <ul class="grid_24" id="local-nav">
+                            <li class="first"><a href="./index.html" title="">Home</a></li>
+                            <li><a href="./components.html" title="">Components</a></li>
+                            <li><a href="./download.html" title="">Download</a></li>
+                            <li class="last"><a href="./about.html" title="">About BioJs</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+
+<!-- ============================== site content ============================ -->	
+	
+            <div class="clearfix" id="content" role="main">
+
+                <!-- ============================== main section ============================ -->
+                    
+                <div class="grid_24"> <!-- grid_24 -->
+                    <div class="main">
+                        <div id="biojsTable" style="margin-top: 7px;"></div>
+                    </div>
+                </div>
+                   
+            </div> 
+        
+        
+<!-- ============================== footer ======================================= -->
+
+            <footer>
+                <div class="grid_24" id="global-footer">
+                    <div class="grid_4 alpha">
+                        <h3>EMBL-EBI</h3>
+                        <ul>
+                            <li class="first"><a href="/your-privacy" title="">Your privacy</a></li>
+                            <li><a href="/cookies">Cookies</a></li>
+                            <li><a href="/ethics">Ethics</a></li>
+                            <li><a href="/terms-use-0">Terms of use</a></li>
+                        </ul>
+                    </div>
+                    
+                    <section id="global-nav-expanded">
+                        <div class="grid_4">
+                            <h3>Services</h3>
+                            <ul>
+                                <li class="first"><a href="/services" title="">Overview</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="grid_4">
+                            <h3>Research</h3>
+                            <ul>
+                                <li><a href="/research">Overview</a></li>
+                                <li><a href="/research/groups">Research groups</a></li>
+                                <li><a href="/research/publications">Publications</a></li> 
+                            </ul>
+                        </div>
+                        
+                        <div class="grid_4">
+                            <h3>Industry</h3>
+                            <ul>
+                                <li class="first"><a href="/industry">Overview</a></li>
+                                <li><a href="/industry/sme-forum"><abbr title="Small Medium Enterprise">SME</abbr> Forum</a></li>
+                            </ul>
+                        </div>
+                        
+                        
+                        <div class="grid_4">
+                            <h3>Training</h3>
+                            <ul>
+                                <li class="first"><a href="/training">Overview</a></li>
+                                <li><a href="/training/events">Events</a></li>
+                            </ul>
+                        </div>
+                        
+                        
+                        <div class="grid_4 omega">
+                            <h3>About us</h3>
+                            <ul>
+                                <li class="first"><a href="/about-us">Overview</a></li>
+                                <li><a href="/about-us/history">History</a></li>
+                                <li><a href="/about-us/funding">Funding</a></li>
+                                <li><a href="/about-us/staff-list">People</a></li>
+                                <li><a href="/about-us/ebi-news" title="">News</a></li>
+                                <li><a href="/about-us/jobs">Jobs</a></li>
+                                <li><a href="/about-us/events">Events</a></li>
+                                <li><a href="/about-us/publications">Publications</a></li>
+                                <li><a href="/about-us/visit-us">Visit us</a></li>
+                                <li class="last"><a href="/about-us/contact-us">Contact us</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                    
+                </div>
+                
+                <div style="text-align: center; font-size: 0.75em;">
+                    Registry generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Jul 26 2013 00:30:02 GMT-0500 (COT)
+                </div>
+            </footer>
+        </div> <!-- div class="container_24" id="wrapper" -->
+    </body>
+</html>

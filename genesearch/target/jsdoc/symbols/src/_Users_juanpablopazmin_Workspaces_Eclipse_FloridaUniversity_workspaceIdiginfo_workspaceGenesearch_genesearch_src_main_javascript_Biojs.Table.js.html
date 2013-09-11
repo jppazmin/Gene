@@ -1,0 +1,1031 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/** 
+<span class='line'>  2</span>  * Table.  
+<span class='line'>  3</span>  * 
+<span class='line'>  4</span>  * @class
+<span class='line'>  5</span>  * @extends Biojs
+<span class='line'>  6</span>  * 
+<span class='line'>  7</span>  * @author &lt;a href="mailto:johncar@gmail.com">John Gomez&lt;/a>
+<span class='line'>  8</span>  * @version 1.0.0
+<span class='line'>  9</span>  * 
+<span class='line'> 10</span>  * @requires &lt;a href='http://blog.jquery.com/2011/09/12/jquery-1-6-4-released/'>jQuery Core 1.6.4&lt;/a>
+<span class='line'> 11</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.6.4.js">&lt;/script>
+<span class='line'> 12</span>  * 
+<span class='line'> 13</span>  * @requires &lt;a href=''>jQuery UI 1.8.2+&lt;/a>
+<span class='line'> 14</span>  * @dependency &lt;script type="text/javascript" src="../biojs/dependencies/jquery/jquery-ui-1.8.2.custom.min.js">&lt;/script>
+<span class='line'> 15</span>  * 
+<span class='line'> 16</span>  * @requires &lt;a href='http://www.datatables.net/'>DataTables Plugin&lt;/a>
+<span class='line'> 17</span>  * @dependency &lt;script type="text/javascript" src="../biojs/dependencies/jquery.dataTables.min.js">&lt;/script>
+<span class='line'> 18</span>  * 
+<span class='line'> 19</span>  * @requires &lt;a href='http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/'>MultiSelect Plugin&lt;/a>
+<span class='line'> 20</span>  * @dependency &lt;script type="text/javascript" src="../biojs/dependencies/jquery.multiselect.min.js">&lt;/script>
+<span class='line'> 21</span>  * 
+<span class='line'> 22</span>  * @requires &lt;a href='../biojs/css/biojs.Table.css'>Table CSS&lt;/a>
+<span class='line'> 23</span>  * @dependency &lt;link href="../biojs/css/biojs.Table.css" rel="stylesheet" type="text/css" />
+<span class='line'> 24</span>  * 
+<span class='line'> 25</span>  * @requires &lt;a href='../biojs/css/smoothness/jquery-ui-1.8.18.custom.css'>jquery-ui-1.8.18 CSS&lt;/a>
+<span class='line'> 26</span>  * @dependency &lt;link href="../biojs/css/smoothness/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css" /> 
+<span class='line'> 27</span>  * 
+<span class='line'> 28</span>  * @param {Object} options 
+<span class='line'> 29</span>  *    An object with the options for HelloWorld component.
+<span class='line'> 30</span>  *    
+<span class='line'> 31</span>  * @option {string} target 
+<span class='line'> 32</span>  *    Identifier of the DIV tag where the component should be displayed.
+<span class='line'> 33</span>  *    
+<span class='line'> 34</span>  * @option {string[][]|Object} dataSet 
+<span class='line'> 35</span>  *    Either 2D string array containing the whole data to be displayed or a plain object defining the data source. 
+<span class='line'> 36</span>  *    
+<span class='line'> 37</span>  *    &lt;pre class="brush: js" title="Syntax of the plain object:">
+<span class='line'> 38</span>  *    {
+<span class='line'> 39</span>  * 		url: &lt;url&gt;,
+<span class='line'> 40</span>  * 		proxyUrl: &lt;proxy&gt;,
+<span class='line'> 41</span>  * 		paramsMap: { "iDisplayStart": &lt;newName1&gt;, "iDisplayLength": &lt;newName2&gt;, ... },
+<span class='line'> 42</span>  * 		filter: &lt;flag&gt;
+<span class='line'> 43</span>  *    }
+<span class='line'> 44</span>  *    &lt;/pre>
+<span class='line'> 45</span>  *    where:
+<span class='line'> 46</span>  *      &lt;ul>
+<span class='line'> 47</span>  *        &lt;li>&lt;b>url&lt;/b> is string containing the url data source.&lt;/li>
+<span class='line'> 48</span>  *        &lt;li>&lt;b>paramsMap&lt;/b> Customize the name of the following params which will be passed to server:
+<span class='line'> 49</span>  *    			&lt;ul>
+<span class='line'> 50</span>  *    				&lt;li>iDisplayStart: index of the first expected record for paging.&lt;/li>
+<span class='line'> 51</span>  *    				&lt;li>iDisplayLength: size of the fetched data (page size).&lt;/li>
+<span class='line'> 52</span>  *    				&lt;li>sSearch: filter string entered by the user in case of filter is enabled.&lt;/li>
+<span class='line'> 53</span>  *    			&lt;/ul>
+<span class='line'> 54</span>  *        &lt;/li>
+<span class='line'> 55</span>  *        &lt;li>&lt;b>filter&lt;/b> is a boolean to show/hide the search box on the table top. 
+<span class='line'> 56</span>  *        The entered string will be passed to the server by means of 'sSearch' parameter.
+<span class='line'> 57</span>  *        Personalize the parameter name using paramsMap.&lt;/li>
+<span class='line'> 58</span>  *        &lt;li>&lt;b>proxyUrl&lt;/b> optional string containing the url of the proxy in case of needing access to server through a proxy.&lt;/li>   
+<span class='line'> 59</span>  *      &lt;/ul>
+<span class='line'> 60</span>  *      
+<span class='line'> 61</span>  *    &lt;pre class="brush: js" title="Example of plain object: ">
+<span class='line'> 62</span>  *    {
+<span class='line'> 63</span>  * 		url: 'http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/query/species:human',
+<span class='line'> 64</span>  * 		paramsMap: { "iDisplayStart": "firstResult", "iDisplayLength": "maxResults" },
+<span class='line'> 65</span>  * 		filter: false
+<span class='line'> 66</span>  *    }
+<span class='line'> 67</span>  *    &lt;/pre>  
+<span class='line'> 68</span>  *  
+<span class='line'> 69</span>  *    &lt;pre class="brush: js" title="Example of 2D array of data: ">
+<span class='line'> 70</span>  *    [
+<span class='line'> 71</span>  *		[ 1, "chi", "China", 1347350000, "December 31, 2011", "0.1925" ],
+<span class='line'> 72</span>  *		[ 2, "ind", "India", 1210193422, "March 1, 2011", "0.1729" ],
+<span class='line'> 73</span>  *		[ 3, "usa", "United States", 313149000, "March 9, 2012", "0.0447" ],
+<span class='line'> 74</span>  *		[ 4, "ino", "Indonesia", 237641326, "May 1, 2010", "0.034" ],
+<span class='line'> 75</span>  * 		[ 5, "bra", "Brazil", 192376496, "July 1, 2011", "0.0275" ],
+<span class='line'> 76</span>  * 		[ 6, "pak", "Pakistan", 178945000, "March 9, 2012", "0.0256" ],
+<span class='line'> 77</span>  * 		[ 7, "nig", "Nigeria", 162471000, "July 1, 2011", "0.0232" ],
+<span class='line'> 78</span>  * 		[ 8, "rus", "Russia", 143030106, "January 1, 2012", "0.0204" ],
+<span class='line'> 79</span>  * 		[ 9, "ban", "Bangladesh", 142319000, "March 15, 2011", "0.0203" ],
+<span class='line'> 80</span>  * 		[ 10, "jap", "Japan", 127770000, "February 1, 2012", "0.0183" ],
+<span class='line'> 81</span>  * 		[ 11, "mex", "Mexico", 112336538, "June 12, 2010", "0.016" ],
+<span class='line'> 82</span>  * 		[ 12, "phi", "Philippines", 94013200, "July 1, 2010", "0.0134" ],
+<span class='line'> 83</span>  * 		[ 13, "vie", "Vietnam", 87840000, "December 31, 2011", "0.0125" ],
+<span class='line'> 84</span>  * 		[ 14, "eth", "Ethiopia", 84320987,	"July 1, 2012", "0.012" ],
+<span class='line'> 85</span>  * 		[ 15, "ger", "Germany", 81796000, "August 31, 2011", "0.0117" ]
+<span class='line'> 86</span>  *    ]
+<span class='line'> 87</span>  *    &lt;/pre>
+<span class='line'> 88</span>  *  
+<span class='line'> 89</span>  * @option {(string|Object)[]} columns 
+<span class='line'> 90</span>  *    &lt;p>Array containing the column descriptors. A descriptor can be either a string or an object. 
+<span class='line'> 91</span>  *    Use a string to define column name only. Use an object to define column name, rendering function and fixed width.
+<span class='line'> 92</span>  *    &lt;/p>
+<span class='line'> 93</span>  *    &lt;pre class="brush: js" title="Syntax of the plain object:">
+<span class='line'> 94</span>  *    {
+<span class='line'> 95</span>  * 		name: &lt;string&gt;,
+<span class='line'> 96</span>  * 		render: &lt;function&gt;,
+<span class='line'> 97</span>  * 		width: &lt;string&gt;
+<span class='line'> 98</span>  *    }
+<span class='line'> 99</span>  *    &lt;/pre>
+<span class='line'>100</span>  *    where:
+<span class='line'>101</span>  *      &lt;ul>
+<span class='line'>102</span>  *        &lt;li>&lt;b>name&lt;/b> will be used for the column title, and 'render'.&lt;/li>
+<span class='line'>103</span>  *        &lt;li>&lt;b>render&lt;/b> is a function to format each row value in that column. 
+<span class='line'>104</span>  *        &lt;br/>Returns a string containing the new formatted value.
+<span class='line'>105</span>  *        &lt;br/>Arguments: 
+<span class='line'>106</span>  *        &lt;ul>
+<span class='line'>107</span>  *    		&lt;li>col: index of the column.&lt;/li>
+<span class='line'>108</span>  *    		&lt;li>dataRow: 1D array containing whole row.&lt;/li>
+<span class='line'>109</span>  *    		&lt;li>value: current value of the cell.&lt;/li>
+<span class='line'>110</span>  *    		&lt;/ul>
+<span class='line'>111</span>  *        &lt;/li>
+<span class='line'>112</span>  *        &lt;pre class="brush: js" title="Example of render function:">
+<span class='line'>113</span>  *       	// Formats a decimal value in a percentage value. 
+<span class='line'>114</span>  *    		var numberToPercentageFormat = function (col, dataRow, value) {
+<span class='line'>115</span>  *		  		return ( new Number(value) * 100 ).toFixed(2) + "%";
+<span class='line'>116</span>  * 			};
+<span class='line'>117</span>  * 		  &lt;/pre>
+<span class='line'>118</span>  *		  &lt;li>&lt;b>width&lt;/b> of the column using either pixels or percentage.&lt;/li>	  
+<span class='line'>119</span>  *    &lt;/ul>
+<span class='line'>120</span>  *    &lt;pre class="brush: js" title="Example of columns declaration">
+<span class='line'>121</span>  *    // Three columns: Identifier, Name and Location. 
+<span class='line'>122</span>  *    // Custom rendering function will apply bold to Identifier values.
+<span class='line'>123</span>  *    columns: [
+<span class='line'>124</span>  *		"Name",
+<span class='line'>125</span>  * 		"Location",
+<span class='line'>126</span>  *		{ name: "Population %", render: numberToPercentageFormat }
+<span class='line'>127</span>  *    ]
+<span class='line'>128</span>  *    &lt;/pre>
+<span class='line'>129</span>  *     
+<span class='line'>130</span>  * @option {int[]} [hideColumns=[]] 
+<span class='line'>131</span>  *    Indexes (0-based) of the columns to be hided.
+<span class='line'>132</span>  *    
+<span class='line'>133</span>  * @option {array[][int,string]} [orderBy=[]] 
+<span class='line'>134</span>  *    2D array to tell how to order the columns. Each 1D array must contains both column index and ordering direction.
+<span class='line'>135</span>  *    
+<span class='line'>136</span>  *    &lt;pre class="brush: js" title="Example:">
+<span class='line'>137</span>  *    // order column 0 in ascending direction and column 3 in descending direction
+<span class='line'>138</span>  *    orderBy: [ [0,'asc'], [3,'desc'] ]
+<span class='line'>139</span>  *    &lt;/pre>
+<span class='line'>140</span>  * 
+<span class='line'>141</span>  * @option {int} [pageLength=10] 
+<span class='line'>142</span>  *    Number of rows per page.
+<span class='line'>143</span>  *    
+<span class='line'>144</span>  * @option {bool} [rowSelection=true] 
+<span class='line'>145</span>  *    Show/hide the first check boxes column used for selecting rows. 
+<span class='line'>146</span>  *    
+<span class='line'>147</span>  * @option {bool} [paginate=true] 
+<span class='line'>148</span>  *    Enable/disable the pagination, so whole the data will be displayed. 
+<span class='line'>149</span>  *    
+<span class='line'>150</span>  * @option {int} [width=597]
+<span class='line'>151</span>  *    Horizontal size of the general container. 
+<span class='line'>152</span>  * 
+<span class='line'>153</span>  * @option {int} [height=400]
+<span class='line'>154</span>  *    Vertical size of the general container.
+<span class='line'>155</span>  *    
+<span class='line'>156</span>  * @option {bool} [showColumnSelector=true]
+<span class='line'>157</span>  *    Show/Hide column selection combo box.
+<span class='line'>158</span>  * 
+<span class='line'>159</span>  * @example 
+<span class='line'>160</span>  *    // Adds a flag to the cell value.
+<span class='line'>161</span>  *    var flagRender = function (col, dataRow, value) {
+<span class='line'>162</span>  *		  return '&lt;img src="data/biojs.table/' +dataRow[col-1] + '.png" /> ' + value;
+<span class='line'>163</span>  *    };
+<span class='line'>164</span>  * 
+<span class='line'>165</span>  *    // Formats a decimal value in a percentage value. 
+<span class='line'>166</span>  *    var numberToPercentageFormat = function (col, dataRow, value) {
+<span class='line'>167</span>  *		  return ( new Number(value) * 100 ).toFixed(2) + "%";
+<span class='line'>168</span>  *    };
+<span class='line'>169</span>  * 
+<span class='line'>170</span>  *    // Example of instantiation of the Table
+<span class='line'>171</span>  *    var myTable = new Biojs.Table({
+<span class='line'>172</span>  *       target: "YourOwnDivId",
+<span class='line'>173</span>  *       hideColumns: [1],
+<span class='line'>174</span>  *       orderBy:  [ [0,'asc'], [3,'desc'] ],
+<span class='line'>175</span>  *       columns: [
+<span class='line'>176</span>  *	     	"Rank",
+<span class='line'>177</span>  *	     	"Flag",
+<span class='line'>178</span>  *          { name: "Country", render: flagRender },
+<span class='line'>179</span>  *          "Population",
+<span class='line'>180</span>  *          "Date",
+<span class='line'>181</span>  *	    	{ name:"% World Population", render: numberToPercentageFormat }
+<span class='line'>182</span>  *       ],
+<span class='line'>183</span>  *       dataSet: [
+<span class='line'>184</span>  *       	[ 1, "chi", "China", 1347350000, "December 31, 2011", "0.1925" ],
+<span class='line'>185</span>  *  		[ 2, "ind", "India", 1210193422, "March 1, 2011", "0.1729" ],
+<span class='line'>186</span>  *			[ 3, "usa", "United States", 313149000, "March 9, 2012", "0.0447" ],
+<span class='line'>187</span>  *			[ 4, "ino", "Indonesia", 237641326, "May 1, 2010", "0.034" ],
+<span class='line'>188</span>  * 			[ 5, "bra", "Brazil", 192376496, "July 1, 2011", "0.0275" ],
+<span class='line'>189</span>  * 			[ 6, "pak", "Pakistan", 178945000, "March 9, 2012", "0.0256" ],
+<span class='line'>190</span>  * 			[ 7, "nig", "Nigeria", 162471000, "July 1, 2011", "0.0232" ],
+<span class='line'>191</span>  * 			[ 8, "rus", "Russia", 143030106, "January 1, 2012", "0.0204" ],
+<span class='line'>192</span>  * 			[ 9, "ban", "Bangladesh", 142319000, "March 15, 2011", "0.0203" ],
+<span class='line'>193</span>  * 			[ 10, "jap", "Japan", 127770000, "February 1, 2012", "0.0183" ],
+<span class='line'>194</span>  * 			[ 11, "mex", "Mexico", 112336538, "June 12, 2010", "0.016" ],
+<span class='line'>195</span>  * 			[ 12, "phi", "Philippines", 94013200, "July 1, 2010", "0.0134" ],
+<span class='line'>196</span>  * 			[ 13, "vie", "Vietnam", 87840000, "December 31, 2011", "0.0125" ],
+<span class='line'>197</span>  * 			[ 14, "eth", "Ethiopia", 84320987,	"July 1, 2012", "0.012" ],
+<span class='line'>198</span>  * 			[ 15, "ger", "Germany", 81796000, "August 31, 2011", "0.0117" ]
+<span class='line'>199</span>  *       ]
+<span class='line'>200</span>  *       
+<span class='line'>201</span>  *    });
+<span class='line'>202</span>  * 
+<span class='line'>203</span>  */</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="NAME">Biojs.Table</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.extend</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="COMM">/** @lends Biojs.Table# */</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">	</span><span class="NAME">constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>209</span> 
+<span class='line'>210</span> 		</span><span class="COMM">//Biojs.console.enable();</span><span class="WHIT">
+<span class='line'>211</span> </span><span class="WHIT">		
+<span class='line'>212</span> 		</span><span class="COMM">// TODO: validate mandatory values</span><span class="WHIT">
+<span class='line'>213</span> 
+<span class='line'>214</span> </span><span class="WHIT">		</span><span class="NAME">self._tableId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'biojs_Table_'</span><span class="PUNC">+</span><span class="NAME">self.getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">		</span><span class="NAME">self._tableSelector</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'#'</span><span class="PUNC">+</span><span class="NAME">self._tableId</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">		
+<span class='line'>217</span> 		</span><span class="NAME">self._container</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'#'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.opt.target</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="STRN">"Table"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>218</span> 
+<span class='line'>219</span> </span><span class="WHIT">		</span><span class="NAME">self._table</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;table id="'</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">self._tableId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="STRN">'">&lt;/table>'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">self._container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">css</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">				</span><span class="NAME">cellpadding</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"0"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">				</span><span class="NAME">cellspacing</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"0"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">				</span><span class="NAME">border</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"0"</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">			</span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"dataTable"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">		
+<span class='line'>228</span> 		</span><span class="NAME">self._columnsOffset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.opt.rowSelection</span><span class="PUNC">)</span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>229</span> 
+<span class='line'>230</span> </span><span class="WHIT">		</span><span class="NAME">self._settings</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">		</span><span class="NAME">self._settings.opt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>232</span> </span><span class="WHIT">		
+<span class='line'>233</span> 		</span><span class="NAME">self._initSettings</span><span class="PUNC">(</span><span class="NAME">self._settings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>234</span> </span><span class="WHIT">		</span><span class="NAME">self.setDataSource</span><span class="PUNC">(</span><span class="NAME">self.opt.dataSet</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">		</span><span class="NAME">self._addEvents</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>236</span> 
+<span class='line'>237</span> </span><span class="WHIT">		</span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Biojs.Table constructor has finished"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>238</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>239</span> 
+<span class='line'>240</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>241</span> 	 * Default values for the options
+<span class='line'>242</span> 	 * @name Biojs.Table-opt
+<span class='line'>243</span> 	 */</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">	</span><span class="NAME">opt</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">		</span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"YourOwnDivId"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>246</span> </span><span class="WHIT">		</span><span class="NAME">hideColumns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">		</span><span class="NAME">columns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="STRN">""</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>248</span> </span><span class="WHIT">		</span><span class="NAME">dataSet</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>249</span> </span><span class="WHIT">		</span><span class="NAME">paginate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">		</span><span class="NAME">pageLength</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">		</span><span class="NAME">width</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">597</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>252</span> </span><span class="WHIT">		</span><span class="NAME">height</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">400</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">		</span><span class="NAME">rowSelection</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">		</span><span class="NAME">orderBy</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">		</span><span class="NAME">showColumnSelector</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>256</span> </span><span class="WHIT">		</span><span class="NAME">filter</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="WHIT">
+<span class='line'>257</span> </span><span class="WHIT">		</span><span class="COMM">//mapUrlParams: function ( params ) { ; }</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>259</span> 
+<span class='line'>260</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>261</span> 	 * Array containing the supported event names
+<span class='line'>262</span> 	 * @name Biojs.Table-eventTypes
+<span class='line'>263</span> 	 */</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">	</span><span class="NAME">eventTypes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>266</span>       * @name Biojs.Table#onCellClicked
+<span class='line'>267</span>       * @event
+<span class='line'>268</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>269</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>270</span>       * @eventData {int} rowIndex Row selected (0-based index).
+<span class='line'>271</span>       * @eventData {int} colIndex Column number (0-based index).
+<span class='line'>272</span>       * @eventData {HTMLTableCellElement} cell Instance of the DOM HTMLTableCellElement selected.
+<span class='line'>273</span>       * @example
+<span class='line'>274</span>       * myTable.onCellClicked(
+<span class='line'>275</span>       *    function( e ) {
+<span class='line'>276</span>       *       alert("Cell selected in row "+ e.rowIndex +", column " + e.colIndex + ". Value: " + e.cell.innerText );
+<span class='line'>277</span>       *    }
+<span class='line'>278</span>       * );
+<span class='line'>279</span>       *
+<span class='line'>280</span>       **/</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">     </span><span class="STRN">"onCellClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>282</span> 
+<span class='line'>283</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>284</span>       * @name Biojs.Table#onCellMouseover
+<span class='line'>285</span>       * @event
+<span class='line'>286</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>287</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>288</span>       * @eventData {int} rowIndex Row selected (0-based index).
+<span class='line'>289</span>       * @eventData {int} colIndex Column number (0-based index).
+<span class='line'>290</span>       * @eventData {HTMLTableCellElement} cell Instance of the DOM HTMLTableCellElement selected.
+<span class='line'>291</span>       * @example
+<span class='line'>292</span>       * myTable.onCellMouseover(
+<span class='line'>293</span>       *    function( e ) {
+<span class='line'>294</span>       *       alert("Cell over row "+ e.rowIndex +", column " + e.colIndex + ". Value: " + e.cell.innerText );
+<span class='line'>295</span>       *    }
+<span class='line'>296</span>       * );
+<span class='line'>297</span>       *
+<span class='line'>298</span>       **/</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">     </span><span class="STRN">"onCellMouseover"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">     
+<span class='line'>301</span>      </span><span class="COMM">/**
+<span class='line'>302</span>       * @name Biojs.Table#onCellMouseenter
+<span class='line'>303</span>       * @event
+<span class='line'>304</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>305</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>306</span>       * @eventData {int} rowIndex Row selected (0-based index).
+<span class='line'>307</span>       * @eventData {int} colIndex Column number (0-based index).
+<span class='line'>308</span>       * @eventData {HTMLTableCellElement} cell Instance of the DOM HTMLTableCellElement selected.
+<span class='line'>309</span>       * @example
+<span class='line'>310</span>       * myTable.onCellMouseenter(
+<span class='line'>311</span>       *    function( e ) {
+<span class='line'>312</span>       *       alert("Mouse enter in row "+ e.rowIndex +", column " + e.colIndex + ". Value: " + e.cell.innerText );
+<span class='line'>313</span>       *    }
+<span class='line'>314</span>       * );
+<span class='line'>315</span>       *
+<span class='line'>316</span>       **/</span><span class="WHIT">
+<span class='line'>317</span> </span><span class="WHIT">     </span><span class="STRN">"onCellMouseenter"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>318</span> </span><span class="WHIT">     
+<span class='line'>319</span>      </span><span class="COMM">/**
+<span class='line'>320</span>       * @name Biojs.Table#onCellMouseout
+<span class='line'>321</span>       * @event
+<span class='line'>322</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>323</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>324</span>       * @eventData {int} rowIndex Row selected (0-based index).
+<span class='line'>325</span>       * @eventData {int} colIndex Column number (0-based index).
+<span class='line'>326</span>       * @eventData {HTMLTableCellElement} cell Instance of the DOM HTMLTableCellElement selected.
+<span class='line'>327</span>       * @example
+<span class='line'>328</span>       * myTable.onCellMouseout(
+<span class='line'>329</span>       *    function( e ) {
+<span class='line'>330</span>       *       alert("Cell selected in row "+ e.rowIndex +", column " + e.colIndex + ". Value: " + e.cell.innerText );
+<span class='line'>331</span>       *    }
+<span class='line'>332</span>       * );
+<span class='line'>333</span>       *
+<span class='line'>334</span>       **/</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">     </span><span class="STRN">"onCellMouseout"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">     
+<span class='line'>337</span>      </span><span class="COMM">/**
+<span class='line'>338</span>       * @name Biojs.Table#onRowSelected
+<span class='line'>339</span>       * @event
+<span class='line'>340</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>341</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>342</span>       * @eventData {int} rowIndex Row selected (0-based index).
+<span class='line'>343</span>       * @eventData {HTMLTableRowElement} row Instance of the DOM HTMLTableRowElement selected.
+<span class='line'>344</span>       * @example
+<span class='line'>345</span>       * myTable.onRowSelected(
+<span class='line'>346</span>       *    function( e ) {
+<span class='line'>347</span>       *       alert("Row selected: "+ e.rowIndex );
+<span class='line'>348</span>       *    }
+<span class='line'>349</span>       * );
+<span class='line'>350</span>       *
+<span class='line'>351</span>       **/</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">     </span><span class="STRN">"onRowSelected"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>353</span> 
+<span class='line'>354</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>355</span>       * @name Biojs.Table#onHeaderClicked
+<span class='line'>356</span>       * @event
+<span class='line'>357</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>358</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>359</span>       * @eventData {string} colName Column name.
+<span class='line'>360</span>       * @eventData {int} colIndex Column number (0-based index).
+<span class='line'>361</span>       * @example
+<span class='line'>362</span>       * myTable.onHeaderClicked(
+<span class='line'>363</span>       *    function( e ) {
+<span class='line'>364</span>       *       alert("Header \""+ e.colName +"\" selected. Column index " + e.colIndex + ". " );
+<span class='line'>365</span>       *    }
+<span class='line'>366</span>       * );
+<span class='line'>367</span>       *
+<span class='line'>368</span>       **/</span><span class="WHIT">
+<span class='line'>369</span> </span><span class="WHIT">     </span><span class="STRN">"onHeaderClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>370</span> 
+<span class='line'>371</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>372</span>       * @name Biojs.Table#onDataArrived
+<span class='line'>373</span>       * @event
+<span class='line'>374</span>       * @param {function} actionPerformed A function which receives a {@link Biojs.Event} object as argument.
+<span class='line'>375</span>       * @eventData {Object} source The component which triggered the event.
+<span class='line'>376</span>       * @eventData {Object} jsonData Data object just arrived.
+<span class='line'>377</span>       * @example
+<span class='line'>378</span>       * myTable.onDataArrived(
+<span class='line'>379</span>       *    function( e ) {
+<span class='line'>380</span>       *       alert( e.jsonData.aaData.length + " new records has arrived." );
+<span class='line'>381</span>       *    }
+<span class='line'>382</span>       * );
+<span class='line'>383</span>       *
+<span class='line'>384</span>       **/</span><span class="WHIT">
+<span class='line'>385</span> </span><span class="WHIT">     </span><span class="STRN">"onDataArrived"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>386</span> </span><span class="WHIT">     </span><span class="STRN">"onRowRendered"</span><span class="WHIT">
+<span class='line'>387</span> </span><span class="WHIT">     </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>388</span> 
+<span class='line'>389</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>390</span>       * Rebuild the table
+<span class='line'>391</span>       * 
+<span class='line'>392</span>       * @example 
+<span class='line'>393</span>       * myTable.setDataSource({
+<span class='line'>394</span> 	  * 	url: 'data/tableJSON.js'
+<span class='line'>395</span> 	  * });
+<span class='line'>396</span>       * 
+<span class='line'>397</span>       */</span><span class="WHIT">
+<span class='line'>398</span> </span><span class="WHIT">     </span><span class="NAME">setDataSource</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">dataSet</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>399</span> 
+<span class='line'>400</span> </span><span class="WHIT">    	</span><span class="NAME">this.opt.dataSet</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">dataSet</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>401</span> </span><span class="WHIT">    	
+<span class='line'>402</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">dataSet</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>403</span> </span><span class="WHIT">			</span><span class="NAME">this._initSettingsForLocalData</span><span class="PUNC">(</span><span class="NAME">this._settings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>404</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>405</span> </span><span class="WHIT">			</span><span class="NAME">this._initSettingsForRemoteData</span><span class="PUNC">(</span><span class="NAME">this._settings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>406</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>407</span> </span><span class="WHIT">		
+<span class='line'>408</span> 		</span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Drawing.."</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>409</span> </span><span class="WHIT">		</span><span class="NAME">this._settings.bDestroy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>410</span> </span><span class="WHIT">    	</span><span class="NAME">this._table.dataTable</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._settings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>411</span>     	
+<span class='line'>412</span>     	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.showColumnSelector</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>413</span> </span><span class="WHIT">    		</span><span class="NAME">this._setColumnSelector</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._table.fnSettings</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>414</span> </span><span class="WHIT">    	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>415</span> </span><span class="WHIT">    	
+<span class='line'>416</span>     	</span><span class="NAME">this._table.fnDraw</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>417</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>418</span> </span><span class="WHIT">     
+<span class='line'>419</span>      </span><span class="NAME">_getTable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>420</span>     	 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._table</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>421</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>422</span> </span><span class="WHIT">     
+<span class='line'>423</span>      </span><span class="COMM">/**
+<span class='line'>424</span>       * Shows the columns indicated by the indexes array.
+<span class='line'>425</span>       * @param {int[]} columns Column indexes to be showed.
+<span class='line'>426</span>       * @param {bool} flag The new value.
+<span class='line'>427</span>       * 
+<span class='line'>428</span>       * @example 
+<span class='line'>429</span>       * myTable.toggleColumns([0,3],true);
+<span class='line'>430</span>       * 
+<span class='line'>431</span>       */</span><span class="WHIT">
+<span class='line'>432</span> </span><span class="WHIT">     </span><span class="NAME">toggleColumns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">flag</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>433</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Toggle columns to :"</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">flag</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>434</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> 
+<span class='line'>436</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">checkbox</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'input[name="multiselect_'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._tableId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'_columns"]'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>437</span> 
+<span class='line'>438</span> </span><span class="WHIT">    	 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">columns.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">    		 </span><span class="NAME">toToggle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">checkbox</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">    		 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">toToggle.attr</span><span class="PUNC">(</span><span class="STRN">"checked"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">flag</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">    			 </span><span class="NAME">toToggle.click</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>443</span> </span><span class="WHIT">    		 </span><span class="NAME">this._table.fnSetColumnVis</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._columnsOffset</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">flag</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>444</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>445</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>446</span> 
+<span class='line'>447</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>448</span>       * Shows the columns indicated by the indexes array.
+<span class='line'>449</span>       * @param {int[]} columns Column indexes to be showed.
+<span class='line'>450</span>       * 
+<span class='line'>451</span>       * @example 
+<span class='line'>452</span>       * myTable.showColumns([0,3]);
+<span class='line'>453</span>       * 
+<span class='line'>454</span>       */</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">     </span><span class="NAME">showColumns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Showing columns:"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>458</span> 
+<span class='line'>459</span> </span><span class="WHIT">    	 </span><span class="NAME">this.toggleColumns</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">,</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>460</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>461</span> 
+<span class='line'>462</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>463</span>       * Hides the columns indicated by the indexes array.
+<span class='line'>464</span>       * @param {int[]} columns Column indexes to be hided.
+<span class='line'>465</span>       * 
+<span class='line'>466</span>       * @example 
+<span class='line'>467</span>       * myTable.hideColumns([0,3]);
+<span class='line'>468</span>       * 
+<span class='line'>469</span>       */</span><span class="WHIT">
+<span class='line'>470</span> </span><span class="WHIT">     </span><span class="NAME">hideColumns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Hiding columns:"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>472</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>473</span> 
+<span class='line'>474</span> </span><span class="WHIT">    	 </span><span class="NAME">this.toggleColumns</span><span class="PUNC">(</span><span class="NAME">columns</span><span class="PUNC">,</span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>475</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>476</span> 
+<span class='line'>477</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>478</span>       * Sorts by column.
+<span class='line'>479</span>       * @param {int} columnIndex Column indexes to be sorted (0-based index).
+<span class='line'>480</span>       * @param {string} direction Sorting direction; 'asc' for ascending, 'desc' for descending.
+<span class='line'>481</span>       * 
+<span class='line'>482</span>       * @example 
+<span class='line'>483</span>       * myTable.orderBy(1,'desc');
+<span class='line'>484</span>       * 
+<span class='line'>485</span>       */</span><span class="WHIT">
+<span class='line'>486</span> </span><span class="WHIT">     </span><span class="NAME">orderBy</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">columnIndex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">direction</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>487</span> </span><span class="WHIT">    	 </span><span class="NAME">this._table.fnSort</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">columnIndex</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._columnsOffset</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">direction</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>488</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>489</span> 
+<span class='line'>490</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>491</span>       * Gets the current selected data.
+<span class='line'>492</span>       * 
+<span class='line'>493</span>       * @returns {string[][]} data current selection.
+<span class='line'>494</span>       * 
+<span class='line'>495</span>       * @example 
+<span class='line'>496</span>       * myTable.getSelectedRows();
+<span class='line'>497</span>       * 
+<span class='line'>498</span>       */</span><span class="WHIT">
+<span class='line'>499</span> </span><span class="WHIT">     </span><span class="NAME">getSelectedRows</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>500</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">selectedRows</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>502</span> 
+<span class='line'>503</span> </span><span class="WHIT">    	 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' tr.selected'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>504</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">each</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">index</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>505</span> </span><span class="WHIT">	    		 </span><span class="NAME">selectedRows.push</span><span class="PUNC">(</span><span class="NAME">self._table.fnGetData</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="WHIT">	    	 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>507</span> 
+<span class='line'>508</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">selectedRows</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>509</span> </span><span class="WHIT">    	 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">selectedRows</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>510</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>511</span> </span><span class="WHIT">     
+<span class='line'>512</span>      </span><span class="COMM">/* 
+<span class='line'>513</span>       * Function: Biojs.Table._initSettings
+<span class='line'>514</span>       * Purpose:  initialize the settings for DataTables plugin in case of using local data
+<span class='line'>515</span>       * Returns:  -
+<span class='line'>516</span>       * Inputs:   settings -> {Object} where the configuration settings will be added.
+<span class='line'>517</span>       */</span><span class="WHIT">
+<span class='line'>518</span> </span><span class="WHIT">     </span><span class="NAME">_initSettings</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">settings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>519</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>520</span> </span><span class="WHIT">    	 
+<span class='line'>521</span>     	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"initializing settings..."</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>522</span> 
+<span class='line'>523</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.aoColumnDefs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>524</span> 
+<span class='line'>525</span>     	 </span><span class="NAME">this._setColumns</span><span class="PUNC">(</span><span class="NAME">this.opt.columns</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">settings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>526</span> </span><span class="WHIT">    	 </span><span class="COMM">//this._setData(this.opt.dataSet, settings);</span><span class="WHIT">
+<span class='line'>527</span> 
+<span class='line'>528</span> </span><span class="WHIT">    	 </span><span class="COMM">// Hide columns </span><span class="WHIT">
+<span class='line'>529</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.hideColumns.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>530</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.aoColumnDefs.push</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">"bVisible"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"aTargets"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.opt.hideColumns</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>531</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>532</span> 
+<span class='line'>533</span> </span><span class="WHIT">    	 </span><span class="COMM">// Order by </span><span class="WHIT">
+<span class='line'>534</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.orderBy.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>535</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.aaSorting</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.orderBy</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>536</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>537</span> 
+<span class='line'>538</span> </span><span class="WHIT">    	 </span><span class="COMM">// Row selection column (checkboxes column) is enabled? </span><span class="WHIT">
+<span class='line'>539</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.opt.rowSelection</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>540</span>     		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">columnsToHide</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.hideColumns</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>541</span> 
+<span class='line'>542</span> </span><span class="WHIT">    		 </span><span class="COMM">// Shift the index of the columns to hide</span><span class="WHIT">
+<span class='line'>543</span> </span><span class="WHIT">    		 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">columnsToHide</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>544</span> </span><span class="WHIT">    			 </span><span class="NAME">columnsToHide</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>545</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>546</span> 
+<span class='line'>547</span> </span><span class="WHIT">    		 </span><span class="COMM">// Shift the index of the columns to order</span><span class="WHIT">
+<span class='line'>548</span> </span><span class="WHIT">    		 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">settings.aaSorting</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="WHIT">    			 </span><span class="NAME">settings.aaSorting</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>550</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>551</span> </span><span class="WHIT">    		 
+<span class='line'>552</span>     		 </span><span class="COMM">// Disable the ordering on the column 0 (checkboxes column) </span><span class="WHIT">
+<span class='line'>553</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.aoColumnDefs.push</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">"bSortable"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"aTargets"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>554</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>555</span> </span><span class="WHIT">    	 
+<span class='line'>556</span>     	 </span><span class="COMM">// pagination</span><span class="WHIT">
+<span class='line'>557</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.opt.paginate</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>558</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.bScrollInfinite</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>559</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.bScrollCollapse</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>560</span> 
+<span class='line'>561</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>562</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.sPaginationType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"full_numbers"</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>563</span>     		 </span><span class="NAME">settings.iDisplayLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.pageLength</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>564</span> </span><span class="WHIT">    		 </span><span class="NAME">settings.oLanguage</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>565</span> </span><span class="WHIT">    				 </span><span class="STRN">"oPaginate"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>566</span> </span><span class="WHIT">    					 </span><span class="STRN">"sPrevious"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"&lt;"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>567</span> </span><span class="WHIT">    					 </span><span class="STRN">"sNext"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">">"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>568</span> </span><span class="WHIT">    					 </span><span class="STRN">"sFirst"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"|"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">    					 </span><span class="STRN">"sLast"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"|"</span><span class="WHIT">
+<span class='line'>570</span> </span><span class="WHIT">    				 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>571</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>572</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>573</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bProcessing</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>574</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bLengthChange</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>575</span> </span><span class="WHIT">    	 </span><span class="COMM">//settings.sScrollX = this.opt.height;</span><span class="WHIT">
+<span class='line'>576</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.sScrollY</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"100%"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>577</span> </span><span class="WHIT">    	 
+<span class='line'>578</span>     	 </span><span class="NAME">settings.fnRowCallback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">nRow</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">iDisplayIndex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">iDisplayIndexFull</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>579</span>     		 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="NAME">Biojs.Table.EVT_ON_ROW_RENDERED</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>580</span> </span><span class="WHIT">    			 </span><span class="NAME">node</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">nRow</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>581</span> </span><span class="WHIT">    			 </span><span class="NAME">data</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">aData</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>582</span> </span><span class="WHIT">    			 </span><span class="NAME">index</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">iDisplayIndex</span><span class="WHIT">
+<span class='line'>583</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>584</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>585</span> 
+<span class='line'>586</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bAutoWidth</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>587</span> 
+<span class='line'>588</span> </span><span class="WHIT">    	 
+<span class='line'>589</span>      </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>590</span> </span><span class="WHIT">     
+<span class='line'>591</span>      </span><span class="COMM">/* 
+<span class='line'>592</span>       * Function: Biojs.Table._initSettingsForLocalData
+<span class='line'>593</span>       * Purpose:  initialize the settings for DataTables plugin in case of using local data
+<span class='line'>594</span>       * Returns:  -
+<span class='line'>595</span>       * Inputs:   settings -> {Object} where the configuration settings will be added.
+<span class='line'>596</span>       */</span><span class="WHIT">
+<span class='line'>597</span> </span><span class="WHIT">     </span><span class="NAME">_initSettingsForLocalData</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">settings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>598</span> </span><span class="WHIT">    	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Using local data"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>599</span> </span><span class="WHIT">    	 </span><span class="NAME">this._setData</span><span class="PUNC">(</span><span class="NAME">this.opt.dataSet</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">settings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>600</span> </span><span class="WHIT">    	 </span><span class="COMM">// Don't use data source provided by a server </span><span class="WHIT">
+<span class='line'>601</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bServerSide</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>602</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set URL of the data source</span><span class="WHIT">
+<span class='line'>603</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.sAjaxSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>604</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set the function which manages the Ajax requests</span><span class="WHIT">
+<span class='line'>605</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.fnServerData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>606</span> </span><span class="WHIT">    	 </span><span class="COMM">// Enable filtering</span><span class="WHIT">
+<span class='line'>607</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bFilter</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.filter</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>608</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>609</span> </span><span class="WHIT">     
+<span class='line'>610</span>      </span><span class="COMM">/* 
+<span class='line'>611</span>       * Function: Biojs.Table._initSettingsForRemoteData
+<span class='line'>612</span>       * Purpose:  initialize the settings for DataTables plugin in case of using remote data
+<span class='line'>613</span>       * Returns:  -
+<span class='line'>614</span>       * Inputs:   settings -> {Object} where the configuration settings will be added.
+<span class='line'>615</span>       */</span><span class="WHIT">
+<span class='line'>616</span> </span><span class="WHIT">     </span><span class="NAME">_initSettingsForRemoteData</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">settings</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>617</span> </span><span class="WHIT">    	 
+<span class='line'>618</span>     	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Using data from remote URL: "</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.url</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>619</span> 
+<span class='line'>620</span> </span><span class="WHIT">    	 </span><span class="COMM">// Use data source provided by a server </span><span class="WHIT">
+<span class='line'>621</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bServerSide</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>622</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set URL of the data source</span><span class="WHIT">
+<span class='line'>623</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.sAjaxSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.url</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>624</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set the function which manages the Ajax requests</span><span class="WHIT">
+<span class='line'>625</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.fnServerData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._fetchData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>626</span> </span><span class="WHIT">    	 </span><span class="COMM">// Enable/disable filtering depending on the support by the server</span><span class="WHIT">
+<span class='line'>627</span> </span><span class="WHIT">    	 </span><span class="NAME">settings.bFilter</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.filter</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>628</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>629</span> 
+<span class='line'>630</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>631</span>       * Function: _fetchData
+<span class='line'>632</span>       * Purpose:  do the Ajax request to get the data from server. Note that 'this' will not refered to the Biojs.Table instance
+<span class='line'>633</span>       * 	due to this function will be linked to the internal DataTables object.
+<span class='line'>634</span>       * Returns:  -
+<span class='line'>635</span>       * Inputs:   
+<span class='line'>636</span>       * 	sSource -> {string} HTTP source to obtain the data from (defined in option dataSet.url).
+<span class='line'>637</span>       * 	aoData -> {Object[]} a key/value pair object containing the data to send to the server.
+<span class='line'>638</span>       * 	fnCallback -> {function} to be called on completion of the data get process that will draw the data on the page.
+<span class='line'>639</span>       * 	oSettings -> {object} DataTables settings object.
+<span class='line'>640</span>       */</span><span class="WHIT">
+<span class='line'>641</span> </span><span class="WHIT">     </span><span class="NAME">_fetchData</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">sSource</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aoData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fnCallback</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oSettings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>642</span> 
+<span class='line'>643</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">httpRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">sSource</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>644</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aoData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>645</span> 
+<span class='line'>646</span> </span><span class="WHIT">    	 </span><span class="COMM">// Get the Biojs Table instance </span><span class="WHIT">
+<span class='line'>647</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">biojsId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">oSettings.sTableId.substr</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"biojs_Table_"</span><span class="PUNC">.</span><span class="NAME">length</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>648</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">instance</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.getInstance</span><span class="PUNC">(</span><span class="NAME">biojsId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>649</span> 
+<span class='line'>650</span> </span><span class="WHIT">    	 </span><span class="COMM">// Rename param names using those defined in the options instance.opt.dataSet.mapParams</span><span class="WHIT">
+<span class='line'>651</span> </span><span class="WHIT">    	 </span><span class="NAME">instance._mapUrlParams</span><span class="PUNC">(</span><span class="NAME">aoData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>652</span> 
+<span class='line'>653</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set callback function on success</span><span class="WHIT">
+<span class='line'>654</span> </span><span class="WHIT">    	 </span><span class="COMM">//httpRequest.success = fnCallback;</span><span class="WHIT">
+<span class='line'>655</span> 
+<span class='line'>656</span> </span><span class="WHIT">    	 </span><span class="COMM">// Data type expected </span><span class="WHIT">
+<span class='line'>657</span> </span><span class="WHIT">    	 </span><span class="NAME">httpRequest.dataType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'json'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>658</span> 
+<span class='line'>659</span> </span><span class="WHIT">    	 </span><span class="COMM">// Using proxy?</span><span class="WHIT">
+<span class='line'>660</span> </span><span class="WHIT">    	 </span><span class="COMM">// Redirect using the proxy and encode all params as url data</span><span class="WHIT">
+<span class='line'>661</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">instance.getProxy</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>662</span> 
+<span class='line'>663</span> </span><span class="WHIT">    		 </span><span class="COMM">// Redirect to proxy url</span><span class="WHIT">
+<span class='line'>664</span> </span><span class="WHIT">    		 </span><span class="NAME">httpRequest.url</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">instance.getProxy</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>665</span> 
+<span class='line'>666</span> </span><span class="WHIT">    		 </span><span class="COMM">// Encode both url and parameters under the param url</span><span class="WHIT">
+<span class='line'>667</span> </span><span class="WHIT">    		 </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"url"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">sSource</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'?'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">jQuery.param</span><span class="PUNC">(</span><span class="NAME">aoData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>668</span> 
+<span class='line'>669</span> </span><span class="WHIT">    		 </span><span class="COMM">// Data type </span><span class="WHIT">
+<span class='line'>670</span> </span><span class="WHIT">    		 </span><span class="NAME">httpRequest.dataType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">instance.getProxyDataType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>671</span> </span><span class="WHIT">    		 
+<span class='line'>672</span>     	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>673</span> </span><span class="WHIT">    	 
+<span class='line'>674</span>     	</span><span class="COMM">// Wrap the callback function </span><span class="WHIT">
+<span class='line'>675</span> </span><span class="WHIT">		 </span><span class="NAME">httpRequest.success</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>676</span> 
+<span class='line'>677</span> </span><span class="WHIT">			 </span><span class="COMM">// Decode data</span><span class="WHIT">
+<span class='line'>678</span> </span><span class="WHIT">			 </span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">instance._decodeToJSON</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>679</span> </span><span class="WHIT">			 
+<span class='line'>680</span> 			 </span><span class="COMM">// Set the echo var</span><span class="WHIT">
+<span class='line'>681</span> </span><span class="WHIT">			 </span><span class="NAME">jsonData.sEcho</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.sEcho</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>682</span> </span><span class="WHIT">			 
+<span class='line'>683</span> 			 </span><span class="COMM">// Add the column of checkboxes in case of using row selection</span><span class="WHIT">
+<span class='line'>684</span> </span><span class="WHIT">			 </span><span class="NAME">instance._setSelectionColumn</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>685</span> </span><span class="WHIT">			 
+<span class='line'>686</span> 			 </span><span class="COMM">// Call the datatables cb function</span><span class="WHIT">
+<span class='line'>687</span> </span><span class="WHIT">			 </span><span class="NAME">fnCallback</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>688</span> 
+<span class='line'>689</span> </span><span class="WHIT">			 </span><span class="COMM">// fire event</span><span class="WHIT">
+<span class='line'>690</span> </span><span class="WHIT">			 </span><span class="NAME">instance.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_DATA_ARRIVED</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>691</span> 				 </span><span class="STRN">"jsonData"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">jsonData</span><span class="WHIT"> 
+<span class='line'>692</span> 			 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>693</span> </span><span class="WHIT">		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>694</span> 
+<span class='line'>695</span> </span><span class="WHIT">    	 </span><span class="NAME">httpRequest.type</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'GET'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>696</span> </span><span class="WHIT">    	 </span><span class="NAME">httpRequest.data</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">params</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>697</span> </span><span class="WHIT">    	 </span><span class="NAME">httpRequest.sEcho</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aoData</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>698</span> 
+<span class='line'>699</span> </span><span class="WHIT">    	 </span><span class="NAME">jQuery.ajax</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">httpRequest</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>700</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>701</span> 
+<span class='line'>702</span> </span><span class="WHIT">     </span><span class="NAME">getProxy</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>703</span> </span><span class="WHIT">    	 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.proxyUrl</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>704</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>705</span> 
+<span class='line'>706</span> </span><span class="WHIT">     </span><span class="NAME">getProxyDataType</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>707</span> </span><span class="WHIT">    	 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.dataType</span><span class="WHIT"> </span><span class="PUNC">|</span><span class="WHIT"> </span><span class="STRN">"text"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>708</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>709</span> 
+<span class='line'>710</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>711</span>       * Returns the total records in the dataset.
+<span class='line'>712</span>       * 
+<span class='line'>713</span>       * @example 
+<span class='line'>714</span>       * alert("Total records:" + myTable.getTotalRecords());
+<span class='line'>715</span>       * 
+<span class='line'>716</span>       */</span><span class="WHIT">
+<span class='line'>717</span> </span><span class="WHIT">     </span><span class="NAME">getTotalRecords</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>718</span> </span><span class="WHIT">    	 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.totalRecords</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>719</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>720</span> 
+<span class='line'>721</span> </span><span class="WHIT">     </span><span class="NAME">_setSelectionColumn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>722</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.rowSelection</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">jsonData.aaData</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>723</span> </span><span class="WHIT">    		 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">jsonData.aaData.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>724</span> </span><span class="WHIT">    			 </span><span class="NAME">jsonData.aaData</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">unshift</span><span class="PUNC">(</span><span class="STRN">'&lt;input type="checkbox" id="'</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="STRN">'" />'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>725</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>726</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>727</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>728</span> 
+<span class='line'>729</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>730</span>       * Function: Biojs.Table._decodeToJSON
+<span class='line'>731</span>       * Purpose:  Decode the received data to suit it into the expected JSON format. 
+<span class='line'>732</span>       * 		  Override this method in the Biojs.Table's children to suit any raw data into the expected JSON format.
+<span class='line'>733</span>       * Returns:  {Object} formatted in the expected JSON format. 
+<span class='line'>734</span>       * Inputs:   data -> {*} raw data received from the server. 
+<span class='line'>735</span>       */</span><span class="WHIT">
+<span class='line'>736</span> </span><span class="WHIT">     </span><span class="NAME">_decodeToJSON</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>737</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>738</span> </span><span class="WHIT">    	 
+<span class='line'>739</span>     	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>740</span> </span><span class="WHIT">    		 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Empty data was received"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>741</span> </span><span class="WHIT">    		 
+<span class='line'>742</span>     	 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="PUNC">(</span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Object</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="PUNC">(</span><span class="NAME">jsonData.aaData</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>743</span> </span><span class="WHIT">			 </span><span class="NAME">jsonData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>744</span> </span><span class="WHIT">			 </span><span class="NAME">jsonData.aaData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>745</span> </span><span class="WHIT">			 </span><span class="NAME">jsonData.iTotalRecords</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>746</span> </span><span class="WHIT">			 </span><span class="NAME">jsonData.iTotalDisplayRecords</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>747</span> </span><span class="WHIT">			 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Error: data with unknown format was detected."</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>748</span> </span><span class="WHIT">		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>749</span> </span><span class="WHIT">    	 
+<span class='line'>750</span>     	 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">jsonData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>751</span> </span><span class="WHIT">    	 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">jsonData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>752</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>753</span> 
+<span class='line'>754</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>755</span>       * Function: Biojs.Table._mapUrlParams
+<span class='line'>756</span>       * Purpose:  Rename the param names with the customized names declared in the option dataSet.paramsMap 
+<span class='line'>757</span>       * Returns:  -
+<span class='line'>758</span>       * Inputs:   {Object[]} a key/value pair object containing the data to send to the server.
+<span class='line'>759</span>       */</span><span class="WHIT">
+<span class='line'>760</span> </span><span class="WHIT">     </span><span class="NAME">_mapUrlParams</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>761</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">map</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.dataSet.paramsMap</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>762</span> </span><span class="WHIT">    	 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">map</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>763</span> </span><span class="WHIT">    		 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">params.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>764</span> </span><span class="WHIT">    			 </span><span class="COMM">// rename the parameter name </span><span class="WHIT">
+<span class='line'>765</span> </span><span class="WHIT">    			 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">params</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>766</span> </span><span class="WHIT">    				 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Renaming param &lt;"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"> with &lt;"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">map</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">">"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>767</span> </span><span class="WHIT">    				 </span><span class="NAME">params</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">map</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>768</span>     			 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>769</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>770</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">	
+<span class='line'>771</span>      </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>772</span> 
+<span class='line'>773</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>774</span>       * Function: Biojs.Table._setColumnSelector
+<span class='line'>775</span>       * Purpose:  Build the drop down box to hide/show columns by means of the user selection. 
+<span class='line'>776</span>       * Returns:  -
+<span class='line'>777</span>       * Inputs:   oSettings -> {Object} DataTables settings object.
+<span class='line'>778</span>       */</span><span class="WHIT">
+<span class='line'>779</span> </span><span class="WHIT">     </span><span class="NAME">_setColumnSelector</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">settings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>780</span> 
+<span class='line'>781</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>782</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">settings.aoColumns</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>783</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">select</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;select id="'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">self._tableId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'_columns" name="columns" multiselect="multiselect" />'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>784</span> 
+<span class='line'>785</span> </span><span class="WHIT">    	 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._columnsOffset</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">columns.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>786</span> </span><span class="WHIT">    		 </span><span class="NAME">select.append</span><span class="PUNC">(</span><span class="STRN">'&lt;option value="'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'">'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">sTitle</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/option>'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>787</span>     	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>788</span> 
+<span class='line'>789</span> </span><span class="WHIT">    	 </span><span class="COMM">// Take selector out of the DOM</span><span class="WHIT">
+<span class='line'>790</span> </span><span class="WHIT">    	 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="PUNC">+</span><span class="STRN">'_wrapper > '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">self._tableId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'_columns'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>791</span> </span><span class="WHIT">    	 
+<span class='line'>792</span>     	 </span><span class="COMM">// Add selector to the DOM </span><span class="WHIT">
+<span class='line'>793</span> </span><span class="WHIT">    	 </span><span class="NAME">select.prependTo</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="PUNC">+</span><span class="STRN">'_wrapper'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>794</span> 
+<span class='line'>795</span> </span><span class="WHIT">    	 </span><span class="COMM">// Uses the MultiSelect plugin as column selector</span><span class="WHIT">
+<span class='line'>796</span> </span><span class="WHIT">    	 </span><span class="NAME">self._columnSelector</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">select.multiselect</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>797</span>     		 </span><span class="NAME">header</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>798</span> </span><span class="WHIT">    		 </span><span class="NAME">click</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">event</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ui</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>799</span> </span><span class="WHIT">    			 </span><span class="NAME">self._table.fnSetColumnVis</span><span class="PUNC">(</span><span class="NAME">ui.value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ui.checked</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>800</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>801</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>802</span> 
+<span class='line'>803</span> </span><span class="WHIT">    	 </span><span class="COMM">// Changes the icon for the column selector</span><span class="WHIT">
+<span class='line'>804</span> </span><span class="WHIT">    	 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="PUNC">+</span><span class="STRN">'_wrapper > button'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>805</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">html</span><span class="PUNC">(</span><span class="STRN">'&lt;span class="ui-icon ui-icon-carat-2-e-w">&lt;/span>'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>806</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">css</span><span class="PUNC">(</span><span class="STRN">"width"</span><span class="PUNC">,</span><span class="STRN">"auto"</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>807</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="STRN">'dataTables_settings'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>808</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">"title"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"Show/hide columns"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>809</span> 
+<span class='line'>810</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set the current selection status</span><span class="WHIT">
+<span class='line'>811</span> </span><span class="WHIT">    	 </span><span class="NAME">self._columnSelector.multiselect</span><span class="PUNC">(</span><span class="STRN">'uncheckAll'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>812</span> 
+<span class='line'>813</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">visibleCols</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">settings.aiDisplayMaster</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>814</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">checkbox</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'input[name="multiselect_'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._tableId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'_columns"]'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>815</span> 
+<span class='line'>816</span> </span><span class="WHIT">    	 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">checkbox.length</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>817</span> </span><span class="WHIT">    		 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">checkbox</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">"checked"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">settings.aoColumns</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._columnsOffset</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">bVisible</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>818</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>819</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>820</span> 
+<span class='line'>821</span> 
+<span class='line'>822</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>823</span>       * Add a single new row or multiple rows of data to the table.
+<span class='line'>824</span>       * @param {array} data 1D array of data - add a single row with the data provided
+<span class='line'>825</span>       * 
+<span class='line'>826</span>       * @example 
+<span class='line'>827</span>       * myTable.addDataRow([ 1, "col", "Colombia", 46420000, "March 12, 2012", "0.0066" ]);
+<span class='line'>828</span>       *  
+<span class='line'>829</span>       */</span><span class="WHIT">
+<span class='line'>830</span> </span><span class="WHIT">     </span><span class="NAME">addDataRow</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">row</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>831</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.opt.rowSelection</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>832</span> </span><span class="WHIT">    		 </span><span class="NAME">row.unshift</span><span class="PUNC">(</span><span class="STRN">'&lt;input type="checkbox" id="" />'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>833</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>834</span> </span><span class="WHIT">    	 </span><span class="NAME">this._table.fnAddData</span><span class="PUNC">(</span><span class="NAME">row</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>835</span>      </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>836</span> 
+<span class='line'>837</span> </span><span class="WHIT">     </span><span class="COMM">/**
+<span class='line'>838</span>       * Add a single new row or multiple rows of data to the table.
+<span class='line'>839</span>       * @param {array} data 1D array of data - add a single row with the data provided
+<span class='line'>840</span>       * 
+<span class='line'>841</span>       * @example 
+<span class='line'>842</span>       * myTable.removeDataRow(2);
+<span class='line'>843</span>       * 
+<span class='line'>844</span>       */</span><span class="WHIT">
+<span class='line'>845</span> </span><span class="WHIT">     </span><span class="NAME">removeDataRow</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>846</span> </span><span class="WHIT">    	 </span><span class="NAME">this._table.fnDeleteRow</span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>847</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>848</span> 
+<span class='line'>849</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>850</span>       * Function: Biojs.Table._setColumns
+<span class='line'>851</span>       * Purpose:  Map the columns values defined in the option 'columns' to the columns values for DataTables plugin
+<span class='line'>852</span>       * Returns:  -
+<span class='line'>853</span>       * Inputs:   
+<span class='line'>854</span>       * 	columns -> {(string|Object)[]} columns in the format defined in the option 'columns'.
+<span class='line'>855</span>       * 	oSettings -> {Object} DataTables settings object.
+<span class='line'>856</span>       */</span><span class="WHIT">
+<span class='line'>857</span> </span><span class="WHIT">     </span><span class="NAME">_setColumns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oSettings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>858</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>859</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">result</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>860</span> 
+<span class='line'>861</span> </span><span class="WHIT">    	 </span><span class="COMM">// Add a column of checkbox for selection </span><span class="WHIT">
+<span class='line'>862</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.opt.rowSelection</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>863</span> </span><span class="WHIT">    		 </span><span class="NAME">columns.splice</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">"name"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'&lt;input type="checkbox" />'</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>864</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>865</span> 
+<span class='line'>866</span> </span><span class="WHIT">    	 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>867</span> </span><span class="WHIT">    		 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>868</span> </span><span class="WHIT">    			 </span><span class="NAME">result</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">"sTitle"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>869</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>870</span> </span><span class="WHIT">    			 </span><span class="NAME">result</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">"sTitle"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>871</span> </span><span class="WHIT">    			 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">render</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">render</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>872</span> </span><span class="WHIT">    				 </span><span class="NAME">result</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">fnRender</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">o</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>873</span> </span><span class="WHIT">    					 </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">o.iDataColumn</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">render</span><span class="PUNC">(</span><span class="NAME">o.iDataColumn</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">o.aData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>874</span> </span><span class="WHIT">    				 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>875</span> </span><span class="WHIT">    			 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>876</span> </span><span class="WHIT">    			 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">width</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">width</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>877</span> </span><span class="WHIT">    				 </span><span class="NAME">result</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">sWidth</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">width</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>878</span> </span><span class="WHIT">    			 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>879</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>880</span> </span><span class="WHIT">    	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>881</span> </span><span class="WHIT">    	 </span><span class="NAME">oSettings.aoColumns</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">result</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>882</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>883</span> 
+<span class='line'>884</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>885</span>       * Function: Biojs.Table._setData
+<span class='line'>886</span>       * Purpose:  Set the data in case of using local data to initialize the Biojs.Table instance.
+<span class='line'>887</span>       * Returns:  -
+<span class='line'>888</span>       * Inputs:   
+<span class='line'>889</span>       * 	data -> {string[][]} data to be displayed.
+<span class='line'>890</span>       * 	oSettings -> {Object} DataTables settings object.
+<span class='line'>891</span>       */</span><span class="WHIT">
+<span class='line'>892</span> </span><span class="WHIT">     </span><span class="NAME">_setData</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oSettings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>893</span> 
+<span class='line'>894</span> </span><span class="WHIT">    	 </span><span class="COMM">// Check if row selection is currently activated.</span><span class="WHIT">
+<span class='line'>895</span> </span><span class="WHIT">    	 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.opt.rowSelection</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>896</span> </span><span class="WHIT">    		 </span><span class="COMM">// Adds a column for a checkbox for each row</span><span class="WHIT">
+<span class='line'>897</span> </span><span class="WHIT">    		 </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">r</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>898</span> </span><span class="WHIT">    			 </span><span class="NAME">data</span><span class="PUNC">[</span><span class="NAME">r</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">splice</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'&lt;input type="checkbox" id="'</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">r</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="STRN">'" />'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>899</span> </span><span class="WHIT">    		 </span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>900</span>     	 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>901</span> </span><span class="WHIT">    	 </span><span class="COMM">// Set the data in DataTables object.</span><span class="WHIT">
+<span class='line'>902</span> </span><span class="WHIT">    	 </span><span class="NAME">oSettings.aaData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>903</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>904</span> 
+<span class='line'>905</span> </span><span class="WHIT">     </span><span class="NAME">_showEmptyMessage</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>906</span> </span><span class="WHIT">    	 </span><span class="NAME">this._body.html</span><span class="PUNC">(</span><span class="STRN">"Empty"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>907</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>908</span> 
+<span class='line'>909</span> </span><span class="WHIT">     </span><span class="COMM">/* 
+<span class='line'>910</span>       * Function: Biojs.Table._addEvents
+<span class='line'>911</span>       * Purpose:  initialize the event triggers for the clicks on the Biojs.Table
+<span class='line'>912</span>       * Returns:  -
+<span class='line'>913</span>       * Inputs:   -
+<span class='line'>914</span>       */</span><span class="WHIT">
+<span class='line'>915</span> </span><span class="WHIT">     </span><span class="NAME">_addEvents</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>916</span> </span><span class="WHIT">    	 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>917</span> 
+<span class='line'>918</span> </span><span class="WHIT">    	 </span><span class="COMM">// Cell clicked </span><span class="WHIT">
+<span class='line'>919</span> </span><span class="WHIT">    	 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">this._tableSelector</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">children</span><span class="PUNC">(</span><span class="STRN">'td'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>920</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">click</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">eventData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>921</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">eventData.target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>922</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.cellIndex</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>923</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">row</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.parentNode.rowIndex</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>924</span> </span><span class="WHIT">	
+<span class='line'>925</span> 	    		 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">self.opt.rowSelection</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>926</span> </span><span class="WHIT">	    			 </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">cell.children</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">checked</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>927</span> </span><span class="WHIT">	    				 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">cell</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">parent</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="STRN">'selected'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>928</span> </span><span class="WHIT">	    				 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_ROW_SELECTED</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>929</span> 	    					 </span><span class="NAME">rowIndex</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">row</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>930</span> 	    					 </span><span class="NAME">row</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">cell</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">parent</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> 
+<span class='line'>931</span> 	    				 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>932</span> </span><span class="WHIT">	    			 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>933</span> </span><span class="WHIT">	    				 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">cell</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">parent</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">removeClass</span><span class="PUNC">(</span><span class="STRN">'selected'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>934</span> </span><span class="WHIT">	    			 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>935</span> </span><span class="WHIT">	    		 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>936</span> </span><span class="WHIT">	    			 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_CELL_CLICKED</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>937</span> 	    				 </span><span class="STRN">"cell"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>938</span> </span><span class="WHIT">	    				 </span><span class="STRN">"rowIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">row</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>939</span> </span><span class="WHIT">	    				 </span><span class="STRN">"colIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> 
+<span class='line'>940</span> 	    			 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>941</span> </span><span class="WHIT">	    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>942</span> </span><span class="WHIT">	    		 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">eventData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>943</span> </span><span class="WHIT">	    	 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>944</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">mouseover</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>945</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">e.target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>946</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.cellIndex</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>947</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">row</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.parentNode.rowIndex</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>948</span> </span><span class="WHIT">	
+<span class='line'>949</span> 	    		 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_CELL_MOUSEOVER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>950</span>     				 </span><span class="STRN">"cell"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>951</span> </span><span class="WHIT">    				 </span><span class="STRN">"rowIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">row</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>952</span> </span><span class="WHIT">    				 </span><span class="STRN">"colIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> 
+<span class='line'>953</span>     			 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>954</span> 	    	 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>955</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">mouseenter</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>956</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">e.target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>957</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.cellIndex</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>958</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">row</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.parentNode.rowIndex</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>959</span> </span><span class="WHIT">	
+<span class='line'>960</span> 	    		 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_CELL_MOUSEENTER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>961</span>     				 </span><span class="STRN">"cell"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>962</span> </span><span class="WHIT">    				 </span><span class="STRN">"rowIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">row</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>963</span> </span><span class="WHIT">    				 </span><span class="STRN">"colIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> 
+<span class='line'>964</span>     			 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>965</span> </span><span class="WHIT">	    		 
+<span class='line'>966</span> 	    	 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>967</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">mouseout</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>968</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">e.target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>969</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.cellIndex</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>970</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">row</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Number</span><span class="PUNC">(</span><span class="NAME">cell.parentNode.rowIndex</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>971</span> </span><span class="WHIT">	
+<span class='line'>972</span> 	    		 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_CELL_MOUSEOUT</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>973</span> 					 </span><span class="STRN">"cell"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>974</span> </span><span class="WHIT">					 </span><span class="STRN">"rowIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">row</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>975</span> </span><span class="WHIT">					 </span><span class="STRN">"colIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> 
+<span class='line'>976</span> 				 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>977</span> </span><span class="WHIT">    	 	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>978</span> 
+<span class='line'>979</span> </span><span class="WHIT">    	 </span><span class="COMM">// Header clicked</span><span class="WHIT">
+<span class='line'>980</span> </span><span class="WHIT">    	 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="PUNC">+</span><span class="STRN">'_wrapper table.dataTable thead tr th'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>981</span> </span><span class="WHIT">	    	 </span><span class="PUNC">.</span><span class="NAME">click</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">eventData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>982</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cell</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">eventData.currentTarget</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>983</span> </span><span class="WHIT">	    		 </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cell.cellIndex</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>984</span> </span><span class="WHIT">	
+<span class='line'>985</span> 	    		 </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">self.opt.rowSelection</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>986</span> </span><span class="WHIT">	    			 </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">cell.children</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">checked</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>987</span> </span><span class="WHIT">	    				 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' tr'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="STRN">'selected'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>988</span> </span><span class="WHIT">	    				 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' tr td input'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">'checked'</span><span class="PUNC">,</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>989</span> </span><span class="WHIT">	    			 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>990</span> </span><span class="WHIT">	    				 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' tr'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">removeClass</span><span class="PUNC">(</span><span class="STRN">'selected'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>991</span> </span><span class="WHIT">	    				 </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">self._tableSelector</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' tr td input'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">'checked'</span><span class="PUNC">,</span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>992</span> </span><span class="WHIT">	    			 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>993</span> </span><span class="WHIT">	    		 </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>994</span> </span><span class="WHIT">	    			 </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.Table.EVT_ON_HEADER_CLICKED</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>995</span> 	    				 </span><span class="STRN">"colName"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">cell.innerHTML</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>996</span> </span><span class="WHIT">	    				 </span><span class="STRN">"colIndex"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">column</span><span class="WHIT"> 
+<span class='line'>997</span> 	    			 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>998</span> </span><span class="WHIT">	    		 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>999</span> </span><span class="WHIT">	
+<span class='line'>1000</span> 	    		 </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">eventData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>1001</span> </span><span class="WHIT">	    	 </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>1002</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>1003</span> 
+<span class='line'>1004</span> </span><span class="WHIT">     
+<span class='line'>1005</span>      
+<span class='line'>1006</span> 	</span><span class="COMM">//TODO: Render functions to format used data types: date, number, ...</span><span class="WHIT">
+<span class='line'>1007</span> 
+<span class='line'>1008</span> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1009</span> </span><span class="COMM">/** @static */</span><span class="WHIT">
+<span class='line'>1010</span> </span><span class="COMM">/** @lends Biojs.Table */</span><span class="WHIT">
+<span class='line'>1011</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>1012</span> </span><span class="WHIT">	</span><span class="COMM">// Indexes to access the event name in this.eventTypes array</span><span class="WHIT">
+<span class='line'>1013</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_CELL_CLICKED</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="STRN">"onCellClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1014</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_CELL_MOUSEOVER</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onCellMouseover"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1015</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_CELL_MOUSEENTER</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onCellMouseenter"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1016</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_CELL_MOUSEOUT</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onCellMouseout"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1017</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_ROW_SELECTED</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="STRN">"onRowSelected"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1018</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_HEADER_CLICKED</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onHeaderClicked"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1019</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_DATA_ARRIVED</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="STRN">"onDataArrived"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1020</span> </span><span class="WHIT">	</span><span class="NAME">EVT_ON_ROW_RENDERED</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onRowRendered"</span><span class="WHIT">
+<span class='line'>1021</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>1022</span> 
+<span class='line'>1023</span> 
+<span class='line'>1024</span> </span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

@@ -1,0 +1,1632 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="BioJS Library" name="author" value="John Gomez Carvajal <johncar@gmail.com>" />
+		
+        <title>BioJs: JavaScript components for biological data < EMBL-EBI</title>
+            
+        <meta content="width=device-width,initial-scale=1" name="viewport" />
+        
+        <!-- EBI's style sheets -->
+        <link href="style/normalize.css" rel="stylesheet" />
+        <link href="style/boilerplate-style.css" rel="stylesheet" />
+        <link href="style/ebi-custom.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/984-24-col-fixed.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/ebi-positioning.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/biojs.css" rel="stylesheet" type="text/css" />
+        <link href="style/biojs-colours_blue.css" rel="stylesheet" type="text/css" />
+        
+        <!-- jQuery Library -->
+		<script language="JavaScript" type="text/javascript" src="scripts/jquery-1.7.2.min.js"></script>
+            
+        <!-- core code -->
+		<script language="JavaScript" type="text/javascript" src="src/Biojs.js"></script>
+    
+        <!-- Using my own Biojs Toolip component in here ;P by John Gomez johncar@gmail.com -->
+        <script src="scripts/Biojs.Tooltip.js" language="JavaScript" type="text/javascript" ></script>
+        <link href="style/biojs.Tooltip.css" rel="stylesheet" type="text/css" />
+
+		<!-- dependencies -->
+		
+            
+                <link href="../biojs/css/biojs.Graph.css" rel="stylesheet" type="text/css"></link>
+            
+                <script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.8.1.js"></script>
+            
+                <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+            
+                <script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery.jsPlumb-1.3.14-all.js"></script>
+            
+	    
+        
+		<!-- component code -->
+		<script language="JavaScript" type="text/javascript" src="src/Biojs.Graph.js"></script>
+		
+		<script language="JavaScript" type="text/javascript">		
+        window.onload = function() {
+            
+                
+                       var instance = new Biojs.Graph({
+      target: "YourOwnDivId",
+   });
+   
+   var e1 = instance.addNode('element1');
+   var e2 = instance.addNode('element2');
+   var e3 = instance.addNode('<div id="element3"><p>Node 3 created from an HTML string</p></div>');
+
+   e1.append("Node 1, appended by using the returned object");
+   jQuery(e2).append("Node 3, using jQuery");
+   
+   instance.addLink(e1,'element2','Catalase');
+	  instance.addLink('element1','element2','Insulin');
+	  instance.addLink('element1','element2','Progester');
+	  instance.addLink('element1','element2','LL2');
+	  instance.addLink('element2','element3','Catalase');
+                
+            
+            
+            
+				
+                
+					
+						
+							
+							
+								
+								$("#addLink1")
+                                    .click( function() {  
+// Creates a link with label Catalase and id linkCatalase
+instance.addLink('element1','element2','Catalase','linkCatalase'); })
+                                    .data('code', '%20%0A//%20Creates%20a%20link%20with%20label%20Catalase%20and%20id%20linkCatalase%0Ainstance.addLink%28%27element1%27%2C%27element2%27%2C%27Catalase%27%2C%27linkCatalase%27%29%3B' );
+							
+								
+								$("#addLink2")
+                                    .click( function() { instance.addLink('element5','element6','Testing'); })
+                                    .data('code', 'instance.addLink%28%27element5%27%2C%27element6%27%2C%27Testing%27%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#addNode1")
+                                    .click( function() {  
+// Creates a node with 'element1' as id
+instance.addNode('element4'); })
+                                    .data('code', '%20%0A//%20Creates%20a%20node%20with%20%27element1%27%20as%20id%0Ainstance.addNode%28%27element4%27%29%3B' );
+							
+								
+								$("#addNode2")
+                                    .click( function() { 
+// Creates a node with 'element1' as id and then it is assigned to var 'node' 
+var node = instance.addNode('element5'); })
+                                    .data('code', '%0A//%20Creates%20a%20node%20with%20%27element1%27%20as%20id%20and%20then%20it%20is%20assigned%20to%20var%20%27node%27%20%0Avar%20node%20%3D%20instance.addNode%28%27element5%27%29%3B' );
+							
+								
+								$("#addNode3")
+                                    .click( function() { 
+// Creates a node since the HTML string provided
+instance.addNode('<div id="element6"></div>'); })
+                                    .data('code', '%0A//%20Creates%20a%20node%20since%20the%20HTML%20string%20provided%0Ainstance.addNode%28%27%3Cdiv%20id%3D%22element6%22%3E%3C/div%3E%27%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#animate1")
+                                    .click( function() { 
+instance.animate(true); })
+                                    .data('code', '%0Ainstance.animate%28true%29%3B' );
+							
+								
+								$("#animate2")
+                                    .click( function() { 
+instance.animate(false); })
+                                    .data('code', '%0Ainstance.animate%28false%29%3B' );
+							
+						
+					
+						
+					
+						
+							
+							
+								
+								$("#getAllNodes1")
+                                    .click( function() { 
+instance.getAllNodes(); })
+                                    .data('code', '%0Ainstance.getAllNodes%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#getNode1")
+                                    .click( function() { 
+instance.getNode("element1"); })
+                                    .data('code', '%0Ainstance.getNode%28%22element1%22%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeAllLinks1")
+                                    .click( function() { 
+instance.removeAllLinks(); })
+                                    .data('code', '%0Ainstance.removeAllLinks%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeAllNodes1")
+                                    .click( function() { 
+instance.removeAllNodes(); })
+                                    .data('code', '%0Ainstance.removeAllNodes%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeLink1")
+                                    .click( function() {  
+// Removes the link with linkCatalase as identifier.
+instance.removeLink('linkCatalase'); })
+                                    .data('code', '%20%0A//%20Removes%20the%20link%20with%20linkCatalase%20as%20identifier.%0Ainstance.removeLink%28%27linkCatalase%27%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeLinksFromNode1")
+                                    .click( function() { instance.removeLinksFromNode("element1"); })
+                                    .data('code', 'instance.removeLinksFromNode%28%22element1%22%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeNode1")
+                                    .click( function() { 
+instance.removeNode("element1"); })
+                                    .data('code', '%0Ainstance.removeNode%28%22element1%22%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setAttractionConstant1")
+                                    .click( function() { 
+instance.setAttractionConstant(0.00001); })
+                                    .data('code', '%0Ainstance.setAttractionConstant%280.00001%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setDamping1")
+                                    .click( function() { 
+instance.setDamping(4); })
+                                    .data('code', '%0Ainstance.setDamping%284%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setDistance1")
+                                    .click( function() { 
+instance.setDistance(200); })
+                                    .data('code', '%0Ainstance.setDistance%28200%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setRepellingFactor1")
+                                    .click( function() { 
+instance.setRepellingFactor(7); })
+                                    .data('code', '%0Ainstance.setRepellingFactor%287%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setVelocity1")
+                                    .click( function() { 
+instance.setVelocity(100); })
+                                    .data('code', '%0Ainstance.setVelocity%28100%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setViewPort1")
+                                    .click( function() { 
+instance.setViewPort({ xMin: 100, yMin: 100, xMax:400, yMax:500 }); })
+                                    .data('code', '%0Ainstance.setViewPort%28%7B%20xMin%3A%20100%2C%20yMin%3A%20100%2C%20xMax%3A400%2C%20yMax%3A500%20%7D%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#start1")
+                                    .click( function() { 
+instance.start(); })
+                                    .data('code', '%0Ainstance.start%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#stop1")
+                                    .click( function() { 
+instance.stop(); })
+                                    .data('code', '%0Ainstance.stop%28%29%3B' );
+							
+						
+					
+                
+            
+            
+            
+            
+				
+                
+                    
+                        
+                            
+                                $("#onClick").children().remove();								
+                                
+                                
+instance.onLabelClicked(
+   function( e ) {
+      $("#onClick").text("Label "+ e.label.getLabel() + " clicked");
+   }
+);
+                                $("#onClick").data('code', '%0Ainstance.onLabelClicked%28%0A%20%20%20function%28%20e%20%29%20%7B%0A%20%20%20%20%20%20%24%28%22%23onClick%22%29.text%28%22Label%20%22+%20e.label.getLabel%28%29%20+%20%22%20clicked%22%29%3B%0A%20%20%20%7D%0A%29%3B' );
+                            
+                        
+                    
+                		
+            
+            
+            function selectMenuOption (){
+            
+                jQuery('#tabmenu ul li a').removeClass('selected');
+                jQuery(this).addClass('selected');
+            
+                jQuery('#content').children().hide();
+                jQuery( '#' + jQuery(this).attr('id').replace('Link','') ).show();
+            
+            };
+            
+            
+            jQuery('#tabmenu ul li a').click(function(){
+                selectMenuOption.call(this);
+            });
+
+            //
+            // Biojs.Tooltip component with syntax highlighter for the method's examples
+            //
+            // 
+            
+            // The highlighter
+            var myBrush = new SyntaxHighlighter.brushes.JScript();
+            myBrush.init({ toolbar: false });
+            
+            // function to render the code snippet
+            function drawJSCode (element) {
+                return myBrush.getHtml( unescape(jQuery(element).data('code')) );
+            }
+
+            // Create the tooltip
+            var biojsTooltip = new Biojs.Tooltip({
+                targetSelector: ".methodExample, .event",
+                cbRender: drawJSCode,
+                arrowType: Biojs.Tooltip.ARROW_RIGHT_MIDDLE
+            });
+            
+            //
+            // View the source code in a new window
+            //
+            var sourceCodeWindow; 
+            
+            jQuery('#viewInWindowButton').click(function() {
+            
+                sourceCodeWindow = window.open('', '', "width=700,height=600,menubar=0,toolbar=0,status=0,scrollbars=1,resizable=1,location=0" );
+            
+                // We get it?
+                if ( sourceCodeWindow ) {
+                
+                    sourceCodeWindow.document.writeln( unescape(window.exampleCode) );
+                    sourceCodeWindow.document.close();
+ 
+                } else {
+                    alert("Please allow pop-up windows for this site in your browser");
+                }
+            
+            });
+
+
+        };	
+			
+		</script>
+        
+        <!-- Syntax highlighting -->
+        <link href="style/shCore.css" rel="stylesheet" />
+        <link href="style/shCoreEclipse.css" rel="stylesheet" />
+        <link href="style/shThemeEclipse.css" rel="stylesheet" />
+        
+        <script src="scripts/shCore.js" type="text/javascript"></script>
+		<script src="scripts/shBrushJScript.js" type="text/javascript"></script>
+        <script src="scripts/shBrushXml.js" type="text/javascript"></script>
+        
+		<script language="JavaScript" type="text/javascript">
+		  	SyntaxHighlighter.all();
+		</script>
+
+	</head>
+
+	<body class="level2" id="biojs" screen_capture_injected="true">
+    
+        <div id="skip-to">
+            <ul>
+                <li><a href="#content" title="">Skip to main content</a></li>
+                <li><a href="#local-nav" title="">Skip to local navigation</a></li>
+                <li><a href="#global-nav" title="">Skip to EBI global navigation menu</a></li>
+                <li><a href="#global-nav-expanded" title="">Skip to expanded EBI global navigation menu (includes all sub-sections)</a></li>
+            </ul>
+        </div>
+<!-- ============================== main content ============================ -->
+        
+        <div class="container_24" id="wrapper"> 
+            <!-- ============================== header ================================= -->
+            <header>
+                <div class="masthead grid_24" id="global-masthead">
+                    <p class="logo-img"><a class="active" href="/" id="logo" style="border:none;" title="Return to the European Bioinformatics Institute home page"><img alt="European Bioinformatics Institute" src="images/logoebi.png" typeof="foaf:Image" /></a></p>
+                    <nav>
+                        <ul id="global-nav">
+                            <li class="first active" id="services"><a href="/services" title="">Services</a></li>
+                            <li id="research"><a href="/research" title="">Research</a></li>
+                            <li id="training"><a href="/training" title="">Training</a></li>
+                            <li id="industry"><a href="/industry" title="">Industry</a></li>
+                            <li class="last" id="about"><a href="/about-us" title="">About us</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <div class="masthead grid_24" id="local-masthead">
+                    <div class="grid_12 alpha" id="local-title-logo">
+                        <h1>BioJs | Home</h1>
+                        <p><a href="." style="border-bottom-width: 0px;" title=""><img alt="Biojs" class="logo" src="images/logo.png" /></a></p>
+                    </div>
+                    
+                    <nav>
+                        <ul class="grid_24" id="local-nav">
+                            <li class="first"><a href="./index.html" title="">Home</a></li>
+                            <li><a href="./components.html" title="">Components</a></li>
+                            <li><a href="./download.html" title="">Download</a></li>
+                            <li class="last"><a href="./about.html" title="">About BioJs</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header><!-- header end -->
+            
+            <div id="tabmenu" class="grid_24 alpha">
+                <h2 class="strapline title">Biojs.Graph showcase</h2>
+                <ul>
+                    <li><a href="#" id="overviewLink" class="selected">Overview</a></li>
+                    <li><a href="#" id="sourceLink">Installation</a></li>
+                    <li><a href="#" id="optionsLink">Options</a></li>
+                    <li><a href="#" id="methodsLink">Methods</a></li>
+                    <li><a href="#" id="eventsLink">Events</a></li>
+                </ul>
+            </div>
+            <!-- ============================== main section ============================ -->
+	
+            <div class="clearfix" id="content" role="main">
+
+                <!-- ============================== overview ============================ -->
+
+                <div id="overview" class="grid_24">
+                    
+                    <!-- ============================== component section ============================ -->
+
+                    <div class="grid_18 alpha"> 
+
+                        <div class="box_3dview" id="example">
+                            <div id="YourOwnDivId"></div>
+                        </div>
+                        <br/>
+                        <div style="text-align:right;">
+                            <p class="warning">
+                                PLEASE NOTE: the above example is being affected by the CSS rules of this site. 
+                                Click on 'view in window' to see the component by using its own CSS stylesheet(s) only.
+                            </p>
+                            <a id="viewInWindowButton" class="main_button" href="#">View in window</a>
+                        </div>
+            
+                        <div> 
+                            <h3>Overview</h3>
+                            <div class="intro">
+                                <p>Shows a graph with customizable node content. It uses a force-based algorithm to spread the nodes on the screen, nicely.
+                                    
+                                </p>
+                            </div>
+                        </div>
+            
+                    </div> <!-- component section end  -->
+           
+                    <!-- ============================== side bar ============================ -->	
+
+                    <div class="grid_6 omega">
+                        <aside>
+                            
+                            
+                                <div class="main-right-box-no">                                     
+                                    <div class="right_title"><span class="version">Events</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                
+                                                    
+                                                        <li>onClick<pre class="event" id="onClick"/></li>
+                                                    
+                                                
+                                                                        
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                            
+                                <div class="main-right-box-no">
+                                    <div class="right_title"><span class="version">Methods</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="addLink1" class="methodExample">
+                                                            addLink</a>
+                                                        </li>
+                                                    
+                                                        
+                                                        <li><a href="#" id="addLink2" class="methodExample">
+                                                            addLink (2)</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="addNode1" class="methodExample">
+                                                            addNode</a>
+                                                        </li>
+                                                    
+                                                        
+                                                        <li><a href="#" id="addNode2" class="methodExample">
+                                                            addNode (2)</a>
+                                                        </li>
+                                                    
+                                                        
+                                                        <li><a href="#" id="addNode3" class="methodExample">
+                                                            addNode (3)</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="animate1" class="methodExample">
+                                                            animate</a>
+                                                        </li>
+                                                    
+                                                        
+                                                        <li><a href="#" id="animate2" class="methodExample">
+                                                            animate (2)</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="getAllNodes1" class="methodExample">
+                                                            getAllNodes</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="getNode1" class="methodExample">
+                                                            getNode</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeAllLinks1" class="methodExample">
+                                                            removeAllLinks</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeAllNodes1" class="methodExample">
+                                                            removeAllNodes</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeLink1" class="methodExample">
+                                                            removeLink</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeLinksFromNode1" class="methodExample">
+                                                            removeLinksFromNode</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeNode1" class="methodExample">
+                                                            removeNode</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setAttractionConstant1" class="methodExample">
+                                                            setAttractionConstant</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setDamping1" class="methodExample">
+                                                            setDamping</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setDistance1" class="methodExample">
+                                                            setDistance</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setRepellingFactor1" class="methodExample">
+                                                            setRepellingFactor</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setVelocity1" class="methodExample">
+                                                            setVelocity</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setViewPort1" class="methodExample">
+                                                            setViewPort</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="start1" class="methodExample">
+                                                            start</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="stop1" class="methodExample">
+                                                            stop</a>
+                                                        </li>
+                                                    
+                                                
+                                                                      
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                            
+                                <div class="main-right-box-no">
+                                    <div class="right_title"><span class="version">Dependencies</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                <li><a href="../biojs/css/biojs.Graph.css">Graph CSS</a></li>
+                                            
+                                                <li><a href='http://www.jquery.com'>jQuery 1.8.0+</a></li>
+                                            
+                                                <li><a href='http://www.jquery.com'>jQuery UI 1.8.23+</a></li>
+                                            
+                                                <li><a href='http://www.jquery.com'>jsPlumb 1.3.14</a></li>
+                                                                       
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                        </aside>
+                    </div> <!-- side bar end -->
+                    
+                </div> <!-- overview -->
+                
+                <!-- ============================= installation ======================== -->
+                    
+                <div id="source" class="grid_24" style="display:none;"> 
+                    <p>To get the above Biojs.Graph to work on your page, you need to do the following:</p>
+                    
+                    <ol>
+                        <li>Include the file <a href="src/Biojs.Graph.js">Biojs.Graph.js</a> and its dependencies to your page header.
+                            
+                            
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                              
+                            
+                            
+                            
+                                <h4>Biojs scripts</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;script language="JavaScript" type="text/javascript" src="src/Biojs.js"&gt;</script>
+<script language="JavaScript" type="text/javascript" src="src/Biojs.Graph.js"></script></pre>
+                                
+                            
+                            
+                            
+                                <h4>External script(s)</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.8.1.js"&gt;</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery.jsPlumb-1.3.14-all.js"></script>
+</pre>
+                                
+                            
+
+                            
+                                <h4>CSS stylesheet(s)</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;link href="../biojs/css/biojs.Graph.css" rel="stylesheet" type="text/css"&gt;</link>
+</pre>
+                                
+                            
+                            
+                            
+                        </li>    
+                        
+                        <li>Create a div tag which holds an unique identifier.
+                            <pre class="brush: html; toolbar: false">
+                                &lt;body&gt;
+                                ...
+                                &lt;div id="YourOwnDivId" /&gt;
+                                ...
+                                &lt;/body&gt;
+                            </pre>
+                        </li>
+                        
+                        <li>Create a code snippet within a &lt;script&gt; tag and instance Biojs.Graph into.
+                            
+                                
+                                    
+                                    <pre class="brush: js; toolbar: false" >window.onload = function() {
+   var instance = new Biojs.Graph({
+      target: "YourOwnDivId",
+   });
+   
+   var e1 = instance.addNode('element1');
+   var e2 = instance.addNode('element2');
+   var e3 = instance.addNode('<div id="element3"><p>Node 3 created from an HTML string</p></div>');
+
+   e1.append("Node 1, appended by using the returned object");
+   jQuery(e2).append("Node 3, using jQuery");
+   
+   instance.addLink(e1,'element2','Catalase');
+	  instance.addLink('element1','element2','Insulin');
+	  instance.addLink('element1','element2','Progester');
+	  instance.addLink('element1','element2','LL2');
+	  instance.addLink('element2','element3','Catalase');
+
+};</pre>
+                                    
+                                
+                             
+                        </li>
+                        <script language="JavaScript" type="text/javascript">
+                            window.exampleCode = escape('<html><head><title>Biojs.Graph</title>');
+                            window.exampleCode += '%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22src/Biojs.js%22%3E%3C/script%3E%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22src/Biojs.Graph.js%22%3E%3C/script%3E%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22../biojs/dependencies/jquery/jquery-1.8.1.js%22%3E%3C/script%3E%0A%3Cscript%20type%3D%22text/javascript%22%20src%3D%22http%3A//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js%22%3E%3C/script%3E%0A%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22../biojs/dependencies/jquery.jsPlumb-1.3.14-all.js%22%3E%3C/script%3E%0A%3Clink%20href%3D%22../biojs/css/biojs.Graph.css%22%20rel%3D%22stylesheet%22%20type%3D%22text/css%22%3E%3C/link%3E%0A%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%3Ewindow.onload%20%3D%20function%28%29%20%7B%0A%20%20%20var%20instance%20%3D%20new%20Biojs.Graph%28%7B%0A%20%20%20%20%20%20target%3A%20%22YourOwnDivId%22%2C%0A%20%20%20%7D%29%3B%0A%20%20%20%0A%20%20%20var%20e1%20%3D%20instance.addNode%28%27element1%27%29%3B%0A%20%20%20var%20e2%20%3D%20instance.addNode%28%27element2%27%29%3B%0A%20%20%20var%20e3%20%3D%20instance.addNode%28%27%3Cdiv%20id%3D%22element3%22%3E%3Cp%3ENode%203%20created%20from%20an%20HTML%20string%3C/p%3E%3C/div%3E%27%29%3B%0A%0A%20%20%20e1.append%28%22Node%201%2C%20appended%20by%20using%20the%20returned%20object%22%29%3B%0A%20%20%20jQuery%28e2%29.append%28%22Node%203%2C%20using%20jQuery%22%29%3B%0A%20%20%20%0A%20%20%20instance.addLink%28e1%2C%27element2%27%2C%27Catalase%27%29%3B%0A%09%20%20instance.addLink%28%27element1%27%2C%27element2%27%2C%27Insulin%27%29%3B%0A%09%20%20instance.addLink%28%27element1%27%2C%27element2%27%2C%27Progester%27%29%3B%0A%09%20%20instance.addLink%28%27element1%27%2C%27element2%27%2C%27LL2%27%29%3B%0A%09%20%20instance.addLink%28%27element2%27%2C%27element3%27%2C%27Catalase%27%29%3B%0A%0A%7D%3B%3C/script%3E';
+                            window.exampleCode += escape('</head><body><div id="YourOwnDivId"></div></body></html>');
+                        </script>
+                        
+                    </ol>
+                </div>
+                    
+                <!-- ============================== options ============================ -->
+                
+                <div id="options" class="grid_24" style="display:none;">
+                    
+                    
+                    <div class="required">
+                        <h3>Required Parameters</h3>
+                        <ul>
+                        
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">target | <span class="dataType">{string}</span> </a></h4>
+                                    <p class="method_desc">  Identifier of the DIV tag where the component should be displayed.</p>
+                                </li>
+                                
+                            
+                        
+                        </ul>
+                    </div>
+                    
+                    <div class="optional">
+                        <h3>Optional Parameters</h3>
+                        <ul>
+                        
+                            
+                                
+                            
+                        
+                        </ul>
+                    </div>
+
+                </div> <!-- options end -->
+                
+                <!-- ============================== methods ============================ -->
+                        
+                <div id="methods" class="grid_24" style="display:none;">
+                    
+                    
+                        
+                        
+                            
+                                
+                                    <h3 class="method_name">addLink</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Creates a new link into graph. Source and target nodes must exist.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|object}</span> <b>source</b>
+                                                    
+                                                    <br/>Starting point of the new link. If a string is provided, an identifier is expected; HTMLNode in other case.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|object}</span> <b>target</b>
+                                                    
+                                                    <br/>Target of the new link. If a string is provided, an identifier is expected; HTMLNode in other case.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>label</b>
+                                                    
+                                                    <br/>Label to be shown on mouseover event
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>id</b>
+                                                    <i>Optional</i>
+                                                    <br/>Optional identifier for the new link
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example 1:</h4>
+                                            <pre class="brush: js"> 
+// Creates a link with label Catalase and id linkCatalase
+instance.addLink('element1','element2','Catalase','linkCatalase');</pre>
+                                        
+                                            
+                                            <h4>Example 2:</h4>
+                                            <pre class="brush: js">instance.addLink('element5','element6','Testing');</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{object}</span> Reference to the link created.</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">addNode</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Creates a new node into graph.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|object}</span> <b>data</b>
+                                                    
+                                                    <br/>Data could be either an identifier or an HTML element. 
+	If it's an identifier, a DIV element with that identifier will be created as node. 
+	In case of HTML element, can be either a string containing the HTML code or an instance of HTMLElement.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example 1:</h4>
+                                            <pre class="brush: js"> 
+// Creates a node with 'element1' as id
+instance.addNode('element4');</pre>
+                                        
+                                            
+                                            <h4>Example 2:</h4>
+                                            <pre class="brush: js">
+// Creates a node with 'element1' as id and then it is assigned to var 'node' 
+var node = instance.addNode('element5');</pre>
+                                        
+                                            
+                                            <h4>Example 3:</h4>
+                                            <pre class="brush: js">
+// Creates a node since the HTML string provided
+instance.addNode('<div id="element6"></div>');</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{object}</span> The node instance created/added to the graph.</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">animate</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Disables/enables node positioning animation.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <b>value</b>
+                                                    
+                                                    <br/>
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example 1:</h4>
+                                            <pre class="brush: js">
+instance.animate(true);</pre>
+                                        
+                                            
+                                            <h4>Example 2:</h4>
+                                            <pre class="brush: js">
+instance.animate(false);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">getAllNodes</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Returns all nodes in the graph
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.getAllNodes();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">getNode</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Returns the node which holds a specified id
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>node</b>
+                                                    
+                                                    <br/>Identifier of the node.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.getNode("element1");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeAllLinks</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes all the links in the graph
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.removeAllLinks();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeAllNodes</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes all the nodes in the graph
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.removeAllNodes();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeLink</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes a link from the graph.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|object}</span> <b>link</b>
+                                                    
+                                                    <br/>Can be either an identifier as string or the link object itself returned by the method addLink.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js"> 
+// Removes the link with linkCatalase as identifier.
+instance.removeLink('linkCatalase');</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{boolean}</span> True on successful deletion, false in other case.</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeLinksFromNode</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes all the links from a node.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|object}</span> <b>node</b>
+                                                    
+                                                    <br/>Can be either and identifier as string or the node object itself, which is returned by the addNode method.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">instance.removeLinksFromNode("element1");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeNode</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes a node from the graph.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string|object}</span> <b>node</b>
+                                                    
+                                                    <br/>Can be either and identifier as string or the node object itself, which is returned by the addNode method.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.removeNode("element1");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setAttractionConstant</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the attraction constant to calculate the attraction force by Hooke's Law for strings.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{float}</span> <b>value</b>
+                                                    
+                                                    <br/>Constant value to calculate the attraction force between nodes.
+ By default, it's setted to 1/(normaldistance^3).
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.setAttractionConstant(0.00001);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setDamping</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the simulated damping value.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>value</b>
+                                                    
+                                                    <br/>Values from 0 to 100 to set the damping factor.
+ Where, 0 means no damping and 100 means maximum damping, i.e. nodes cannot move.
+ A value of 4 is acceptable.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.setDamping(4);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setDistance</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Set the distance in pixels between nodes.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>value</b>
+                                                    
+                                                    <br/>Minimum separation distance, in pixels, allowed between each two nodes. 
+ Use this setting to either disperse or compact the whole graph.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.setDistance(200);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setRepellingFactor</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the repelling factor to calculate the repelling force.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>value</b>
+                                                    
+                                                    <br/>Repelling factor as a positive number.
+ By default, value is 5
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.setRepellingFactor(7);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setVelocity</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the velocity of the animation in frames per second.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>fps</b>
+                                                    
+                                                    <br/>Velocity of the animation in frames per second.
+ This value is used to invoke the force-based algorithm fps times each second. 
+ Take in account that more velocity means more usage of CPU.
+ A value of 100 is a normal velocity.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.setVelocity(100);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setViewPort</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Sets the boundary of the graph. 
+All the nodes will fall and move within this area
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{object}</span> <b>window</b>
+                                                    
+                                                    <br/>Boundary as object having the members: xMin, yMin, xMax, yMax.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.setViewPort({ xMin: 100, yMin: 100, xMax:400, yMax:500 });</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">start</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Starts the nodes positioning animation by using a force-based algorithm. 
+Stops automatically when the system reaches the equilibrium, i.e. all nodes are stopped.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.start();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">stop</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Stops the nodes positioning animation.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+instance.stop();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                        
+                    
+                    
+                </div> <!-- methods section end -->
+                        
+                <!-- ============================== events ============================ -->
+                
+                
+                    
+                    <div id="events" class="grid_24" style="display:none;">
+                        
+                            
+                                
+                                <h3 class="method_name">onClick</h3><!-------------- Begin of event -->
+
+                                <p></p>
+                                    
+                                
+                                    <h4>Parameters:</h4>
+                                    <ul>
+                                        
+                                            <li>
+                                                <span class="dataType">{function}</span> <b>actionPerformed</b>
+                                                
+                                                <br/>A function which receives an <a href="../symbols/Biojs.Event.html">Biojs.Event</a> object as argument.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    <h4>Returned data in the Biojs.Event object:</h4>
+                                    <ul>
+                                        	
+                                            <li>
+                                                <span class="dataType">{Object}</span>  
+                                                <b></b>
+                                                
+                                                <br/>source The component which did triggered the event.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    
+                                    
+                                        
+                                        <br/>
+                                        <h4>Example :</h4>
+                                        <pre class="brush: js">
+instance.onLabelClicked(
+   function( e ) {
+      alert("Label "+ e.label.getLabel() + " clicked");
+   }
+);</pre>
+                                    
+                                <!------------------- End of event -->
+                            
+                        
+                    </div> <!-- events section end -->
+                
+                
+            </div> <!-- main section end -->
+
+            <!-- ============================== footer section ============================ -->
+        
+            <footer><!-- ============================== footer ======================================= -->
+
+            <div class="grid_24" id="global-footer">
+                <div class="grid_4 alpha">
+                    <h3>EMBL-EBI</h3>
+                    <ul>
+                        <li class="first"><a href="/your-privacy" title="">Your privacy</a></li>
+                        <li><a href="/cookies">Cookies</a></li>
+                        <li><a href="/ethics">Ethics</a></li>
+                        <li><a href="/terms-use-0">Terms of use</a></li>
+                    </ul>
+                </div>
+                
+                <section id="global-nav-expanded">
+                    <div class="grid_4">
+                        <h3>Services</h3>
+                        <ul>
+                            <li class="first"><a href="/services" title="">Overview</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="grid_4">
+                        <h3>Research</h3>
+                        <ul>
+                            <li><a href="/research">Overview</a></li>
+                            <li><a href="/research/groups">Research groups</a></li>
+                            <li><a href="/research/publications">Publications</a></li> 
+                        </ul>
+                    </div>
+                    
+                    <div class="grid_4">
+                        <h3>Industry</h3>
+                        <ul>
+                            <li class="first"><a href="/industry">Overview</a></li>
+                            <li><a href="/industry/sme-forum"><abbr title="Small Medium Enterprise">SME</abbr> Forum</a></li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <div class="grid_4">
+                        <h3>Training</h3>
+                        <ul>
+                            <li class="first"><a href="/training">Overview</a></li>
+                            <li><a href="/training/events">Events</a></li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <div class="grid_4 omega">
+                        <h3>About us</h3>
+                        <ul>
+                            <li class="first"><a href="/about-us">Overview</a></li>
+                            <li><a href="/about-us/history">History</a></li>
+                            <li><a href="/about-us/funding">Funding</a></li>
+                            <li><a href="/about-us/staff-list">People</a></li>
+                            <li><a href="/about-us/ebi-news" title="">News</a></li>
+                            <li><a href="/about-us/jobs">Jobs</a></li>
+                            <li><a href="/about-us/events">Events</a></li>
+                            <li><a href="/about-us/publications">Publications</a></li>
+                            <li><a href="/about-us/visit-us">Visit us</a></li>
+                            <li class="last"><a href="/about-us/contact-us">Contact us</a></li>
+                        </ul>
+                    </div>
+                </section>
+                
+            </div>
+            
+            <div style="text-align: center; font-size: 0.75em;">
+                Registry generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Jul 26 2013 00:30:01 GMT-0500 (COT)
+            </div>
+            
+        </footer><!-- footer end -->
+        
+        </div> <!--  main content end -->
+            
+        <div id="toolTip" style="display:none">
+            <div class="body"></div>
+            <i class="rightArrow"></i>
+        </div>
+                
+    </body>
+</html>

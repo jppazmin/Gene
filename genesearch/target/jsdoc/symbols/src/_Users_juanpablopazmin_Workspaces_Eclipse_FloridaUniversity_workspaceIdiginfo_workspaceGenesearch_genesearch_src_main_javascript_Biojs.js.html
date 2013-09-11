@@ -1,0 +1,664 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * Main container of the BioJS library. It is the parent class for all the components.
+<span class='line'>  3</span>  * 
+<span class='line'>  4</span>  * @namespace
+<span class='line'>  5</span>  * 
+<span class='line'>  6</span>  */</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">Biojs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  8</span> </span><span class="WHIT">	</span><span class="COMM">// dummy</span><span class="WHIT">
+<span class='line'>  9</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 10</span> 
+<span class='line'> 11</span> </span><span class="COMM">/**
+<span class='line'> 12</span>  * @class
+<span class='line'> 13</span>  * @param {string} eventType The name of the event.
+<span class='line'> 14</span>  */</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="NAME">Biojs.EventHandler</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">eventType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 17</span>      * The name of the event.
+<span class='line'> 18</span>      * @type {string}
+<span class='line'> 19</span>      */</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">	</span><span class="NAME">this.eventType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">eventType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 22</span>      * Array of the registered listeners.
+<span class='line'> 23</span>      * @type {function[]}
+<span class='line'> 24</span>      */</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">	</span><span class="NAME">this.listeners</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 27</span>      * Register action listeners for the event.
+<span class='line'> 28</span>      * @param {function} actionPerformed The action listener to be registered.
+<span class='line'> 29</span>      */</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">	</span><span class="NAME">this.addListener</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">actionPerformed</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">actionPerformed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 32</span> </span><span class="WHIT">			</span><span class="NAME">this.listeners.push</span><span class="PUNC">(</span><span class="NAME">actionPerformed</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 36</span>      * Executes all listener actions registered in the listeners field.
+<span class='line'> 37</span>      * @param {Object} eventObject The event' object to be passed as argument to the listeners.
+<span class='line'> 38</span>      */</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="WHIT">	</span><span class="NAME">this.triggerEvent</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">eventObject</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this.listeners</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="WHIT">			</span><span class="NAME">this.listeners</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">(</span><span class="NAME">eventObject</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 42</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 45</span> 
+<span class='line'> 46</span> </span><span class="COMM">/**
+<span class='line'> 47</span>  * @class
+<span class='line'> 48</span>  * @param {string} type The name of the event.
+<span class='line'> 49</span>  * @param {Object} data An object containing the data for copying it in this event.
+<span class='line'> 50</span>  * @param {Biojs} source The component source of the event. 
+<span class='line'> 51</span>  */</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="NAME">Biojs.Event</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">source</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="WHIT">	
+<span class='line'> 54</span> 	</span><span class="COMM">/**
+<span class='line'> 55</span>      * The component which did triggered the event.
+<span class='line'> 56</span>      * @type {Biojs}
+<span class='line'> 57</span>      */</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">	</span><span class="NAME">this.source</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 60</span>      * The name of the event.
+<span class='line'> 61</span>      * @type {string}
+<span class='line'> 62</span>      */</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">	</span><span class="NAME">this.type</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">	
+<span class='line'> 65</span> 	</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">data</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">		</span><span class="KEYW">this</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 69</span> 
+<span class='line'> 70</span> </span><span class="COMM">/**
+<span class='line'> 71</span>  * @class
+<span class='line'> 72</span>  * 
+<span class='line'> 73</span>  */</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="NAME">Biojs.Utils</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 76</span> 	 * Clone all members from an object.
+<span class='line'> 77</span> 	 * @param {object} object The object to be cloned.
+<span class='line'> 78</span> 	 * @returns {object} A Clone of the object passed as argument.
+<span class='line'> 79</span> 	 * 
+<span class='line'> 80</span> 	 */</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">	</span><span class="NAME">clone</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">	  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">newObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">obj</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">	  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">	    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">	    	</span><span class="NAME">newObj</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.Utils.clone</span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">	    	</span><span class="NAME">newObj</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">	  </span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'> 90</span> 	  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">newObj</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">	
+<span class='line'> 93</span> 	</span><span class="COMM">/**
+<span class='line'> 94</span> 	 * Determine if an onject or array is empty.
+<span class='line'> 95</span> 	 * @param {object|array} o Either object or array to figure out if empty or not.
+<span class='line'> 96</span> 	 * @returns {bool} true if empty, false if don't 
+<span class='line'> 97</span> 	 */</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">	</span><span class="NAME">isEmpty</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">o</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">o</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="STRN">"string"</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">o</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">o.length</span><span class="PUNC">&lt;=</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">o</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">		        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">o.hasOwnProperty</span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">		            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">		        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">		    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">		    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">	
+<span class='line'>111</span> 	</span><span class="COMM">/**
+<span class='line'>112</span>      * Cross-browser console for debugging. 
+<span class='line'>113</span>      * The console is disabled by default. That means, all messages written by means Biojs.console.log("My Message") will be ignored. 
+<span class='line'>114</span>      * Use Biojs.console.enable() to enable it.
+<span class='line'>115</span>      * 
+<span class='line'>116</span>      * @example
+<span class='line'>117</span>      * // Enabling loggin messages 
+<span class='line'>118</span>      * Biojs.console.enable();
+<span class='line'>119</span>      * ... 
+<span class='line'>120</span>      * // Writing a log
+<span class='line'>121</span>      * Biojs.console.log("My Message");
+<span class='line'>122</span>      * 
+<span class='line'>123</span>      * @type {Object}
+<span class='line'>124</span>      */</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">	</span><span class="NAME">console</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">		</span><span class="NAME">enable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">			</span><span class="COMM">// Define a cross-browser window.console.log method.</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">			</span><span class="COMM">// For IE and FF without Firebug, fallback to using an alert.</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.console</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">				</span><span class="COMM">/**
+<span class='line'>131</span> 				 * @ignore
+<span class='line'>132</span> 				 */</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">				</span><span class="COMM">// In this case, there are a console, perfect!</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">				</span><span class="NAME">this.log</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">console.log</span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>136</span> </span><span class="WHIT">				</span><span class="COMM">// We have not window.console, but it is Opera browser?</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.opera</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">					</span><span class="COMM">/**
+<span class='line'>139</span> 					 * @ignore
+<span class='line'>140</span> 					 */</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">					</span><span class="COMM">// Right! then lets use window.opera.postError</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">					</span><span class="NAME">this.log</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">window.opera.postError</span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">					</span><span class="COMM">// None console found! </span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">					</span><span class="COMM">// Try to write the logs somewhere</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">					</span><span class="COMM">// That's it! in a new window, identified by 'Biojs.console'</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">					</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">consoleWin</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.open</span><span class="PUNC">(</span><span class="STRN">''</span><span class="PUNC">,</span><span class="STRN">'myconsole'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">					  </span><span class="STRN">'width=350,height=250'</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">					   </span><span class="PUNC">+</span><span class="STRN">',menubar=0'</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">					   </span><span class="PUNC">+</span><span class="STRN">',toolbar=0'</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">					   </span><span class="PUNC">+</span><span class="STRN">',status=0'</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">					   </span><span class="PUNC">+</span><span class="STRN">',scrollbars=1'</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">					   </span><span class="PUNC">+</span><span class="STRN">',resizable=1'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>154</span> 					 
+<span class='line'>155</span> 					</span><span class="COMM">// We got it?</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">					</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">consoleWin</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">						</span><span class="COMM">// Good, build a blank document into with a DIV 'Biojs.console'</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">						</span><span class="NAME">consoleWin.document.writeln</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">						  </span><span class="STRN">'&lt;html>&lt;head>&lt;title>BioJS Console&lt;/title>&lt;/head>'</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">						   </span><span class="PUNC">+</span><span class="STRN">'&lt;body bgcolor=white onLoad="self.focus()">'</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">						   </span><span class="PUNC">+</span><span class="STRN">'&lt;div id="Biojs.console">&lt;/div>'</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">						   </span><span class="PUNC">+</span><span class="STRN">'&lt;/body>&lt;/html>'</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">						</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">						</span><span class="NAME">consoleWin.document.close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">						
+<span class='line'>166</span> 						</span><span class="NAME">Biojs.console.domDocument</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">consoleWin.document</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">						</span><span class="NAME">Biojs.console.domDivNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">consoleWin.document.getElementById</span><span class="PUNC">(</span><span class="STRN">"Biojs.console"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">						
+<span class='line'>169</span> 						</span><span class="COMM">/**
+<span class='line'>170</span> 						 * @ignore
+<span class='line'>171</span> 						 */</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">						</span><span class="COMM">// Finally, the log function will write into the DIV</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">						</span><span class="NAME">this.log</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">							</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">							
+<span class='line'>176</span> 							</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">								</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">msg.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">									</span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'['</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">']='</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">msg</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' '</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">								</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">								
+<span class='line'>181</span> 							</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">String</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">msg</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">								</span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">msg</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">								
+<span class='line'>184</span> 							</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">								</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">									</span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'['</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">']='</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">msg</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' '</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">							    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">							</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">							
+<span class='line'>190</span> 							</span><span class="NAME">textNode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.console.domDocument.createTextNode</span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">							</span><span class="NAME">line</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.console.domDocument.createElement</span><span class="PUNC">(</span><span class="STRN">'pre'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">							</span><span class="NAME">line.appendChild</span><span class="PUNC">(</span><span class="NAME">textNode</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">							</span><span class="NAME">Biojs.console.domDivNode.appendChild</span><span class="PUNC">(</span><span class="NAME">line</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">						</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">						
+<span class='line'>196</span> 					</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">						</span><span class="COMM">// Game over! do not write logs, but let's tell to user by means an alert (sorry!)</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">						</span><span class="NAME">alert</span><span class="PUNC">(</span><span class="STRN">"Please activate the pop-up window in this page "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">								</span><span class="STRN">"in order to enable the BioJS console"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="WHIT">	
+<span class='line'>201</span> 				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">		
+<span class='line'>205</span> 		</span><span class="NAME">log</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">/* Do nothing by default */</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">		
+<span class='line'>206</span> 	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> 
+<span class='line'>209</span> </span><span class="COMM">/**
+<span class='line'>210</span>  * Extend this class &lt;tt>Biojs&lt;/tt> in order to create a new component.
+<span class='line'>211</span>  * @param {object} instance The subclass.
+<span class='line'>212</span>  * @param {object} interface (optional) A second parameter passed to the extend method of a class defines the class interface.
+<span class='line'>213</span>  * @returns {object} SubClass The class with its own members and the inherited ones from Biojs.
+<span class='line'>214</span>  * 
+<span class='line'>215</span>  * @example 
+<span class='line'>216</span>  * Biojs.MyComponent = Biojs.extend(
+<span class='line'>217</span>  * { // instance 
+<span class='line'>218</span>  *    constructor: function(options) {
+<span class='line'>219</span>  *       // constructor code here  
+<span class='line'>220</span>  *    },
+<span class='line'>221</span>  *  
+<span class='line'>222</span>  *    opt: { target: "divId" },
+<span class='line'>223</span>  *    
+<span class='line'>224</span>  *    eventTypes: [ "myEvent1", "myEvent2" ],
+<span class='line'>225</span>  *      
+<span class='line'>226</span>  *    getVersion: function() {
+<span class='line'>227</span>  *        return Biojs.MyComponent.VERSION;
+<span class='line'>228</span>  *    }
+<span class='line'>229</span>  *  }, 
+<span class='line'>230</span>  *  { // class interface
+<span class='line'>231</span>  *     VERSION: "3.14.15"
+<span class='line'>232</span>  *  });
+<span class='line'>233</span>  * 
+<span class='line'>234</span>  *  alert(Biojs.MyComponent.VERSION);
+<span class='line'>235</span>  * 
+<span class='line'>236</span>  */</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="NAME">Biojs.extend</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">_child</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">_static</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// subclass</span><span class="WHIT">
+<span class='line'>238</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">extend</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.extend</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">	
+<span class='line'>240</span> 	</span><span class="COMM">// build the prototype</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">	</span><span class="NAME">Biojs._prototyping</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">	
+<span class='line'>243</span> 	</span><span class="COMM">/**
+<span class='line'>244</span> 	 * @name proto
+<span class='line'>245</span> 	 * @constructs
+<span class='line'>246</span> 	 */</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proto</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>248</span> 
+<span class='line'>249</span> </span><span class="WHIT">	</span><span class="COMM">// Inherit parent' events to the child</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">proto.eventTypes</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">proto.eventTypes</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>252</span> </span><span class="WHIT">			</span><span class="NAME">_child.eventTypes.push</span><span class="PUNC">(</span><span class="NAME">proto.eventTypes</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">	
+<span class='line'>256</span> 	</span><span class="COMM">// Inherit parent' options to the child</span><span class="WHIT">
+<span class='line'>257</span> </span><span class="WHIT">	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">proto.opt</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Object</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">proto.opt</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>259</span> </span><span class="WHIT">			</span><span class="NAME">_child.opt</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">proto.opt</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>260</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>261</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">	
+<span class='line'>263</span> 	</span><span class="NAME">extend.call</span><span class="PUNC">(</span><span class="NAME">proto</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">_child</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">	
+<span class='line'>265</span> 	</span><span class="COMM">/**
+<span class='line'>266</span> 	 * @ignore
+<span class='line'>267</span> 	 */</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">	</span><span class="NAME">proto.base</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">		</span><span class="COMM">// call this method from any other method to invoke that method's ancestor</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>271</span> 
+<span class='line'>272</span> </span><span class="WHIT">	</span><span class="KEYW">delete</span><span class="WHIT"> </span><span class="NAME">Biojs._prototyping</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">	
+<span class='line'>274</span> 	</span><span class="COMM">// create the wrapper for the constructor function</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">proto.constructor</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">klass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">proto.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">		
+<span class='line'>278</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">Biojs._prototyping</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>279</span> 
+<span class='line'>280</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.constructor</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">klass</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// instantiation</span><span class="WHIT">
+<span class='line'>281</span> 
+<span class='line'>282</span> </span><span class="WHIT">				</span><span class="COMM">// Create a instance of this class</span><span class="WHIT">
+<span class='line'>283</span> </span><span class="WHIT">				</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">BiojsComponent</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> </span><span class="WHIT">				</span><span class="NAME">BiojsComponent.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">proto</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>285</span> </span><span class="WHIT">				</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">instance</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">BiojsComponent</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>286</span> 
+<span class='line'>287</span> </span><span class="WHIT">				</span><span class="COMM">// Change the default option's values </span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">				</span><span class="COMM">// in the instance by the provided ones</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">				</span><span class="NAME">instance.setOptions</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">				
+<span class='line'>291</span> 				</span><span class="COMM">// Set the event handlers</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">				</span><span class="NAME">instance.setEventHandlers</span><span class="PUNC">(</span><span class="NAME">instance.eventTypes</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">				
+<span class='line'>294</span> 				</span><span class="COMM">// Set the unique id for the instance</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">				</span><span class="NAME">instance.biojsObjectId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.uniqueId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">				
+<span class='line'>297</span> 				</span><span class="COMM">// register instance</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">				</span><span class="NAME">Biojs.addInstance</span><span class="PUNC">(</span><span class="NAME">instance</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">				
+<span class='line'>300</span> 				</span><span class="COMM">// execute the instance's constructor</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">				</span><span class="NAME">constructor.apply</span><span class="PUNC">(</span><span class="NAME">instance</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="WHIT">				
+<span class='line'>303</span> 				</span><span class="COMM">// return the instance</span><span class="WHIT">
+<span class='line'>304</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">instance</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>305</span> </span><span class="WHIT">				
+<span class='line'>306</span> 			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// Calling to ancestor's constructor</span><span class="WHIT">
+<span class='line'>307</span> </span><span class="WHIT">				</span><span class="NAME">constructor.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>311</span> 
+<span class='line'>312</span> </span><span class="WHIT">	</span><span class="COMM">// build the class interface</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">	</span><span class="NAME">klass.ancestor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">	</span><span class="NAME">klass.extend</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.extend</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>315</span> </span><span class="WHIT">	</span><span class="NAME">klass.forEach</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.forEach</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>316</span> </span><span class="WHIT">	</span><span class="NAME">klass.implement</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.implement</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> </span><span class="WHIT">	</span><span class="NAME">klass.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">proto</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>318</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>319</span> 	 * @ignore
+<span class='line'>320</span> 	 */</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">	</span><span class="NAME">klass.valueOf</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">type</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">type</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">klass</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">constructor.valueOf</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>324</span> </span><span class="WHIT">	</span><span class="NAME">klass.toString</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.toString</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>325</span> </span><span class="WHIT">	</span><span class="NAME">extend.call</span><span class="PUNC">(</span><span class="NAME">klass</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">_static</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>326</span> </span><span class="WHIT">	
+<span class='line'>327</span> 	</span><span class="COMM">// class initialization</span><span class="WHIT">
+<span class='line'>328</span> </span><span class="WHIT">	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">klass.init</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>329</span> </span><span class="WHIT">		</span><span class="NAME">klass.init</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">	
+<span class='line'>332</span> 	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">klass</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>334</span> 
+<span class='line'>335</span> </span><span class="NAME">Biojs.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> 
+<span class='line'>336</span> </span><span class="COMM">/** @lends Biojs# */</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">	</span><span class="NAME">extend</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">source</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">	
+<span class='line'>339</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">arguments.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// extending with a name/value pair</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ancestor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">[</span><span class="NAME">source</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">ancestor</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="COMM">// overriding a method?</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">				</span><span class="COMM">// the valueOf() comparison is to avoid circular references</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">				</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">ancestor.valueOf</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">ancestor.valueOf</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">value.valueOf</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
+<span class='line'>344</span> </span><span class="WHIT">				</span><span class="REGX">/\bbase\b/</span><span class="PUNC">.</span><span class="NAME">test</span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">				</span><span class="COMM">// get the underlying method</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">				</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">method</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value.valueOf</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>347</span> </span><span class="WHIT">				</span><span class="COMM">// override</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="WHIT">				</span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">					</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">previous</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.base</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.base</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">					</span><span class="NAME">this.base</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ancestor</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">					</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">returnValue</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">method.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">					</span><span class="NAME">this.base</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">previous</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">returnValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>354</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>355</span> </span><span class="WHIT">				</span><span class="COMM">// point to the underlying method</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">				</span><span class="NAME">value.valueOf</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">type</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>357</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">type</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">method</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>358</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">				</span><span class="NAME">value.toString</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.toString</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">			</span><span class="KEYW">this</span><span class="PUNC">[</span><span class="NAME">source</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">source</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// extending with an object literal</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">extend</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.extend</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">			</span><span class="COMM">// if this object has a customised extend method then use it</span><span class="WHIT">
+<span class='line'>365</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">Biojs._prototyping</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>366</span> </span><span class="WHIT">				</span><span class="NAME">extend</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.extend</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">extend</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>367</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>368</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proto</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">toSource</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>369</span> </span><span class="WHIT">			</span><span class="COMM">// do the "toString" and other methods manually</span><span class="WHIT">
+<span class='line'>370</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">hidden</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="STRN">"constructor"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"toString"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"valueOf"</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>371</span> </span><span class="WHIT">			</span><span class="COMM">// if we are prototyping then include the constructor</span><span class="WHIT">
+<span class='line'>372</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs._prototyping</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>373</span> </span><span class="WHIT">			</span><span class="KEYW">while</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">key</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">hidden</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>374</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">source</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">proto</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">					</span><span class="NAME">extend.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>376</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>377</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>378</span> </span><span class="WHIT">			</span><span class="COMM">// copy each of the source object's properties to this object</span><span class="WHIT">
+<span class='line'>379</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>380</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">proto</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">extend.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>381</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">	
+<span class='line'>382</span> 		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>383</span> </span><span class="WHIT">		
+<span class='line'>384</span> 		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>385</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>386</span> </span><span class="WHIT">	
+<span class='line'>387</span> 	</span><span class="COMM">/**
+<span class='line'>388</span> 	 * Register a function under an event type in order to execute it whenever the event is triggered.
+<span class='line'>389</span> 	 * @param {string} eventType The event to be listened.
+<span class='line'>390</span> 	 * @param {function} actionPerformed The action to be executed whenever the event occurs. it 
+<span class='line'>391</span> 	 * 
+<span class='line'>392</span> 	 * 
+<span class='line'>393</span> 	 * @example 
+<span class='line'>394</span> 	 * 
+<span class='line'>395</span> 	 * var listener = function(eventObj){
+<span class='line'>396</span> 	 *    alert("Selected: "+eventObj.start+", end: "+ eventObj.end);
+<span class='line'>397</span> 	 * }
+<span class='line'>398</span> 	 * 
+<span class='line'>399</span> 	 * var mySequence = new Biojs.Sequence( {
+<span class='line'>400</span> 	 *    sequence : "mlpglallllaawtaralevptdgnagllaepqiamfcgrlnmhmnvqngsgtktcidtkegilqy",
+<span class='line'>401</span> 	 *    target : "#div0001",
+<span class='line'>402</span> 	 *    format : 'CODATA',
+<span class='line'>403</span> 	 *    id : 'P918283'	
+<span class='line'>404</span> 	 * });
+<span class='line'>405</span> 	 * 
+<span class='line'>406</span> 	 * mySequence.addListener('onSelectionChanged', listener);
+<span class='line'>407</span> 	 * 
+<span class='line'>408</span> 	 * // HTML div tag with the id='div0001' must exist in the HTML document 
+<span class='line'>409</span> 	 * 
+<span class='line'>410</span> 	 */</span><span class="WHIT">
+<span class='line'>411</span> </span><span class="WHIT">	</span><span class="NAME">addListener</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">eventType</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actionPerformed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>412</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._eventHandlers</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>413</span> </span><span class="WHIT">			</span><span class="COMM">// register the listener in this._eventHandlers for the eventType  </span><span class="WHIT">
+<span class='line'>414</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._eventHandlers</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>415</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">eventType</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">this._eventHandlers</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">eventType</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>416</span> </span><span class="WHIT">					</span><span class="NAME">this._eventHandlers</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">addListener</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">actionPerformed</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>417</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>418</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>419</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>420</span> 		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>421</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>422</span> </span><span class="WHIT">	
+<span class='line'>423</span> 	</span><span class="COMM">/**
+<span class='line'>424</span> 	 * Sets an event handler and an alias method for each string in the array eventTypes.
+<span class='line'>425</span> 	 * This method is executed automatically before constructing an instance, using the eventTypes array 
+<span class='line'>426</span> 	 * that should be defined as member of subclass. Then, the resulting instance will have methods 
+<span class='line'>427</span> 	 * named in the form instance.&lg;eventName&gt;(actionPerformed) for all eventTypes.
+<span class='line'>428</span> 	 * 
+<span class='line'>429</span> 	 * @param {string[]} eventTypes Array of names of the events to be set.
+<span class='line'>430</span> 	 * 
+<span class='line'>431</span> 	 */</span><span class="WHIT">
+<span class='line'>432</span> </span><span class="WHIT">	</span><span class="NAME">setEventHandlers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">eventTypes</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>433</span> </span><span class="WHIT">		</span><span class="COMM">// Supposed that this._eventHandlers does not exist.</span><span class="WHIT">
+<span class='line'>434</span> </span><span class="WHIT">		</span><span class="NAME">this._eventHandlers</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> </span><span class="WHIT">		</span><span class="COMM">// Because the event handlers are not initialized yet</span><span class="WHIT">
+<span class='line'>436</span> </span><span class="WHIT">		
+<span class='line'>437</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alias</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">handler</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>438</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actionPerformed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">				</span><span class="NAME">handler.listeners.push</span><span class="PUNC">(</span><span class="NAME">actionPerformed</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>441</span> 		</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> </span><span class="WHIT">		
+<span class='line'>443</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">eventTypes</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>444</span> </span><span class="WHIT">			</span><span class="COMM">// Create an event handler for each eventType in eventTypes</span><span class="WHIT">
+<span class='line'>445</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">eventTypes.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>446</span> </span><span class="WHIT">				</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">handler</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Biojs.EventHandler</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">eventTypes</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>447</span> </span><span class="WHIT">				</span><span class="NAME">this._eventHandlers.push</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">handler</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>448</span> </span><span class="WHIT">				</span><span class="COMM">// Creates the alias this.&lt;eventType> (&lt;actionPerformed>)</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">				</span><span class="COMM">// as alternative to be used instead of this.addistener(&lt;eventType>, &lt;actionPerformed>)</span><span class="WHIT">
+<span class='line'>450</span> </span><span class="WHIT">				
+<span class='line'>451</span> 				</span><span class="KEYW">this</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">eventTypes</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">alias</span><span class="PUNC">(</span><span class="NAME">handler</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>452</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>453</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>454</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>455</span> 	
+<span class='line'>456</span> 	</span><span class="COMM">/**
+<span class='line'>457</span> 	 * Trigger the registered functions under an event type.
+<span class='line'>458</span> 	 * @param {string} eventType The event to be raised.
+<span class='line'>459</span> 	 * @param {Object} params The values to be included into Biojs.Event object. 
+<span class='line'>460</span> 	 * 
+<span class='line'>461</span> 	 * @example 
+<span class='line'>462</span> 	 * 
+<span class='line'>463</span> 	 * Biojs.MyComponent = Biojs.extend({
+<span class='line'>464</span> 	 *    // ...
+<span class='line'>465</span> 	 *    // code before the event 
+<span class='line'>466</span> 	 *    
+<span class='line'>467</span> 	 *    this.raiseEvent('onSelectionChanged', {start : start, end : end});
+<span class='line'>468</span> 	 *    
+<span class='line'>469</span> 	 *    // code after the event 
+<span class='line'>470</span> 	 *    // ... 
+<span class='line'>471</span> 	 * });
+<span class='line'>472</span> 	 * 
+<span class='line'>473</span> 	 */</span><span class="WHIT">
+<span class='line'>474</span> </span><span class="WHIT">	</span><span class="NAME">raiseEvent</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">eventType</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">eventObj</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>475</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._eventHandlers</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>476</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">eventType</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">this._eventHandlers</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">eventType</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>477</span> </span><span class="WHIT">				</span><span class="NAME">this._eventHandlers</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">triggerEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">eventObj</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>478</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>479</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>480</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>481</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>482</span> </span><span class="WHIT">	
+<span class='line'>483</span> 	
+<span class='line'>484</span> 	</span><span class="COMM">//</span><span class="WHIT">
+<span class='line'>485</span> </span><span class="WHIT">	</span><span class="COMM">// Save the option values to be applied to this component</span><span class="WHIT">
+<span class='line'>486</span> </span><span class="WHIT">	</span><span class="COMM">// 	options -> [Object] containing the values</span><span class="WHIT">
+<span class='line'>487</span> </span><span class="WHIT">	</span><span class="COMM">//	</span><span class="WHIT">
+<span class='line'>488</span> </span><span class="WHIT">	</span><span class="NAME">setOptions</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>489</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Object</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>490</span> </span><span class="WHIT">		</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>491</span> </span><span class="WHIT">			</span><span class="NAME">this.opt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.Utils.clone</span><span class="PUNC">(</span><span class="NAME">this.opt</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>492</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>493</span> </span><span class="WHIT">				</span><span class="NAME">this.opt</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>494</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>495</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>496</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>497</span> </span><span class="WHIT">	
+<span class='line'>498</span> 	</span><span class="COMM">// </span><span class="WHIT">
+<span class='line'>499</span> </span><span class="WHIT">	</span><span class="COMM">// </span><span class="WHIT">
+<span class='line'>500</span> </span><span class="WHIT">	</span><span class="COMM">// 	source -> [BioJs] the another component </span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">	</span><span class="COMM">// 	eventType -> [string] the event to be listened </span><span class="WHIT">
+<span class='line'>502</span> </span><span class="WHIT">	</span><span class="COMM">// 	callbackFunction -> [function] the action to be executed</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="WHIT">	</span><span class="COMM">//</span><span class="WHIT">
+<span class='line'>504</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>505</span> 	 * Connect this component with another by means listening its events.
+<span class='line'>506</span> 	 * @param {Biojs} source The another component.
+<span class='line'>507</span> 	 * @param {string} eventType The event to be listened.	 
+<span class='line'>508</span> 	 * @param {function} actionPerformed The action to be executed whenever the event occurs. it 
+<span class='line'>509</span> 	 * 
+<span class='line'>510</span> 	 * 
+<span class='line'>511</span> 	 * @example 
+<span class='line'>512</span> 	 * 
+<span class='line'>513</span> 	 * var mySequence = new Biojs.Sequence( {
+<span class='line'>514</span> 	 *    sequence : "mlpglallllaawtaralevptdgnagllaepqiamfcgrlnmhmnvqngsgtktcidtkegilqy",
+<span class='line'>515</span> 	 *    target : "#div0001",
+<span class='line'>516</span> 	 *    format : 'CODATA',
+<span class='line'>517</span> 	 *    id : 'P918283'	
+<span class='line'>518</span> 	 * });
+<span class='line'>519</span> 	 * 
+<span class='line'>520</span> 	 * var anotherSequence = new Biojs.Sequence({
+<span class='line'>521</span> 	 *    sequence : "laawtaralevptmlpglallldgnagllaepqi",
+<span class='line'>522</span> 	 *    target : "#div0002",	
+<span class='line'>523</span> 	 * });
+<span class='line'>524</span> 	 * 
+<span class='line'>525</span> 	 * anotherSequence.listen(
+<span class='line'>526</span> 	 *    mySequence,
+<span class='line'>527</span> 	 *    "onSelectionChange",
+<span class='line'>528</span> 	 *    function( eventObj ) {
+<span class='line'>529</span> 	 *       anotherSequence.setSelection(eventObj.start, eventObj.end);
+<span class='line'>530</span> 	 *    }   
+<span class='line'>531</span> 	 * );
+<span class='line'>532</span> 	 * 
+<span class='line'>533</span> 	 */</span><span class="WHIT">
+<span class='line'>534</span> </span><span class="WHIT">	</span><span class="NAME">listen</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">eventType</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callbackFunction</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">		
+<span class='line'>535</span> 		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">source</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Biojs</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>536</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">callbackFunction</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>537</span> </span><span class="WHIT">				</span><span class="NAME">source.addListener</span><span class="PUNC">(</span><span class="NAME">eventType</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callbackFunction</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>538</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>539</span> 		</span><span class="PUNC">}</span><span class="WHIT"> 
+<span class='line'>540</span> 	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>541</span> </span><span class="WHIT">	
+<span class='line'>542</span> 	</span><span class="NAME">getId</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>543</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.biojsObjectId</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>544</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>545</span> </span><span class="WHIT">	
+<span class='line'>546</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>547</span> 
+<span class='line'>548</span> </span><span class="COMM">// initialize</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="NAME">Biojs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>550</span> </span><span class="WHIT">	</span><span class="NAME">constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>551</span> </span><span class="WHIT">		</span><span class="NAME">this.extend</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>552</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>553</span> 	
+<span class='line'>554</span> 	</span><span class="NAME">vaueOf</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">"Biojs"</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>555</span> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>556</span> </span><span class="COMM">/** @static */</span><span class="WHIT">
+<span class='line'>557</span> </span><span class="COMM">/** @lends Biojs */</span><span class="WHIT">
+<span class='line'>558</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>559</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>560</span>      * Ancestor of the Biojs class (Object).
+<span class='line'>561</span>      * @type {Object}
+<span class='line'>562</span>      */</span><span class="WHIT">
+<span class='line'>563</span> </span><span class="WHIT">	</span><span class="NAME">ancestor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Object</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>564</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>565</span>      * Version of the Biojs class.
+<span class='line'>566</span>      * @type {string}
+<span class='line'>567</span>      */</span><span class="WHIT">
+<span class='line'>568</span> </span><span class="WHIT">	</span><span class="NAME">version</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"1.0"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">	
+<span class='line'>570</span> 	</span><span class="NAME">forEach</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">object</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">context</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>571</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>572</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.prototype</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>573</span> </span><span class="WHIT">				</span><span class="NAME">block.call</span><span class="PUNC">(</span><span class="NAME">context</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>574</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>575</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>576</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>577</span> </span><span class="WHIT">	
+<span class='line'>578</span> 	</span><span class="NAME">implement</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>579</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">arguments.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>580</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>581</span> </span><span class="WHIT">				</span><span class="COMM">// if it's a function, call it</span><span class="WHIT">
+<span class='line'>582</span> </span><span class="WHIT">				</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">(</span><span class="NAME">this.prototype</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>583</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>584</span> </span><span class="WHIT">				</span><span class="COMM">// add the interface using the extend method</span><span class="WHIT">
+<span class='line'>585</span> </span><span class="WHIT">				</span><span class="NAME">this.prototype.extend</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>586</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>587</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>588</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>589</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>590</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>591</span>      * Get string. 
+<span class='line'>592</span>      * @type {function}
+<span class='line'>593</span>      */</span><span class="WHIT">
+<span class='line'>594</span> </span><span class="WHIT">	</span><span class="NAME">toString</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>595</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">String</span><span class="PUNC">(</span><span class="NAME">this.valueOf</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>596</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>597</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>598</span>      * Get a unique identifier. It is useful to assign the instance' id 
+<span class='line'>599</span>      * @type {function}
+<span class='line'>600</span>      */</span><span class="WHIT">
+<span class='line'>601</span> </span><span class="WHIT">	</span><span class="NAME">uniqueId</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>602</span> </span><span class="WHIT">	    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.__uniqueid</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"undefined"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>603</span> </span><span class="WHIT">	    	</span><span class="NAME">Biojs.prototype.__uniqueid</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>604</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>605</span> </span><span class="WHIT">	    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.__uniqueid</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>606</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>607</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>608</span>      * Register a Biojs instance. 
+<span class='line'>609</span>      * @type {function}
+<span class='line'>610</span>      */</span><span class="WHIT">
+<span class='line'>611</span> </span><span class="WHIT">	</span><span class="NAME">addInstance</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">instance</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>612</span> </span><span class="WHIT">	    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.__instances</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"undefined"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>613</span> </span><span class="WHIT">	    	</span><span class="NAME">Biojs.prototype.__instances</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>614</span> </span><span class="WHIT">	    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>615</span> </span><span class="WHIT">	    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.__instances</span><span class="PUNC">[</span><span class="NAME">instance.biojsObjectId</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">instance</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>616</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>617</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>618</span>      * Get a Biojs instance by means of its id. 
+<span class='line'>619</span>      * @type {function}
+<span class='line'>620</span>      */</span><span class="WHIT">
+<span class='line'>621</span> </span><span class="WHIT">	</span><span class="NAME">getInstance</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>622</span> </span><span class="WHIT">	    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Biojs.prototype.__instances</span><span class="PUNC">[</span><span class="NAME">id</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>623</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>624</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>625</span>      * Set a variable in the DOM window. 
+<span class='line'>626</span>      * @type {function}
+<span class='line'>627</span>      */</span><span class="WHIT">
+<span class='line'>628</span> </span><span class="WHIT">	</span><span class="NAME">registerGlobal</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>629</span> </span><span class="WHIT">		</span><span class="NAME">window</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>630</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>631</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>632</span>      * Get a variable value from the DOM window. 
+<span class='line'>633</span>      * @type {function}
+<span class='line'>634</span>      */</span><span class="WHIT">
+<span class='line'>635</span> </span><span class="WHIT">	</span><span class="NAME">getGlobal</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">key</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>636</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">window</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>637</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">	
+<span class='line'>638</span> 	</span><span class="COMM">/**
+<span class='line'>639</span>      * Cross-browser console for debugging. 
+<span class='line'>640</span>      * This is a shorcut for {@link Biojs.Utils.console}
+<span class='line'>641</span>      * 
+<span class='line'>642</span>      * @type {Object}
+<span class='line'>643</span>      * 
+<span class='line'>644</span>      */</span><span class="WHIT">
+<span class='line'>645</span> </span><span class="WHIT">	</span><span class="NAME">console</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Biojs.Utils.console</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>646</span> </span><span class="WHIT">	
+<span class='line'>647</span> 	</span><span class="NAME">EventHandler</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Biojs.EventHandler</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>648</span> </span><span class="WHIT">	
+<span class='line'>649</span> 	</span><span class="NAME">Event</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Biojs.Event</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>650</span> </span><span class="WHIT">	
+<span class='line'>651</span> 	</span><span class="NAME">Utils</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Biojs.Utils</span><span class="WHIT">
+<span class='line'>652</span> </span><span class="WHIT">	
+<span class='line'>653</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>654</span> 
+<span class='line'>655</span> 
+<span class='line'>656</span> 
+<span class='line'>657</span> </span></pre></body></html>

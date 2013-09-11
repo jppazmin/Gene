@@ -1,0 +1,1832 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="BioJS Library" name="author" value="John Gomez Carvajal <johncar@gmail.com>" />
+		
+        <title>BioJs: JavaScript components for biological data < EMBL-EBI</title>
+            
+        <meta content="width=device-width,initial-scale=1" name="viewport" />
+        
+        <!-- EBI's style sheets -->
+        <link href="style/normalize.css" rel="stylesheet" />
+        <link href="style/boilerplate-style.css" rel="stylesheet" />
+        <link href="style/ebi-custom.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/984-24-col-fixed.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/ebi-positioning.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/biojs.css" rel="stylesheet" type="text/css" />
+        <link href="style/biojs-colours_blue.css" rel="stylesheet" type="text/css" />
+        
+        <!-- jQuery Library -->
+		<script language="JavaScript" type="text/javascript" src="scripts/jquery-1.7.2.min.js"></script>
+            
+        <!-- core code -->
+		<script language="JavaScript" type="text/javascript" src="src/Biojs.js"></script>
+    
+        <!-- Using my own Biojs Toolip component in here ;P by John Gomez johncar@gmail.com -->
+        <script src="scripts/Biojs.Tooltip.js" language="JavaScript" type="text/javascript" ></script>
+        <link href="style/biojs.Tooltip.css" rel="stylesheet" type="text/css" />
+
+		<!-- dependencies -->
+		
+            
+                <script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.4.2.min.js"></script>
+            
+                <script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-ui-1.8.2.custom.min.js"></script>
+            
+	    
+        
+		<!-- component code -->
+		<script language="JavaScript" type="text/javascript" src="src/Biojs.Sequence.js"></script>
+		
+		<script language="JavaScript" type="text/javascript">		
+        window.onload = function() {
+            
+                
+                    
+var theSequence = '"METLCQRLNVCQDKILTHYENDSTDLRDHIDYWKHMRLECAIYYKAREMGFKHINHQVVPTLAVSKNKALQAIELQLTLETIYNSQYSNEKWTLQDVSLEVYLTAPTGCIKKHGYTVEVQFDGDICNTMHYTNWTHIYICEEASVTVVEGQVDYYGLYYVHEGIRTYFVQFKDDAEKYSKNKVWEVHAGGQVILCPTSVFSSNEVSSPEIIRQHLANHPAATHTKAVALGTEETQTTIQRPRSEPDTGNPCHTTKLLHRDSVDSAPILTAFNSSHKGRINCNSNTTPIVHLKGDANTLKCLRYRFKKHCTLYTAVSSTWHWTGHNVKHKSAIVTLTYDSEWQRDQFLSQVKIPKTITVSTGFMSI"';
+var mySequence = new Biojs.Sequence({
+		sequence : theSequence,
+		target : "YourOwnDivId",
+		format : 'CODATA',
+		id : 'P918283',
+		annotations: [
+       { name:"CATH", 
+	  		color:"#F0F020", 
+	  		html: "Using color code #F0F020 ", 
+	  		regions: [{start: 122, end: 135}]
+		  },
+       { name:"TEST", 
+         html:"&lt;br&gt; Example of &lt;b&gt;HTML&lt;/b&gt;", 
+         color:"green", 
+         regions: [
+           {start: 285, end: 292},
+           {start: 293, end: 314, color: "#2E4988"}]
+       }
+     ],
+     highlights : [
+     	{ start:30, end:42, color:"white", background:"green", id:"spin1" },
+     	{ start:139, end:140 }, 
+     	{ start:631, end:633, color:"white", background:"blue" }
+     ]
+});
+                
+            
+            
+            
+				
+                
+					
+						
+							
+							
+								
+								$("#addAnnotation1")
+                                    .click( function() { // Annotations using regions with different colors.
+mySequence.addAnnotation({
+   name:"UNIPROT", 
+   html:"&lt;br&gt; Example of &lt;b&gt;HTML&lt;/b&gt;", 
+   color:"green", 
+   regions: [
+      {start: 540, end: 560},
+      {start: 561, end:580, color: "#FFA010"}, 
+      {start: 581, end:590, color: "red"}, 
+      {start: 690, end:710}]
+}); })
+                                    .data('code', '//%20Annotations%20using%20regions%20with%20different%20colors.%0AmySequence.addAnnotation%28%7B%0A%20%20%20name%3A%22UNIPROT%22%2C%20%0A%20%20%20html%3A%22%26lt%3Bbr%26gt%3B%20Example%20of%20%26lt%3Bb%26gt%3BHTML%26lt%3B/b%26gt%3B%22%2C%20%0A%20%20%20color%3A%22green%22%2C%20%0A%20%20%20regions%3A%20%5B%0A%20%20%20%20%20%20%7Bstart%3A%20540%2C%20end%3A%20560%7D%2C%0A%20%20%20%20%20%20%7Bstart%3A%20561%2C%20end%3A580%2C%20color%3A%20%22%23FFA010%22%7D%2C%20%0A%20%20%20%20%20%20%7Bstart%3A%20581%2C%20end%3A590%2C%20color%3A%20%22red%22%7D%2C%20%0A%20%20%20%20%20%20%7Bstart%3A%20690%2C%20end%3A710%7D%5D%0A%7D%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#addHighlight1")
+                                    .click( function() { // highlight the characters within the position 100 to 150, included.
+mySequence.addHighlight( { "start": 100, "end": 150, "color": "white", "background": "red", "id": "aaa" } ); })
+                                    .data('code', '//%20highlight%20the%20characters%20within%20the%20position%20100%20to%20150%2C%20included.%0AmySequence.addHighlight%28%20%7B%20%22start%22%3A%20100%2C%20%22end%22%3A%20150%2C%20%22color%22%3A%20%22white%22%2C%20%22background%22%3A%20%22red%22%2C%20%22id%22%3A%20%22aaa%22%20%7D%20%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#clearSequence1")
+                                    .click( function() { 
+mySequence.clearSequence("No sequence available", "../biojs/css/images/warning_icon.png"); })
+                                    .data('code', '%0AmySequence.clearSequence%28%22No%20sequence%20available%22%2C%20%22../biojs/css/images/warning_icon.png%22%29%3B' );
+							
+						
+					
+						
+					
+						
+					
+						
+					
+						
+							
+							
+								
+								$("#hideFormatSelector1")
+                                    .click( function() { // Hides the format selector.
+mySequence.hideFormatSelector(); })
+                                    .data('code', '//%20Hides%20the%20format%20selector.%0AmySequence.hideFormatSelector%28%29%3B' );
+							
+						
+					
+						
+					
+						
+							
+							
+								
+								$("#removeAllAnnotations1")
+                                    .click( function() { 
+mySequence.removeAllAnnotations(); })
+                                    .data('code', '%0AmySequence.removeAllAnnotations%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeAllHighlights1")
+                                    .click( function() { mySequence.removeAllHighlights(); })
+                                    .data('code', 'mySequence.removeAllHighlights%28%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeAnnotation1")
+                                    .click( function() { 
+// Remove the UNIPROT annotation.
+mySequence.removeAnnotation('UNIPROT'); })
+                                    .data('code', '%0A//%20Remove%20the%20UNIPROT%20annotation.%0AmySequence.removeAnnotation%28%27UNIPROT%27%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#removeHighlight1")
+                                    .click( function() { // Clear the highlighted characters within the position 100 to 150, included.
+mySequence.removeHighlight("spin1"); })
+                                    .data('code', '//%20Clear%20the%20highlighted%20characters%20within%20the%20position%20100%20to%20150%2C%20included.%0AmySequence.removeHighlight%28%22spin1%22%29%3B' );
+							
+						
+					
+						
+					
+						
+							
+							
+								
+								$("#setFormat1")
+                                    .click( function() { // Set format to 'FASTA'.
+mySequence.setFormat('FASTA'); })
+                                    .data('code', '//%20Set%20format%20to%20%27FASTA%27.%0AmySequence.setFormat%28%27FASTA%27%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setNumCols1")
+                                    .click( function() { // Set the number of columns to 70.
+mySequence.setNumCols(70); })
+                                    .data('code', '//%20Set%20the%20number%20of%20columns%20to%2070.%0AmySequence.setNumCols%2870%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setSelection1")
+                                    .click( function() { // set selection from the position 100 to 150 
+mySequence.setSelection(100, 150); })
+                                    .data('code', '//%20set%20selection%20from%20the%20position%20100%20to%20150%20%0AmySequence.setSelection%28100%2C%20150%29%3B' );
+							
+						
+					
+						
+							
+							
+								
+								$("#setSequence1")
+                                    .click( function() { 
+mySequence.setSequence("P99999"); })
+                                    .data('code', '%0AmySequence.setSequence%28%22P99999%22%29%3B' );
+							
+						
+					
+						
+					
+						
+							
+							
+								
+								$("#showFormatSelector1")
+                                    .click( function() { // Shows the format selector.
+mySequence.showFormatSelector(); })
+                                    .data('code', '//%20Shows%20the%20format%20selector.%0AmySequence.showFormatSelector%28%29%3B' );
+							
+						
+					
+						
+					
+						
+					
+                
+            
+            
+            
+            
+				
+                
+                    
+                        
+                            
+                                $("#onAnnotationClicked").children().remove();								
+                                
+                                
+mySequence.onAnnotationClicked(
+   function( objEvent ) {
+      $("#onAnnotationClicked").text("Clicked " + objEvent.name + " on position " + objEvent.pos );
+   }
+);
+                                $("#onAnnotationClicked").data('code', '%0AmySequence.onAnnotationClicked%28%0A%20%20%20function%28%20objEvent%20%29%20%7B%0A%20%20%20%20%20%20%24%28%22%23onAnnotationClicked%22%29.text%28%22Clicked%20%22%20+%20objEvent.name%20+%20%22%20on%20position%20%22%20+%20objEvent.pos%20%29%3B%0A%20%20%20%7D%0A%29%3B' );
+                            
+                        
+                    
+                        
+                            
+                                $("#onSelectionChange").children().remove();								
+                                
+                                
+mySequence.onSelectionChange(
+   function( objEvent ) {
+      $("#onSelectionChange").text("Selection in progress: " + objEvent.start + ", " + objEvent.end );
+   }
+);
+                                $("#onSelectionChange").data('code', '%0AmySequence.onSelectionChange%28%0A%20%20%20function%28%20objEvent%20%29%20%7B%0A%20%20%20%20%20%20%24%28%22%23onSelectionChange%22%29.text%28%22Selection%20in%20progress%3A%20%22%20+%20objEvent.start%20+%20%22%2C%20%22%20+%20objEvent.end%20%29%3B%0A%20%20%20%7D%0A%29%3B' );
+                            
+                        
+                    
+                        
+                            
+                                $("#onSelectionChanged").children().remove();								
+                                
+                                
+mySequence.onSelectionChanged(
+   function( objEvent ) {
+      $("#onSelectionChanged").text("Selected: " + objEvent.start + ", " + objEvent.end );
+   }
+);
+                                $("#onSelectionChanged").data('code', '%0AmySequence.onSelectionChanged%28%0A%20%20%20function%28%20objEvent%20%29%20%7B%0A%20%20%20%20%20%20%24%28%22%23onSelectionChanged%22%29.text%28%22Selected%3A%20%22%20+%20objEvent.start%20+%20%22%2C%20%22%20+%20objEvent.end%20%29%3B%0A%20%20%20%7D%0A%29%3B' );
+                            
+                        
+                    
+                		
+            
+            
+            function selectMenuOption (){
+            
+                jQuery('#tabmenu ul li a').removeClass('selected');
+                jQuery(this).addClass('selected');
+            
+                jQuery('#content').children().hide();
+                jQuery( '#' + jQuery(this).attr('id').replace('Link','') ).show();
+            
+            };
+            
+            
+            jQuery('#tabmenu ul li a').click(function(){
+                selectMenuOption.call(this);
+            });
+
+            //
+            // Biojs.Tooltip component with syntax highlighter for the method's examples
+            //
+            // 
+            
+            // The highlighter
+            var myBrush = new SyntaxHighlighter.brushes.JScript();
+            myBrush.init({ toolbar: false });
+            
+            // function to render the code snippet
+            function drawJSCode (element) {
+                return myBrush.getHtml( unescape(jQuery(element).data('code')) );
+            }
+
+            // Create the tooltip
+            var biojsTooltip = new Biojs.Tooltip({
+                targetSelector: ".methodExample, .event",
+                cbRender: drawJSCode,
+                arrowType: Biojs.Tooltip.ARROW_RIGHT_MIDDLE
+            });
+            
+            //
+            // View the source code in a new window
+            //
+            var sourceCodeWindow; 
+            
+            jQuery('#viewInWindowButton').click(function() {
+            
+                sourceCodeWindow = window.open('', '', "width=700,height=600,menubar=0,toolbar=0,status=0,scrollbars=1,resizable=1,location=0" );
+            
+                // We get it?
+                if ( sourceCodeWindow ) {
+                
+                    sourceCodeWindow.document.writeln( unescape(window.exampleCode) );
+                    sourceCodeWindow.document.close();
+ 
+                } else {
+                    alert("Please allow pop-up windows for this site in your browser");
+                }
+            
+            });
+
+
+        };	
+			
+		</script>
+        
+        <!-- Syntax highlighting -->
+        <link href="style/shCore.css" rel="stylesheet" />
+        <link href="style/shCoreEclipse.css" rel="stylesheet" />
+        <link href="style/shThemeEclipse.css" rel="stylesheet" />
+        
+        <script src="scripts/shCore.js" type="text/javascript"></script>
+		<script src="scripts/shBrushJScript.js" type="text/javascript"></script>
+        <script src="scripts/shBrushXml.js" type="text/javascript"></script>
+        
+		<script language="JavaScript" type="text/javascript">
+		  	SyntaxHighlighter.all();
+		</script>
+
+	</head>
+
+	<body class="level2" id="biojs" screen_capture_injected="true">
+    
+        <div id="skip-to">
+            <ul>
+                <li><a href="#content" title="">Skip to main content</a></li>
+                <li><a href="#local-nav" title="">Skip to local navigation</a></li>
+                <li><a href="#global-nav" title="">Skip to EBI global navigation menu</a></li>
+                <li><a href="#global-nav-expanded" title="">Skip to expanded EBI global navigation menu (includes all sub-sections)</a></li>
+            </ul>
+        </div>
+<!-- ============================== main content ============================ -->
+        
+        <div class="container_24" id="wrapper"> 
+            <!-- ============================== header ================================= -->
+            <header>
+                <div class="masthead grid_24" id="global-masthead">
+                    <p class="logo-img"><a class="active" href="/" id="logo" style="border:none;" title="Return to the European Bioinformatics Institute home page"><img alt="European Bioinformatics Institute" src="images/logoebi.png" typeof="foaf:Image" /></a></p>
+                    <nav>
+                        <ul id="global-nav">
+                            <li class="first active" id="services"><a href="/services" title="">Services</a></li>
+                            <li id="research"><a href="/research" title="">Research</a></li>
+                            <li id="training"><a href="/training" title="">Training</a></li>
+                            <li id="industry"><a href="/industry" title="">Industry</a></li>
+                            <li class="last" id="about"><a href="/about-us" title="">About us</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <div class="masthead grid_24" id="local-masthead">
+                    <div class="grid_12 alpha" id="local-title-logo">
+                        <h1>BioJs | Home</h1>
+                        <p><a href="." style="border-bottom-width: 0px;" title=""><img alt="Biojs" class="logo" src="images/logo.png" /></a></p>
+                    </div>
+                    
+                    <nav>
+                        <ul class="grid_24" id="local-nav">
+                            <li class="first"><a href="./index.html" title="">Home</a></li>
+                            <li><a href="./components.html" title="">Components</a></li>
+                            <li><a href="./download.html" title="">Download</a></li>
+                            <li class="last"><a href="./about.html" title="">About BioJs</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header><!-- header end -->
+            
+            <div id="tabmenu" class="grid_24 alpha">
+                <h2 class="strapline title">Biojs.Sequence showcase</h2>
+                <ul>
+                    <li><a href="#" id="overviewLink" class="selected">Overview</a></li>
+                    <li><a href="#" id="sourceLink">Installation</a></li>
+                    <li><a href="#" id="optionsLink">Options</a></li>
+                    <li><a href="#" id="methodsLink">Methods</a></li>
+                    <li><a href="#" id="eventsLink">Events</a></li>
+                </ul>
+            </div>
+            <!-- ============================== main section ============================ -->
+	
+            <div class="clearfix" id="content" role="main">
+
+                <!-- ============================== overview ============================ -->
+
+                <div id="overview" class="grid_24">
+                    
+                    <!-- ============================== component section ============================ -->
+
+                    <div class="grid_18 alpha"> 
+
+                        <div class="box_3dview" id="example">
+                            <div id="YourOwnDivId"></div>
+                        </div>
+                        <br/>
+                        <div style="text-align:right;">
+                            <p class="warning">
+                                PLEASE NOTE: the above example is being affected by the CSS rules of this site. 
+                                Click on 'view in window' to see the component by using its own CSS stylesheet(s) only.
+                            </p>
+                            <a id="viewInWindowButton" class="main_button" href="#">View in window</a>
+                        </div>
+            
+                        <div> 
+                            <h3>Overview</h3>
+                            <div class="intro">
+                                <p>Sequence component
+                                    <br/>Version
+                                        1.0.0.<br/>
+                                    
+                                </p>
+                            </div>
+                        </div>
+            
+                    </div> <!-- component section end  -->
+           
+                    <!-- ============================== side bar ============================ -->	
+
+                    <div class="grid_6 omega">
+                        <aside>
+                            
+                            
+                                <div class="main-right-box-no">                                     
+                                    <div class="right_title"><span class="version">Events</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                
+                                                    
+                                                        <li>onAnnotationClicked<pre class="event" id="onAnnotationClicked"/></li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                        <li>onSelectionChange<pre class="event" id="onSelectionChange"/></li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                        <li>onSelectionChanged<pre class="event" id="onSelectionChanged"/></li>
+                                                    
+                                                
+                                                                        
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                            
+                                <div class="main-right-box-no">
+                                    <div class="right_title"><span class="version">Methods</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="addAnnotation1" class="methodExample">
+                                                            addAnnotation</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="addHighlight1" class="methodExample">
+                                                            addHighlight</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="clearSequence1" class="methodExample">
+                                                            clearSequence</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="hideFormatSelector1" class="methodExample">
+                                                            hideFormatSelector</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeAllAnnotations1" class="methodExample">
+                                                            removeAllAnnotations</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeAllHighlights1" class="methodExample">
+                                                            removeAllHighlights</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeAnnotation1" class="methodExample">
+                                                            removeAnnotation</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="removeHighlight1" class="methodExample">
+                                                            removeHighlight</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setFormat1" class="methodExample">
+                                                            setFormat</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setNumCols1" class="methodExample">
+                                                            setNumCols</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setSelection1" class="methodExample">
+                                                            setSelection</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="setSequence1" class="methodExample">
+                                                            setSequence</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                    
+                                                        
+                                                        <li><a href="#" id="showFormatSelector1" class="methodExample">
+                                                            showFormatSelector</a>
+                                                        </li>
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                                      
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                            
+                                <div class="main-right-box-no">
+                                    <div class="right_title"><span class="version">Dependencies</span></div>
+                                    <div>
+                                        <ul class="feat_list">	
+                                            
+                                                <li><a href='http://blog.jquery.com/2011/09/12/jquery-1-6-4-released/'>jQuery Core 1.6.4</a></li>
+                                            
+                                                <li><a href='http://jqueryui.com/download'>jQuery UI 1.8.16</a></li>
+                                                                       
+                                        </ul>	
+                                    </div>
+                                </div>
+                            
+                            
+                        </aside>
+                    </div> <!-- side bar end -->
+                    
+                </div> <!-- overview -->
+                
+                <!-- ============================= installation ======================== -->
+                    
+                <div id="source" class="grid_24" style="display:none;"> 
+                    <p>To get the above Biojs.Sequence to work on your page, you need to do the following:</p>
+                    
+                    <ol>
+                        <li>Include the file <a href="src/Biojs.Sequence.js">Biojs.Sequence.js</a> and its dependencies to your page header.
+                            
+                            
+                                
+                                    
+                                
+                                    
+                                
+                              
+                            
+                            
+                            
+                                <h4>Biojs scripts</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;script language="JavaScript" type="text/javascript" src="src/Biojs.js"&gt;</script>
+<script language="JavaScript" type="text/javascript" src="src/Biojs.Sequence.js"></script></pre>
+                                
+                            
+                            
+                            
+                                <h4>External script(s)</h4>
+                                <pre class="brush: html; toolbar: false" >&lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.4.2.min.js"&gt;</script>
+<script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-ui-1.8.2.custom.min.js"></script>
+</pre>
+                                
+                            
+
+                            
+                            
+                            
+                        </li>    
+                        
+                        <li>Create a div tag which holds an unique identifier.
+                            <pre class="brush: html; toolbar: false">
+                                &lt;body&gt;
+                                ...
+                                &lt;div id="YourOwnDivId" /&gt;
+                                ...
+                                &lt;/body&gt;
+                            </pre>
+                        </li>
+                        
+                        <li>Create a code snippet within a &lt;script&gt; tag and instance Biojs.Sequence into.
+                            
+                                
+                                    
+                                    <pre class="brush: js; toolbar: false" >window.onload = function() {
+
+var theSequence = '"METLCQRLNVCQDKILTHYENDSTDLRDHIDYWKHMRLECAIYYKAREMGFKHINHQVVPTLAVSKNKALQAIELQLTLETIYNSQYSNEKWTLQDVSLEVYLTAPTGCIKKHGYTVEVQFDGDICNTMHYTNWTHIYICEEASVTVVEGQVDYYGLYYVHEGIRTYFVQFKDDAEKYSKNKVWEVHAGGQVILCPTSVFSSNEVSSPEIIRQHLANHPAATHTKAVALGTEETQTTIQRPRSEPDTGNPCHTTKLLHRDSVDSAPILTAFNSSHKGRINCNSNTTPIVHLKGDANTLKCLRYRFKKHCTLYTAVSSTWHWTGHNVKHKSAIVTLTYDSEWQRDQFLSQVKIPKTITVSTGFMSI"';
+var mySequence = new Biojs.Sequence({
+		sequence : theSequence,
+		target : "YourOwnDivId",
+		format : 'CODATA',
+		id : 'P918283',
+		annotations: [
+       { name:"CATH", 
+	  		color:"#F0F020", 
+	  		html: "Using color code #F0F020 ", 
+	  		regions: [{start: 122, end: 135}]
+		  },
+       { name:"TEST", 
+         html:"&lt;br&gt; Example of &lt;b&gt;HTML&lt;/b&gt;", 
+         color:"green", 
+         regions: [
+           {start: 285, end: 292},
+           {start: 293, end: 314, color: "#2E4988"}]
+       }
+     ],
+     highlights : [
+     	{ start:30, end:42, color:"white", background:"green", id:"spin1" },
+     	{ start:139, end:140 }, 
+     	{ start:631, end:633, color:"white", background:"blue" }
+     ]
+});
+
+};</pre>
+                                    
+                                
+                             
+                        </li>
+                        <script language="JavaScript" type="text/javascript">
+                            window.exampleCode = escape('<html><head><title>Biojs.Sequence</title>');
+                            window.exampleCode += '%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22src/Biojs.js%22%3E%3C/script%3E%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22src/Biojs.Sequence.js%22%3E%3C/script%3E%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22../biojs/dependencies/jquery/jquery-1.4.2.min.js%22%3E%3C/script%3E%0A%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%20src%3D%22../biojs/dependencies/jquery/jquery-ui-1.8.2.custom.min.js%22%3E%3C/script%3E%0A%3Cscript%20language%3D%22JavaScript%22%20type%3D%22text/javascript%22%3Ewindow.onload%20%3D%20function%28%29%20%7B%0A%0Avar%20theSequence%20%3D%20%27%22METLCQRLNVCQDKILTHYENDSTDLRDHIDYWKHMRLECAIYYKAREMGFKHINHQVVPTLAVSKNKALQAIELQLTLETIYNSQYSNEKWTLQDVSLEVYLTAPTGCIKKHGYTVEVQFDGDICNTMHYTNWTHIYICEEASVTVVEGQVDYYGLYYVHEGIRTYFVQFKDDAEKYSKNKVWEVHAGGQVILCPTSVFSSNEVSSPEIIRQHLANHPAATHTKAVALGTEETQTTIQRPRSEPDTGNPCHTTKLLHRDSVDSAPILTAFNSSHKGRINCNSNTTPIVHLKGDANTLKCLRYRFKKHCTLYTAVSSTWHWTGHNVKHKSAIVTLTYDSEWQRDQFLSQVKIPKTITVSTGFMSI%22%27%3B%0Avar%20mySequence%20%3D%20new%20Biojs.Sequence%28%7B%0A%09%09sequence%20%3A%20theSequence%2C%0A%09%09target%20%3A%20%22YourOwnDivId%22%2C%0A%09%09format%20%3A%20%27CODATA%27%2C%0A%09%09id%20%3A%20%27P918283%27%2C%0A%09%09annotations%3A%20%5B%0A%20%20%20%20%20%20%20%7B%20name%3A%22CATH%22%2C%20%0A%09%20%20%09%09color%3A%22%23F0F020%22%2C%20%0A%09%20%20%09%09html%3A%20%22Using%20color%20code%20%23F0F020%20%22%2C%20%0A%09%20%20%09%09regions%3A%20%5B%7Bstart%3A%20122%2C%20end%3A%20135%7D%5D%0A%09%09%20%20%7D%2C%0A%20%20%20%20%20%20%20%7B%20name%3A%22TEST%22%2C%20%0A%20%20%20%20%20%20%20%20%20html%3A%22%26lt%3Bbr%26gt%3B%20Example%20of%20%26lt%3Bb%26gt%3BHTML%26lt%3B/b%26gt%3B%22%2C%20%0A%20%20%20%20%20%20%20%20%20color%3A%22green%22%2C%20%0A%20%20%20%20%20%20%20%20%20regions%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%7Bstart%3A%20285%2C%20end%3A%20292%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%7Bstart%3A%20293%2C%20end%3A%20314%2C%20color%3A%20%22%232E4988%22%7D%5D%0A%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%5D%2C%0A%20%20%20%20%20highlights%20%3A%20%5B%0A%20%20%20%20%20%09%7B%20start%3A30%2C%20end%3A42%2C%20color%3A%22white%22%2C%20background%3A%22green%22%2C%20id%3A%22spin1%22%20%7D%2C%0A%20%20%20%20%20%09%7B%20start%3A139%2C%20end%3A140%20%7D%2C%20%0A%20%20%20%20%20%09%7B%20start%3A631%2C%20end%3A633%2C%20color%3A%22white%22%2C%20background%3A%22blue%22%20%7D%0A%20%20%20%20%20%5D%0A%7D%29%3B%0A%0A%7D%3B%3C/script%3E';
+                            window.exampleCode += escape('</head><body><div id="YourOwnDivId"></div></body></html>');
+                        </script>
+                        
+                    </ol>
+                </div>
+                    
+                <!-- ============================== options ============================ -->
+                
+                <div id="options" class="grid_24" style="display:none;">
+                    
+                    
+                    <div class="required">
+                        <h3>Required Parameters</h3>
+                        <ul>
+                        
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">target | <span class="dataType">{string}</span> </a></h4>
+                                    <p class="method_desc">  Identifier of the DIV tag where the component should be displayed.</p>
+                                </li>
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">sequence | <span class="dataType">{string}</span> </a></h4>
+                                    <p class="method_desc">  The sequence to be displayed.</p>
+                                </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        
+                        </ul>
+                    </div>
+                    
+                    <div class="optional">
+                        <h3>Optional Parameters</h3>
+                        <ul>
+                        
+                            
+                                
+                            
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">id | <span class="dataType">{string}</span> </a></h4>
+                                    <p class="method_desc">
+                                        
+   Sequence identifier if apply.
+                                        
+                                    </p>
+                                </li>
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">format | <span class="dataType">{string}</span> </a></h4>
+                                    <p class="method_desc">
+                                        
+   The display format for the sequence representation.
+                                        
+                                            <br/>Default: "FASTA"
+                                        
+                                    </p>
+                                </li>
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">highlights | <span class="dataType">{Object[]}</span> </a></h4>
+                                    <p class="method_desc">
+                                        
+	  For highlighting multiple regions. 
+   <pre class="brush: js" title="Syntax:"> 
+   [
+   	// Highlight aminoacids from 'start' to 'end' of the current strand using the specified 'color' (optional) and 'background' (optional).
+   	{ start: &lt;startVal1&gt;, end: &lt;endVal1&gt; [, id:&lt;idVal1&gt;] [, color: &lt;HTMLColor&gt;] [, background: &lt;HTMLColor&gt;]}, 
+   	//
+   	// Any others highlights
+   	...,  
+   	// 
+   	{ start: &lt;startValN&gt;, end: &lt;endValN&gt; [, id:&lt;idValN&gt;] [, color: &lt;HTMLColor&gt;] [, background: &lt;HTMLColor&gt;]}
+   ]</pre>
+
+<pre class="brush: js" title="Example:"> 
+highlights : [
+		{ start:30, end:42, color:"white", background:"green", id:"spin1" },
+		{ start:139, end:140 }, 
+		{ start:631, end:633, color:"white", background:"blue" }
+	]
+</pre>
+                                        
+                                    </p>
+                                </li>
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">columns | <span class="dataType">{Object}</span> </a></h4>
+                                    <p class="method_desc">
+                                        
+	  Options for displaying the columns. Syntax: { size: &lt;numCols&gt;, spacedEach: &lt;numCols&gt;}
+                                        
+                                            <br/>Default: {size:40,spacedEach:10}
+                                        
+                                    </p>
+                                </li>
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">selection | <span class="dataType">{Object}</span> </a></h4>
+                                    <p class="method_desc">
+                                        
+	  Positions for the current selected region. Syntax: { start: &lt;startValue&gt;, end: &lt;endValue&gt;}
+                                        
+                                    </p>
+                                </li>
+                                
+                            
+                                
+                                <li>
+                                    <h4><a href="#" class="method_name">annotations | <span class="dataType">{Object[]}</span> </a></h4>
+                                    <p class="method_desc">
+                                        
+   Set of overlapping annotations. Must be an array of objects following the syntax:
+    		<pre class="brush: js" title="Syntax:">
+           [ 
+             // An annotation:
+             { name: &lt;name&gt;, 
+               html: &lt;message&gt;, 
+               color: &lt;color_code&gt;, 
+               regions: [{ start: &lt;startVal1&gt;, end: &lt;endVal1&gt; color: &lt;HTMLColor&gt;}, ...,{ start: &lt;startValN&gt;, end: &lt;endValN&gt;, color: &lt;HTMLColor&gt;}] 
+             }, 
+             
+             // ...
+             // more annotations here 
+             // ...
+           ]
+   		 </pre>
+   where:
+     <ul>
+       <li><b>name</b> is the unique name for the annotation</li>
+       <li><b>html</b> is the message (can be HTML) to be displayed in the tool tip.</li>
+       <li><b>color</b> is the default HTML color code for all the regions.</li>
+       <li><b>regions</b> array of objects defining the intervals which belongs to the annotation.</li>
+       <li><b>regions[i].start</b> is the starting character for the i-th interval.</li>
+       <li><b>regions[i].end</b> is the ending character for the i-th interval.</li>
+       <li><b>regions[i].color</b> is an optional color for the i-th interval.   
+     </ul>
+                                        
+                                    </p>
+                                </li>
+                                
+                            
+                        
+                        </ul>
+                    </div>
+
+                </div> <!-- options end -->
+                
+                <!-- ============================== methods ============================ -->
+                        
+                <div id="methods" class="grid_24" style="display:none;">
+                    
+                    
+                        
+                        
+                            
+                                
+                                    <h3 class="method_name">addAnnotation</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Annotate a set of intervals provided in the argument.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{Object}</span> <b>annotation</b>
+                                                    
+                                                    <br/>The intervals belonging to the same annotation. 
+Syntax: { name: &lt;value&gt;, color: &lt;HTMLColorCode&gt;, html: &lt;HTMLString&gt;, regions: [{ start: &lt;startVal1&gt;, end: &lt;endVal1&gt;}, ...,  { start: &lt;startValN&gt;, end: &lt;endValN&gt;}] }
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// Annotations using regions with different colors.
+mySequence.addAnnotation({
+   name:"UNIPROT", 
+   html:"&lt;br&gt; Example of &lt;b&gt;HTML&lt;/b&gt;", 
+   color:"green", 
+   regions: [
+      {start: 540, end: 560},
+      {start: 561, end:580, color: "#FFA010"}, 
+      {start: 581, end:590, color: "red"}, 
+      {start: 690, end:710}]
+});</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">addHighlight</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Highlights a region using the font color defined in {Biojs.Sequence#highlightFontColor} by default is red.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{Object}</span> <b>h</b>
+                                                    
+                                                    <br/>The highlight defined as follows:
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// highlight the characters within the position 100 to 150, included.
+mySequence.addHighlight( { "start": 100, "end": 150, "color": "white", "background": "red", "id": "aaa" } );</pre>
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{int}</span> representing the id of the highlight on the internal array. Returns -1 on failure</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">clearSequence</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Shows the columns indicated by the indexes array.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>showMessage</b>
+                                                    <i>Optional</i>
+                                                    <br/>Message to be showed.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>icon</b>
+                                                    <i>Optional</i>
+                                                    <br/>Icon to be showed a side of the message
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+mySequence.clearSequence("No sequence available", "../biojs/css/images/warning_icon.png");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">formatSelectorVisible</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Set the visibility of the drop-down list of formats.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{boolean}</span> <b>visible</b>
+                                                    
+                                                    <br/>true: show; false: hide.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">hide</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Hides the whole component.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">hideFormatSelector</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        This is similar to a {Biojs.Protein3D#formatSelectorVisible} with the 'false' argument.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// Hides the format selector.
+mySequence.hideFormatSelector();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">highlight</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Highlights a region using the font color defined in {Biojs.Protein3D#highlightFontColor} by default is red.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>start</b>
+                                                    
+                                                    <br/>The starting character of the highlighting.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>end</b>
+                                                    
+                                                    <br/>The ending character of the highlighting.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>color</b>
+                                                    <i>Optional</i>
+                                                    <br/>HTML color code.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>background</b>
+                                                    <i>Optional</i>
+                                                    <br/>HTML color code.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>id</b>
+                                                    <i>Optional</i>
+                                                    <br/>Custom identifier.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                    
+                                    
+                                        <h4 class="heading">Returns:</h4>
+                                        <ul>
+                                        
+                                            <li><span class="dataType">{int}</span> representing the id of the highlight on the internal array. Returns -1 on failure</li>
+                                        
+                                        </ul>
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeAllAnnotations</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes all the current annotations.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+mySequence.removeAllAnnotations();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeAllHighlights</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Remove all the highlights of whole sequence.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">mySequence.removeAllHighlights();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeAnnotation</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Removes an annotation by means of its name.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>name</b>
+                                                    
+                                                    <br/>The name of the annotation to be removed.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+// Remove the UNIPROT annotation.
+mySequence.removeAnnotation('UNIPROT');</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">removeHighlight</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Remove a highlight.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>id</b>
+                                                    
+                                                    <br/>The id of the highlight on the internal array. This value is returned by method highlight.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// Clear the highlighted characters within the position 100 to 150, included.
+mySequence.removeHighlight("spin1");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setAnnotation</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Annotate a set of intervals provided in the argument.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{Object}</span> <b>annotation</b>
+                                                    
+                                                    <br/>The intervals belonging to the same annotation. 
+Syntax: { name: &lt;value&gt;, color: &lt;HTMLColorCode&gt;, html: &lt;HTMLString&gt;, regions: [{ start: &lt;startVal1&gt;, end: &lt;endVal1&gt;}, ...,  { start: &lt;startValN&gt;, end: &lt;endValN&gt;}] }
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setFormat</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Changes the current displaying format of the sequence.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>format</b>
+                                                    
+                                                    <br/>The format for the sequence to be displayed.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// Set format to 'FASTA'.
+mySequence.setFormat('FASTA');</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setNumCols</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Changes the current number of columns in the displayed sequence.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>numCols</b>
+                                                    
+                                                    <br/>The number of columns.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// Set the number of columns to 70.
+mySequence.setNumCols(70);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setSelection</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Set the current selection in the sequence causing the event Biojs.Sequence#onSelectionChanged
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>start</b>
+                                                    
+                                                    <br/>The starting character of the selection.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>end</b>
+                                                    
+                                                    <br/>The ending character of the selection
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// set selection from the position 100 to 150 
+mySequence.setSelection(100, 150);</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">setSequence</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Shows the columns indicated by the indexes array.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>seq</b>
+                                                    
+                                                    <br/>The sequence strand.
+                                                </li>
+                                            
+                                                <li>
+                                                    <span class="dataType">{string}</span> <b>identifier</b>
+                                                    <i>Optional</i>
+                                                    <br/>Sequence identifier.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">
+mySequence.setSequence("P99999");</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">show</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Shows the whole component.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">showFormatSelector</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        This is similar to a {Biojs.Protein3D#formatSelectorVisible} with the 'true' argument.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                        
+                                        
+                                            
+                                            <h4>Example :</h4>
+                                            <pre class="brush: js">// Shows the format selector.
+mySequence.showFormatSelector();</pre>
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">unHighlight</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Clear a highlighted region using.
+                                    </p>
+
+                                    
+                                        <h4>Parameters:</h4>
+                                        <ul>
+                                            
+                                                <li>
+                                                    <span class="dataType">{int}</span> <b>id</b>
+                                                    
+                                                    <br/>The id of the highlight on the internal array. This value is returned by method highlight.
+                                                </li>
+                                            
+                                        </ul>
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                                
+                                    <h3 class="method_name">unHighlightAll</h3><!-------------- Begin of method -->
+                                    <p class="method_desc"> 
+                                        Clear the highlights of whole sequence.
+                                    </p>
+
+                                    
+                                        
+                                    
+                                    
+                                    
+                                 <!------------------- End of method -->
+                            
+                        
+                    
+                    
+                </div> <!-- methods section end -->
+                        
+                <!-- ============================== events ============================ -->
+                
+                
+                    
+                    <div id="events" class="grid_24" style="display:none;">
+                        
+                            
+                                
+                                <h3 class="method_name">onAnnotationClicked</h3><!-------------- Begin of event -->
+
+                                <p></p>
+                                    
+                                
+                                    <h4>Parameters:</h4>
+                                    <ul>
+                                        
+                                            <li>
+                                                <span class="dataType">{function}</span> <b>actionPerformed</b>
+                                                
+                                                <br/>An function which receives an <a href="../symbols/Biojs.Event.html">Biojs.Event</a> object as argument.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    <h4>Returned data in the Biojs.Event object:</h4>
+                                    <ul>
+                                        	
+                                            <li>
+                                                <span class="dataType">{Object}</span>  
+                                                <b></b>
+                                                
+                                                <br/>source The component which did triggered the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{string}</span>  
+                                                <b></b>
+                                                
+                                                <br/>type The name of the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{string}</span>  
+                                                <b></b>
+                                                
+                                                <br/>name The name of the selected annotation.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{int}</span>  
+                                                <b></b>
+                                                
+                                                <br/>pos A number indicating the position of the selected amino acid.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    
+                                    
+                                        
+                                        <br/>
+                                        <h4>Example :</h4>
+                                        <pre class="brush: js">
+mySequence.onAnnotationClicked(
+   function( objEvent ) {
+      alert("Clicked " + objEvent.name + " on position " + objEvent.pos );
+   }
+);</pre>
+                                    
+                                <!------------------- End of event -->
+                            
+                                
+                                <h3 class="method_name">onSelectionChange</h3><!-------------- Begin of event -->
+
+                                <p></p>
+                                    
+                                
+                                    <h4>Parameters:</h4>
+                                    <ul>
+                                        
+                                            <li>
+                                                <span class="dataType">{function}</span> <b>actionPerformed</b>
+                                                
+                                                <br/>An function which receives an <a href="../symbols/Biojs.Event.html">Biojs.Event</a> object as argument.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    <h4>Returned data in the Biojs.Event object:</h4>
+                                    <ul>
+                                        	
+                                            <li>
+                                                <span class="dataType">{Object}</span>  
+                                                <b></b>
+                                                
+                                                <br/>source The component which did triggered the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{string}</span>  
+                                                <b></b>
+                                                
+                                                <br/>type The name of the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{int}</span>  
+                                                <b></b>
+                                                
+                                                <br/>start A number indicating the start of the selection.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{int}</span>  
+                                                <b></b>
+                                                
+                                                <br/>end A number indicating the ending of selection.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    
+                                    
+                                        
+                                        <br/>
+                                        <h4>Example :</h4>
+                                        <pre class="brush: js">
+mySequence.onSelectionChange(
+   function( objEvent ) {
+      alert("Selection in progress: " + objEvent.start + ", " + objEvent.end );
+   }
+);</pre>
+                                    
+                                <!------------------- End of event -->
+                            
+                                
+                                <h3 class="method_name">onSelectionChanged</h3><!-------------- Begin of event -->
+
+                                <p></p>
+                                    
+                                
+                                    <h4>Parameters:</h4>
+                                    <ul>
+                                        
+                                            <li>
+                                                <span class="dataType">{function}</span> <b>actionPerformed</b>
+                                                
+                                                <br/>An function which receives an <a href="../symbols/Biojs.Event.html">Biojs.Event</a> object as argument.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    <h4>Returned data in the Biojs.Event object:</h4>
+                                    <ul>
+                                        	
+                                            <li>
+                                                <span class="dataType">{Object}</span>  
+                                                <b></b>
+                                                
+                                                <br/>source The component which did triggered the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{string}</span>  
+                                                <b></b>
+                                                
+                                                <br/>type The name of the event.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{int}</span>  
+                                                <b></b>
+                                                
+                                                <br/>start A number indicating the start of the selection.
+                                            </li>
+                                        	
+                                            <li>
+                                                <span class="dataType">{int}</span>  
+                                                <b></b>
+                                                
+                                                <br/>end A number indicating the ending of selection.
+                                            </li>
+                                        
+                                    </ul>
+                                
+                                    
+                                
+                                    
+                                    
+                                        
+                                        <br/>
+                                        <h4>Example :</h4>
+                                        <pre class="brush: js">
+mySequence.onSelectionChanged(
+   function( objEvent ) {
+      alert("Selected: " + objEvent.start + ", " + objEvent.end );
+   }
+);</pre>
+                                    
+                                <!------------------- End of event -->
+                            
+                        
+                    </div> <!-- events section end -->
+                
+                
+            </div> <!-- main section end -->
+
+            <!-- ============================== footer section ============================ -->
+        
+            <footer><!-- ============================== footer ======================================= -->
+
+            <div class="grid_24" id="global-footer">
+                <div class="grid_4 alpha">
+                    <h3>EMBL-EBI</h3>
+                    <ul>
+                        <li class="first"><a href="/your-privacy" title="">Your privacy</a></li>
+                        <li><a href="/cookies">Cookies</a></li>
+                        <li><a href="/ethics">Ethics</a></li>
+                        <li><a href="/terms-use-0">Terms of use</a></li>
+                    </ul>
+                </div>
+                
+                <section id="global-nav-expanded">
+                    <div class="grid_4">
+                        <h3>Services</h3>
+                        <ul>
+                            <li class="first"><a href="/services" title="">Overview</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="grid_4">
+                        <h3>Research</h3>
+                        <ul>
+                            <li><a href="/research">Overview</a></li>
+                            <li><a href="/research/groups">Research groups</a></li>
+                            <li><a href="/research/publications">Publications</a></li> 
+                        </ul>
+                    </div>
+                    
+                    <div class="grid_4">
+                        <h3>Industry</h3>
+                        <ul>
+                            <li class="first"><a href="/industry">Overview</a></li>
+                            <li><a href="/industry/sme-forum"><abbr title="Small Medium Enterprise">SME</abbr> Forum</a></li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <div class="grid_4">
+                        <h3>Training</h3>
+                        <ul>
+                            <li class="first"><a href="/training">Overview</a></li>
+                            <li><a href="/training/events">Events</a></li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <div class="grid_4 omega">
+                        <h3>About us</h3>
+                        <ul>
+                            <li class="first"><a href="/about-us">Overview</a></li>
+                            <li><a href="/about-us/history">History</a></li>
+                            <li><a href="/about-us/funding">Funding</a></li>
+                            <li><a href="/about-us/staff-list">People</a></li>
+                            <li><a href="/about-us/ebi-news" title="">News</a></li>
+                            <li><a href="/about-us/jobs">Jobs</a></li>
+                            <li><a href="/about-us/events">Events</a></li>
+                            <li><a href="/about-us/publications">Publications</a></li>
+                            <li><a href="/about-us/visit-us">Visit us</a></li>
+                            <li class="last"><a href="/about-us/contact-us">Contact us</a></li>
+                        </ul>
+                    </div>
+                </section>
+                
+            </div>
+            
+            <div style="text-align: center; font-size: 0.75em;">
+                Registry generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Jul 26 2013 00:30:02 GMT-0500 (COT)
+            </div>
+            
+        </footer><!-- footer end -->
+        
+        </div> <!--  main content end -->
+            
+        <div id="toolTip" style="display:none">
+            <div class="body"></div>
+            <i class="rightArrow"></i>
+        </div>
+                
+    </body>
+</html>

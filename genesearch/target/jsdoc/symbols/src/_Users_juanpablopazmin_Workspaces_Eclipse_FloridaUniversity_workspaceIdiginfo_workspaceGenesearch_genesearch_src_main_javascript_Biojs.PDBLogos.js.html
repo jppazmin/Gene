@@ -1,0 +1,267 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/** 
+<span class='line'>  2</span>  * PDBLogos shows a set of icons to give a quick summary of salient features of a PDB entry.
+<span class='line'>  3</span>  * See more info on PDBLogos at http://pdbe.org/prints
+<span class='line'>  4</span>  * 
+<span class='line'>  5</span>  * @class
+<span class='line'>  6</span>  * @extends Biojs
+<span class='line'>  7</span>  * 
+<span class='line'>  8</span>  * @author &lt;a href="mailto:johncar@gmail.com">John Gomez-Carvajal&lt;/a>
+<span class='line'>  9</span>  * @version 1.0.0
+<span class='line'> 10</span>  *
+<span class='line'> 11</span>  * @requires &lt;a href='http://code.jquery.com/jquery-1.6.4.js'>Raphael 2.1.0&lt;/a>
+<span class='line'> 12</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/graphics/raphael-2.1.0.js">&lt;/script>
+<span class='line'> 13</span>  * 
+<span class='line'> 14</span>  * @requires &lt;a href='http://code.jquery.com/jquery-1.6.4.js'>jQuery Core 1.6.4&lt;/a>
+<span class='line'> 15</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.4.2.min.js">&lt;/script>
+<span class='line'> 16</span>  * 
+<span class='line'> 17</span>  * @param {Object} options An object with the options for PDBLogos component.
+<span class='line'> 18</span>  *    
+<span class='line'> 19</span>  * @option {string} target
+<span class='line'> 20</span>  *    Identifier/HTMLElement of the div container where the component should be rendered.
+<span class='line'> 21</span>  *
+<span class='line'> 22</span>  * @option {string} identifier
+<span class='line'> 23</span>  *    PDB entry id for which prints will be rendered.
+<span class='line'> 24</span>  *
+<span class='line'> 25</span>  * @option {Object} raphael
+<span class='line'> 26</span>  *    A Raphael object instead of div to render PDBprints into.
+<span class='line'> 27</span>  *
+<span class='line'> 28</span>  * @option {int} startX
+<span class='line'> 29</span>  *    X-coordinate of point where rendering the array of PDBprints will start in the Raphael canvas
+<span class='line'> 30</span>  *
+<span class='line'> 31</span>  * @option {int} startY
+<span class='line'> 32</span>  *    Y-coordinate of point point where rendering the array of PDBprints will start in the Raphael canvas
+<span class='line'> 33</span>  *
+<span class='line'> 34</span>  * @option {int} interval
+<span class='line'> 35</span>  *    Gap size between successive PDBprints in a vertical or horizontal array
+<span class='line'> 36</span>  *
+<span class='line'> 37</span>  * @option {int} size
+<span class='line'> 38</span>  *    Length of an icon logo
+<span class='line'> 39</span>  * 
+<span class='line'> 40</span>  * @option {string} [color="#588FE5"]
+<span class='line'> 41</span>  *    Color for background as HTML color code.
+<span class='line'> 42</span>  *
+<span class='line'> 43</span>  * @option {char} orient
+<span class='line'> 44</span>  *    Rendering orientation either vertical or horizontal
+<span class='line'> 45</span>  * 
+<span class='line'> 46</span>  * @option {string} [pdb3DIcon='biojs/css/images/3d.png']
+<span class='line'> 47</span>  *    Image URL to be used as 3D structure's icon
+<span class='line'> 48</span>  *    
+<span class='line'> 49</span>  * @example 
+<span class='line'> 50</span>  * var instance = new Biojs.PDBLogos({
+<span class='line'> 51</span>  *    target: "YourOwnDivId",
+<span class='line'> 52</span>  *    identifier: "1cbs"
+<span class='line'> 53</span>  * });	
+<span class='line'> 54</span>  * 
+<span class='line'> 55</span>  */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="NAME">Biojs.PDBLogos</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.extend</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="COMM">/** @lends Biojs.PDBLogos# */</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 60</span>    *  Default values for the options
+<span class='line'> 61</span>    *  @name Biojs.PDBLogos-opt
+<span class='line'> 62</span>    */</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">  </span><span class="NAME">opt</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">    </span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"YourOwnDivId"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">	</span><span class="NAME">raphael</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">	</span><span class="NAME">identifier</span><span class="PUNC">:</span><span class="STRN">""</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">	</span><span class="NAME">startX</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">	</span><span class="NAME">startY</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">	</span><span class="NAME">interval</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">	</span><span class="NAME">size</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">40</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">	</span><span class="NAME">orient</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'h'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">	</span><span class="NAME">logosURL</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'http://www.ebi.ac.uk/pdbe-apps/widgets/pdbprints'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">	</span><span class="NAME">logos</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">	</span><span class="NAME">color</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"#588FE5"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">	</span><span class="NAME">pdb3DIcon</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'biojs/css/images/3d.png'</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 77</span> 
+<span class='line'> 78</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 79</span>     * Array containing the supported event names
+<span class='line'> 80</span>     * @name Biojs.PDBLogos-eventTypes
+<span class='line'> 81</span>     */</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">  </span><span class="NAME">eventTypes</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 84</span>     * @name Biojs.PDBLogos#onClick
+<span class='line'> 85</span>     * @event
+<span class='line'> 86</span>     * @param {function} actionPerformed A function which receives an {@link Biojs.Event} object as argument.
+<span class='line'> 87</span>     * @eventData {Object} source The component which did triggered the event.
+<span class='line'> 88</span>     * @eventData {string} type The name of the event.
+<span class='line'> 89</span>     * @eventData {string} identifier PDB actual entry.
+<span class='line'> 90</span>     * @eventData {string} category Name of the PDBLogo category clicked.
+<span class='line'> 91</span>     * @eventData {string} printsUrl Url of the PDB general information.
+<span class='line'> 92</span>     * @example
+<span class='line'> 93</span>     * instance.onClick(
+<span class='line'> 94</span>     *    function( e ) {
+<span class='line'> 95</span>     *       alert("Logo " + e.category + " of PDB " + e.identifier + " was clicked.");
+<span class='line'> 96</span>     *    }
+<span class='line'> 97</span>     * );
+<span class='line'> 98</span>     *
+<span class='line'> 99</span>     * */</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">    </span><span class="STRN">"onClick"</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">  </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>102</span> 
+<span class='line'>103</span> </span><span class="WHIT">  </span><span class="NAME">constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">    </span><span class="NAME">this._initCanvas</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="NAME">this.opt.identifier</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">        </span><span class="NAME">this._doRequest</span><span class="PUNC">(</span><span class="NAME">this.opt.identifier</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>109</span> 
+<span class='line'>110</span> </span><span class="WHIT">  </span><span class="NAME">_initCanvas</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">config</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>112</span> 
+<span class='line'>113</span> </span><span class="WHIT">    </span><span class="COMM">// Make Raphael object if not provided already</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">config.raphael</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">        </span><span class="NAME">config.raphael.remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">        </span><span class="NAME">config.raphael</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>118</span> 
+<span class='line'>119</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sizex</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startX</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.CATEGORY.lenght</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sizey</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startY</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">config.interval</span><span class="PUNC">+</span><span class="NAME">config.size</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> 
+<span class='line'>122</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">config.orient</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.VERTICAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">        </span><span class="NAME">sizey</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startY</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.CATEGORY.lenght</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">        </span><span class="NAME">sizex</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startX</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">config.interval</span><span class="PUNC">+</span><span class="NAME">config.size</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">    </span><span class="NAME">config.raphael</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Raphael</span><span class="PUNC">(</span><span class="NAME">config.target</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">sizex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">sizey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>128</span> 
+<span class='line'>129</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>130</span>     * Sets the pdb identifier generating a new request of logos.
+<span class='line'>131</span>     *
+<span class='line'>132</span>     * @param {string} value PDB entry.
+<span class='line'>133</span>     *
+<span class='line'>134</span>     * @example
+<span class='line'>135</span>     * instance.setIdentifier("1j3s");
+<span class='line'>136</span>     *
+<span class='line'>137</span>   */</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">  </span><span class="NAME">setIdentifier</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">    </span><span class="NAME">this.opt.identifier</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">    </span><span class="NAME">this._initCanvas</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">    </span><span class="NAME">this._doRequest</span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>143</span> 
+<span class='line'>144</span> </span><span class="WHIT">  </span><span class="NAME">_doRequest</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">identifier</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">     
+<span class='line'>146</span>      </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">     
+<span class='line'>148</span>      </span><span class="NAME">jQuery.ajax</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">        </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'http://www.ebi.ac.uk/pdbe-apps/widgets/pdbprints'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">        </span><span class="NAME">data</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="STRN">'varname'</span><span class="PUNC">:</span><span class="STRN">'printsdata'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'pdbid'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">identifier</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">color</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"transparent"</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">        </span><span class="NAME">dataType</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'script'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">        </span><span class="NAME">crossDomain</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'true'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">        </span><span class="NAME">type</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'GET'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">        </span><span class="NAME">success</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">response</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callOptions</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">self._printsLayout</span><span class="PUNC">(</span><span class="NAME">printsdata</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">     </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>157</span> 
+<span class='line'>158</span> 
+<span class='line'>159</span> </span><span class="WHIT">  </span><span class="NAME">_printsLayout</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">config</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ix</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startX</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">iy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startY</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">    
+<span class='line'>166</span>     </span><span class="NAME">config.logos</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">	
+<span class='line'>168</span>     </span><span class="NAME">data</span><span class="PUNC">[</span><span class="NAME">config.identifier</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">PDBStructure</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">config.pdb3DIcon</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'structure'</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>169</span> 
+<span class='line'>170</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">category</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.CATEGORY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">    	
+<span class='line'>172</span>     	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">isizeY</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">isizeX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">imgUrl</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">[</span><span class="NAME">config.identifier</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NAME">category</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">printsURL</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"http://www.pdbe.org"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">        
+<span class='line'>176</span>         </span><span class="NAME">ix</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startX</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">        </span><span class="NAME">iy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.startY</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">        
+<span class='line'>179</span>         </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">config.orient</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.VERTICAL</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">            </span><span class="NAME">iy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">        	</span><span class="NAME">ix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>184</span> 
+<span class='line'>185</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">category</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"PDBeLogo"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">            </span><span class="NAME">config.logos.push</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">                </span><span class="NAME">config.raphael.text</span><span class="PUNC">(</span><span class="NAME">ix</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">iy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">self.opt.size</span><span class="PUNC">/</span><span class="NUMB">4</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">config.identifier</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">                    </span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">                        </span><span class="STRN">'font-family'</span><span class="PUNC">:</span><span class="STRN">'Mono'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>190</span> </span><span class="WHIT">                        </span><span class="STRN">'text-anchor'</span><span class="PUNC">:</span><span class="STRN">'start'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">                        </span><span class="STRN">'font-size'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.opt.size</span><span class="PUNC">/</span><span class="NUMB">3</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">                        </span><span class="STRN">'cursor'</span><span class="PUNC">:</span><span class="STRN">'pointer'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">                        </span><span class="STRN">'title'</span><span class="PUNC">:</span><span class="STRN">'View all about PDB '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">config.identifier</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">                    </span><span class="PUNC">.</span><span class="NAME">data</span><span class="PUNC">(</span><span class="STRN">"identifier"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">config.identifier</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">                    </span><span class="PUNC">.</span><span class="NAME">mouseup</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">                        </span><span class="NAME">window.open</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">"http://www.pdbe.org/"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.data</span><span class="PUNC">(</span><span class="STRN">"identifier"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">            </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>200</span> 
+<span class='line'>201</span> </span><span class="WHIT">            </span><span class="NAME">imgUrl</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"http://www.ebi.ac.uk/pdbe-apps/widgets/html/PDBeWatermark_horizontal_128.png"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">            </span><span class="NAME">isizeX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NUMB">0.9</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">            </span><span class="NAME">isizeY</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">            </span><span class="NAME">iy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">config.size</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span> 
+<span class='line'>206</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">        	
+<span class='line'>208</span>         	</span><span class="NAME">printsURL</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"/"</span><span class="PUNC">+</span><span class="NAME">config.identifier</span><span class="PUNC">+</span><span class="STRN">"/"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.CATEGORY</span><span class="PUNC">[</span><span class="NAME">category</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>209</span> 
+<span class='line'>210</span> </span><span class="WHIT">        	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">category</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"PDBStructure"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>211</span> </span><span class="WHIT">        		</span><span class="NAME">printsURL</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"http://www.ebi.ac.uk/pdbe-srv/view/entry/"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">config.identifier</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"/openastex"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>212</span> </span><span class="WHIT">        	</span><span class="PUNC">}</span><span class="WHIT">	
+<span class='line'>213</span>             
+<span class='line'>214</span>             </span><span class="COMM">// Add icon background</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">            </span><span class="NAME">config.raphael.rect</span><span class="PUNC">(</span><span class="NAME">ix</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">iy</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">isizeX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">isizeY</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">7</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="STRN">'fill'</span><span class="PUNC">:</span><span class="NAME">self.opt.color</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>217</span> 
+<span class='line'>218</span> </span><span class="WHIT">        </span><span class="NAME">config.logos.push</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">            </span><span class="NAME">config.raphael.image</span><span class="PUNC">(</span><span class="NAME">imgUrl</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ix</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">iy</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">isizeX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">isizeY</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">                </span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">                	</span><span class="STRN">'cursor'</span><span class="PUNC">:</span><span class="STRN">'pointer'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">                	</span><span class="STRN">'title'</span><span class="PUNC">:</span><span class="STRN">'View '</span><span class="PUNC">+</span><span class="NAME">category</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">                </span><span class="PUNC">.</span><span class="NAME">data</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">                    </span><span class="STRN">"printsURL"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">printsURL</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">                    </span><span class="STRN">"category"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">category</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>228</span> </span><span class="WHIT">                </span><span class="PUNC">.</span><span class="NAME">mouseup</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="WHIT">                    </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos.EVT_ON_CLICK</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">                        </span><span class="NAME">printsURL</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.data</span><span class="PUNC">(</span><span class="STRN">"printsURL"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">                        </span><span class="NAME">identifier</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">config.identifier</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>232</span> </span><span class="WHIT">                        </span><span class="NAME">category</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.data</span><span class="PUNC">(</span><span class="STRN">"category"</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>233</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>234</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">                </span><span class="PUNC">.</span><span class="NAME">mouseover</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">        </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>237</span> 
+<span class='line'>238</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">    
+<span class='line'>240</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>241</span> 
+<span class='line'>242</span> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">    </span><span class="NAME">HORIZONTAL</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'h'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">    </span><span class="NAME">VERTICAL</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'v'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>245</span> 
+<span class='line'>246</span> </span><span class="WHIT">    </span><span class="NAME">CATEGORY</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">       </span><span class="STRN">"PDBeLogo"</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="STRN">""</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>248</span> </span><span class="WHIT">       </span><span class="STRN">"PrimaryCitation"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"citation"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>249</span> </span><span class="WHIT">       </span><span class="STRN">"Taxonomy"</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="STRN">"taxonomy"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">       </span><span class="STRN">"Expressed"</span><span class="PUNC">:</span><span class="WHIT">       </span><span class="STRN">"taxonomy"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">       </span><span class="STRN">"Experimental"</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="STRN">"experimental"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>252</span> </span><span class="WHIT">       </span><span class="STRN">"Protein"</span><span class="PUNC">:</span><span class="WHIT">         </span><span class="STRN">"primary"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">       </span><span class="STRN">"NucleicAcid"</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="STRN">"primary"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">       </span><span class="STRN">"Ligands"</span><span class="PUNC">:</span><span class="WHIT">         </span><span class="STRN">"ligands"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">       </span><span class="STRN">"PDBStructure"</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="STRN">"PDBStructure"</span><span class="WHIT">
+<span class='line'>256</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>257</span> 
+<span class='line'>258</span> </span><span class="WHIT">    </span><span class="NAME">EVT_ON_CLICK</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"onClick"</span><span class="WHIT">
+<span class='line'>259</span> 
+<span class='line'>260</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

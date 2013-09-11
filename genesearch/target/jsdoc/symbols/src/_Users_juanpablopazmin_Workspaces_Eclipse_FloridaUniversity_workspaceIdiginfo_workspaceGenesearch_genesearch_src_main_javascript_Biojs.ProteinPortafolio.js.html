@@ -1,0 +1,521 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/** 
+<span class='line'>  2</span>  * ProteinPortafolio component shows the description of a protein as well as its PDB alignments if there is any.
+<span class='line'>  3</span>  * Component shows the PDBLogos of the selected alignment and ables to play with the sequence and
+<span class='line'>  4</span>  * the 3D draw of the alignment.
+<span class='line'>  5</span>  * 
+<span class='line'>  6</span>  * @class
+<span class='line'>  7</span>  * @extends Biojs
+<span class='line'>  8</span>  * 
+<span class='line'>  9</span>  * @author &lt;a href="mailto:johncar@gmail.com">John Gomez&lt;/a>
+<span class='line'> 10</span>  * @version 1.0.0
+<span class='line'> 11</span>  * 
+<span class='line'> 12</span>  * @requires &lt;a href='http://code.jquery.com/jquery-1.6.4.js'>jQuery Core 1.6.4&lt;/a>
+<span class='line'> 13</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jquery/jquery-1.6.4.js">&lt;/script>
+<span class='line'> 14</span>  *
+<span class='line'> 15</span>  * @requires &lt;a href='http://code.jquery.com/jquery-1.6.4.js'>Raphael 2.1.0&lt;/a>
+<span class='line'> 16</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/graphics/raphael-2.1.0.js">&lt;/script>
+<span class='line'> 17</span>  *
+<span class='line'> 18</span>  * @requires &lt;a href='Biojs.PDBLogos.html'>PDBLogos&lt;/a>
+<span class='line'> 19</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/Biojs.PDBLogos.js">&lt;/script>
+<span class='line'> 20</span>  *
+<span class='line'> 21</span>  * @requires &lt;a href='Biojs.Sequence.html'>Sequence&lt;/a>
+<span class='line'> 22</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/Biojs.Sequence.js">&lt;/script>
+<span class='line'> 23</span>  *
+<span class='line'> 24</span>  * @requires &lt;a href='Biojs.Protein3DWS.html'>Protein3DWS&lt;/a>
+<span class='line'> 25</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/Biojs.Protein3D.js">&lt;/script>
+<span class='line'> 26</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/Biojs.Protein3DWS.js">&lt;/script>
+<span class='line'> 27</span>  *
+<span class='line'> 28</span>  * @requires &lt;a href='http://jmol.sourceforge.net/download/'>jMol 12.0.48&lt;/a>
+<span class='line'> 29</span>  * @dependency &lt;script language="JavaScript" type="text/javascript" src="../biojs/dependencies/jmol-12.0.48/Jmol.js">&lt;/script>
+<span class='line'> 30</span>  *
+<span class='line'> 31</span>  * @requires &lt;a href='../biojs/css/Protein3D.css'>Protein3D CSS&lt;/a>
+<span class='line'> 32</span>  * @dependency &lt;link href="../biojs/css/biojs.Protein3D.css" rel="stylesheet" type="text/css" />
+<span class='line'> 33</span>  *
+<span class='line'> 34</span>  * @requires &lt;a href='../biojs/css/ProteinPortafolio.css'>ProteinPortafolio CSS&lt;/a>
+<span class='line'> 35</span>  * @dependency &lt;link href="../biojs/css/biojs.ProteinPortafolio.css" rel="stylesheet" type="text/css" />
+<span class='line'> 36</span>  *
+<span class='line'> 37</span>  * @param {Object} options An object with the options for ProteinPortafolio component.
+<span class='line'> 38</span>  *    
+<span class='line'> 39</span>  * @option {string} target 
+<span class='line'> 40</span>  *    Identifier of the DIV tag where the component should be displayed.
+<span class='line'> 41</span>  *    
+<span class='line'> 42</span>  * @option {string} [fontFamily='"Andale mono", courier, monospace'] 
+<span class='line'> 43</span>  *    Font list to be applied to the component content.
+<span class='line'> 44</span>  *  
+<span class='line'> 45</span>  * @option {string} [fontColor="white"] 
+<span class='line'> 46</span>  *    HTML color code for the font.
+<span class='line'> 47</span>  *    
+<span class='line'> 48</span>  * @option {string} [backgroundColor="#7BBFE9"] 
+<span class='line'> 49</span>  * 	  Background color for the entire div content.
+<span class='line'> 50</span>  * 
+<span class='line'> 51</span>  * @option {Object} [selectionFontColor="white"] 
+<span class='line'> 52</span>  * 	  This color will be used to change the font color of selected text.
+<span class='line'> 53</span>  * 
+<span class='line'> 54</span>  * @option {Object} [ selectionBackgroundColor="yellow"] 
+<span class='line'> 55</span>  * 	  This color will be used to change the background of selected text.
+<span class='line'> 56</span>  *     
+<span class='line'> 57</span>  * @example 
+<span class='line'> 58</span>  * var instance = new Biojs.ProteinPortafolio({
+<span class='line'> 59</span>  * 		target : "YourOwnDivId",
+<span class='line'> 60</span>  * 		accession : 'P99999'
+<span class='line'> 61</span>  * });	
+<span class='line'> 62</span>  * 
+<span class='line'> 63</span>  */</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="NAME">Biojs.ProteinPortafolio</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Biojs.extend</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="COMM">/** @lends Biojs.ProteinPortafolio# */</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">    </span><span class="NAME">constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">        </span><span class="COMM">// In JavaScript "this" always refers to the owner of the function we're executing (http://www.quirksmode.org/js/this.html)</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">        </span><span class="COMM">// Let's preserve the reference to 'this' through the variable self. In this way, we can invoke/execute</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">        </span><span class="COMM">// our component instead of the object where 'this' is being invoked/executed.</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 72</span> 
+<span class='line'> 73</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.enable</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 74</span> 
+<span class='line'> 75</span> </span><span class="WHIT">        </span><span class="COMM">// For practical use, create an object with the main DIV container</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">        </span><span class="COMM">// to be used in all of the code of our component</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">        </span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">"#"</span><span class="PUNC">+</span><span class="NAME">self.opt.target</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 78</span> 
+<span class='line'> 79</span> </span><span class="WHIT">        </span><span class="NAME">this._initialize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> 
+<span class='line'> 81</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">options.accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">            </span><span class="NAME">this.setProtein</span><span class="PUNC">(</span><span class="NAME">options.accession</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 84</span> 
+<span class='line'> 85</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 86</span> 
+<span class='line'> 87</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 88</span>     *  Default values for the options
+<span class='line'> 89</span>     *  @name Biojs.ProteinPortafolio-opt
+<span class='line'> 90</span>     */</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">    </span><span class="NAME">opt</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">        </span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"YourOwnDivId"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">        </span><span class="NAME">accession</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">        </span><span class="NAME">mappingUrl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'http://www.ebi.ac.uk/pdbe-apps/widgets/unipdb?uniprot='</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">        </span><span class="NAME">featuresUrl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'http://www.ebi.ac.uk/das-srv/uniprot/das/uniprot-summary/features'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">        </span><span class="NAME">proxyUrl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'../biojs/dependencies/proxy/proxy.php'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">        </span><span class="NAME">jmolFolder</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'../biojs/dependencies/jmol-12.0.48'</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">  
+<span class='line'>100</span>     </span><span class="COMM">/**
+<span class='line'>101</span>     * Array containing the supported event names
+<span class='line'>102</span>     * @name Biojs.ProteinPortafolio-eventTypes
+<span class='line'>103</span>     */</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">    </span><span class="NAME">eventTypes</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">       </span><span class="COMM">/**
+<span class='line'>106</span>         * @name Biojs.ProteinPortafolio#onClick
+<span class='line'>107</span>         * @event
+<span class='line'>108</span>         * @param {function} actionPerformed A function which receives an {@link Biojs.Event} object as argument.
+<span class='line'>109</span>         * @eventData {Object} source The component which did triggered the event.
+<span class='line'>110</span>         * @eventData {string} type The name of the event.
+<span class='line'>111</span>         * @eventData {int} selected Selected character.
+<span class='line'>112</span>         * @example
+<span class='line'>113</span>         * instance.onClick(
+<span class='line'>114</span>         *    function( objEvent ) {
+<span class='line'>115</span>         *       alert("The character " + objEvent.selected + " was clicked.");
+<span class='line'>116</span>         *    }
+<span class='line'>117</span>         * );
+<span class='line'>118</span>         *
+<span class='line'>119</span>         * */</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">        </span><span class="STRN">"onClick"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>121</span> 
+<span class='line'>122</span> </span><span class="WHIT">       </span><span class="COMM">/**
+<span class='line'>123</span>         * @name Biojs.ProteinPortafolio#onPdbSelected
+<span class='line'>124</span>         * @event
+<span class='line'>125</span>         * @param {function} actionPerformed A function which receives an {@link Biojs.Event} object as argument.
+<span class='line'>126</span>         * @eventData {Object} source The component which did triggered the event.
+<span class='line'>127</span>         * @eventData {string} alignmentId Identifier .
+<span class='line'>128</span>         * @eventData {string} pdbId Selected pdb entry.
+<span class='line'>129</span>         * @eventData {int} start Start position of the alignment.
+<span class='line'>130</span>         * @eventData {int} end End position of the alignment.
+<span class='line'>131</span>         * @example
+<span class='line'>132</span>         * instance.onPdbSelected(
+<span class='line'>133</span>         *    function( e ) {
+<span class='line'>134</span>         *       alert("Selected " + e.alignmentId + " alignment.");
+<span class='line'>135</span>         *    }
+<span class='line'>136</span>         * );
+<span class='line'>137</span>         *
+<span class='line'>138</span>         * */</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">        </span><span class="STRN">"onPdbSelected"</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">    </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">  
+<span class='line'>142</span>     </span><span class="COMM">/**
+<span class='line'>143</span>     * Change the font size. Do nothing it no value is provided.
+<span class='line'>144</span>     *
+<span class='line'>145</span>     * @param {string} [size] The new font size in pixels.
+<span class='line'>146</span>     *
+<span class='line'>147</span>     * @example
+<span class='line'>148</span>     * instance.setSize("72px");
+<span class='line'>149</span>     */</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">    </span><span class="NAME">setSize</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">size</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>151</span> 
+<span class='line'>152</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>153</span> 
+<span class='line'>154</span> </span><span class="WHIT">    </span><span class="NAME">_initialize</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">        
+<span class='line'>156</span>     	</span><span class="NAME">this._alpha</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div class="alpha">&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">    	</span><span class="NAME">this._beta</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div class="beta">&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._container</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">    	
+<span class='line'>159</span>     	</span><span class="NAME">this._header</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div class="header">&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._alpha</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">        </span><span class="NAME">this._toolbar</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div class="toolbar">&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._alpha</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">        </span><span class="NAME">this._content</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;div class="content">&lt;/div>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._alpha</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>162</span> 
+<span class='line'>163</span> </span><span class="WHIT">        </span><span class="NAME">this._content.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'ProteinPortafolio_content_'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">        
+<span class='line'>165</span>         </span><span class="NAME">this._container.addClass</span><span class="PUNC">(</span><span class="STRN">'ProteinPortafolio'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>167</span> 
+<span class='line'>168</span> </span><span class="WHIT">    </span><span class="NAME">_clearAll</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">        </span><span class="NAME">this._header.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">        </span><span class="NAME">this._toolbar.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">        </span><span class="NAME">this._content.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>173</span> 
+<span class='line'>174</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>175</span>     * Sets the protein accession which changes everything to reflect the new protein information
+<span class='line'>176</span>     *
+<span class='line'>177</span>     * @param {string} accession The new protein identifier
+<span class='line'>178</span>     *
+<span class='line'>179</span>     * @example
+<span class='line'>180</span>     * instance.setProtein("P07148");
+<span class='line'>181</span>     *
+<span class='line'>182</span>     * @example
+<span class='line'>183</span>     * instance.setProtein("P12345");
+<span class='line'>184</span>     */</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">    </span><span class="NAME">setProtein</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>186</span> 
+<span class='line'>187</span> </span><span class="WHIT">        </span><span class="NAME">this.opt.accession</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>188</span> 
+<span class='line'>189</span> </span><span class="WHIT">        </span><span class="NAME">this._requestAligments</span><span class="PUNC">(</span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">alignments</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>190</span> 
+<span class='line'>191</span> </span><span class="WHIT">            </span><span class="NAME">this._alignments</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">alignments</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> 
+<span class='line'>193</span> </span><span class="WHIT">            </span><span class="NAME">this._container.removeClass</span><span class="PUNC">(</span><span class="STRN">'loading'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span> 
+<span class='line'>195</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="NAME">alignments</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">               </span><span class="COMM">// Alignments found</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">               </span><span class="NAME">this._setHeader</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.accession</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._createPDBSelect</span><span class="PUNC">(</span><span class="NAME">alignments</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> 
+<span class='line'>199</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">               </span><span class="COMM">// none alignment found</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">               </span><span class="NAME">this._setHeader</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.opt.accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>204</span> 
+<span class='line'>205</span> </span><span class="WHIT">        </span><span class="NAME">this._showFeatures</span><span class="PUNC">(</span><span class="NAME">accession</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>207</span> 
+<span class='line'>208</span> </span><span class="WHIT">    </span><span class="NAME">_requestAligments</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">action</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>210</span> 
+<span class='line'>211</span> </span><span class="WHIT">        </span><span class="NAME">this._clearAll</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>212</span> </span><span class="WHIT">        </span><span class="NAME">this._container.addClass</span><span class="PUNC">(</span><span class="STRN">'loading'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>213</span> 
+<span class='line'>214</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xhr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.ajax</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.opt.mappingUrl</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">            </span><span class="NAME">data</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">biojsmapping</span><span class="PUNC">:</span><span class="STRN">'1'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">varname</span><span class="PUNC">:</span><span class="STRN">'pdbmappings'</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">            </span><span class="NAME">dataType</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"script"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">            </span><span class="NAME">crossDomain</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">            </span><span class="NAME">timeout</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">5000</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">            </span><span class="NAME">success</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">                </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"SUCCESS: data received"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">                </span><span class="NAME">self._alignments</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pdbmappings</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">                </span><span class="NAME">action.call</span><span class="PUNC">(</span><span class="NAME">self</span><span class="PUNC">,</span><span class="NAME">pdbmappings</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">            </span><span class="NAME">async</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">            </span><span class="NAME">error</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">qXHR</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">textStatus</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">errorThrown</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">                </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"ERROR: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">textStatus</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span> </span><span class="WHIT">                </span><span class="NAME">self.raiseEvent</span><span class="PUNC">(</span><span class="STRN">'onRequestError'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">message</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">textStatus</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="WHIT">                </span><span class="NAME">action.call</span><span class="PUNC">(</span><span class="NAME">self</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>232</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>233</span> 
+<span class='line'>234</span> </span><span class="WHIT">    </span><span class="NAME">_createPDBSelect</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">alignments</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pdbOptions</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">        </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">pdb</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">alignments</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="WHIT">            </span><span class="NAME">text</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pdb</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">" ("</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">alignments</span><span class="PUNC">[</span><span class="NAME">pdb</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">start</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">".."</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">alignments</span><span class="PUNC">[</span><span class="NAME">pdb</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">end</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">")"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>238</span> </span><span class="WHIT">            </span><span class="NAME">pdbOptions</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'&lt;option value="'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">text</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'">'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">text</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/option>'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>240</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"_createOptions: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pdbOptions</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">pdbOptions</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>243</span> 
+<span class='line'>244</span> </span><span class="WHIT">    </span><span class="NAME">_setHeader</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">mappingsSelector</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>246</span> 
+<span class='line'>247</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">mappingsSelector</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>248</span> </span><span class="WHIT">            </span><span class="NAME">this._header.html</span><span class="PUNC">(</span><span class="STRN">"Accession: "</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">", PDB Alignments: &lt;select>"</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">mappingsSelector</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"&lt;/select>"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>249</span> </span><span class="WHIT">            </span><span class="NAME">this._onAlignmentSelectionChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">            </span><span class="NAME">this._header.children</span><span class="PUNC">(</span><span class="STRN">'select'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">change</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">self._onAlignmentSelectionChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>252</span> </span><span class="WHIT">            </span><span class="NAME">this._header.html</span><span class="PUNC">(</span><span class="STRN">"Accession: "</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">", No PDB alignments found."</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">        
+<span class='line'>255</span>         </span><span class="NAME">this._adjustContentSize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>256</span> 
+<span class='line'>257</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>258</span> 
+<span class='line'>259</span> </span><span class="WHIT">    </span><span class="NAME">_onAlignmentSelectionChange</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>260</span> 
+<span class='line'>261</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getCurrentAlignment</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>262</span> 
+<span class='line'>263</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Biojs.Utils.isEmpty</span><span class="PUNC">(</span><span class="NAME">alignment</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>264</span> 
+<span class='line'>265</span> </span><span class="WHIT">            </span><span class="NAME">this.raiseEvent</span><span class="PUNC">(</span><span class="STRN">'onPdbSelected'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">                                </span><span class="STRN">"pdbId"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">alignment.pdbId</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">                                </span><span class="STRN">"alignmentId"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">alignment.alignmentId</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">                                </span><span class="STRN">"start"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">alignment.start</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">                                </span><span class="STRN">"end"</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">alignment.end</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">                            </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>271</span> 
+<span class='line'>272</span> </span><span class="WHIT">            </span><span class="NAME">this._showPDBPrints</span><span class="PUNC">(</span><span class="NAME">alignment.pdbId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">            </span><span class="NAME">this._showImage</span><span class="PUNC">(</span><span class="NAME">alignment.pdbId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>274</span> </span><span class="WHIT">            </span><span class="NAME">this._showFeatures</span><span class="PUNC">(</span><span class="NAME">this.opt.accession</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>275</span> 
+<span class='line'>276</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">            </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"No structural information available for "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.opt.accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>280</span> 
+<span class='line'>281</span> </span><span class="WHIT">    </span><span class="NAME">_showPDBPrints</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">pdbId</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>282</span> 
+<span class='line'>283</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> </span><span class="WHIT">        </span><span class="NAME">this._toolbar.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>285</span> </span><span class="WHIT">        </span><span class="NAME">this._toolbar.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'PDBLogos_toolbar_'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>286</span> 
+<span class='line'>287</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">myprints</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Biojs.PDBLogos</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">            </span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this._toolbar.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">            </span><span class="NAME">identifier</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">pdbId</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>291</span> 
+<span class='line'>292</span> </span><span class="WHIT">        </span><span class="NAME">myprints.onClick</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">        	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">e.category</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">"PDBStructure"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">        		</span><span class="NAME">self._showProtein3D</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">        	</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">        		</span><span class="NAME">window.open</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">e.printsURL</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">        	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> 
+<span class='line'>300</span> </span><span class="WHIT">        </span><span class="NAME">this._adjustContentSize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>302</span> 
+<span class='line'>303</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>304</span>     * Get the available alignments for the current protein filtered by selection (PDB files containing a part of the requested region).
+<span class='line'>305</span>     *
+<span class='line'>306</span>     * @example
+<span class='line'>307</span>     * // Get the alignments matching with bases 4, 8 and 100.
+<span class='line'>308</span>     * alert ( instance.getAlignmentsByPdb("2F73") );
+<span class='line'>309</span>     *
+<span class='line'>310</span>     * @param {string} pdb identifier.
+<span class='line'>311</span>     * @returns {Object} .
+<span class='line'>312</span>     *
+<span class='line'>313</span>     */</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">    </span><span class="NAME">getAlignmentsByPdb</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">pdbId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>315</span> 
+<span class='line'>316</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alignments</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> 
+<span class='line'>318</span> </span><span class="WHIT">        </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">al</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">this._alignments</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT">  </span><span class="NAME">this._alignments</span><span class="PUNC">[</span><span class="NAME">al</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">intObjectId.indexOf</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">pdbId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">                </span><span class="NAME">alignments</span><span class="PUNC">[</span><span class="NAME">this._alignments</span><span class="PUNC">[</span><span class="NAME">al</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">intObjectId</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._alignments</span><span class="PUNC">[</span><span class="NAME">al</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>323</span> 
+<span class='line'>324</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Alignments for pdb "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pdbId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>325</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">alignments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>326</span> 
+<span class='line'>327</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">alignments</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>328</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>329</span> 
+<span class='line'>330</span> </span><span class="WHIT">    </span><span class="NAME">getCurrentAlignment</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>331</span> 
+<span class='line'>332</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">result</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pdbSelectedValue</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._header.find</span><span class="PUNC">(</span><span class="STRN">'select'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">val</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>334</span> 
+<span class='line'>335</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">pdbSelectedValue</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>336</span> 
+<span class='line'>337</span> </span><span class="WHIT">            </span><span class="NAME">result.accession</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.opt.accession</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">            </span><span class="NAME">result.alignmentId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pdbSelectedValue.substring</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">pdbSelectedValue.indexOf</span><span class="PUNC">(</span><span class="STRN">' '</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">            </span><span class="NAME">result.pdbId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pdbSelectedValue.substring</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">pdbSelectedValue.indexOf</span><span class="PUNC">(</span><span class="STRN">'.'</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>340</span> 
+<span class='line'>341</span> 
+<span class='line'>342</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getAlignmentsByPdb</span><span class="PUNC">(</span><span class="NAME">result.alignmentId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>343</span> 
+<span class='line'>344</span> </span><span class="WHIT">            </span><span class="NAME">result.start</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="PUNC">[</span><span class="NAME">result.alignmentId</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">start</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">            </span><span class="NAME">result.end</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="PUNC">[</span><span class="NAME">result.alignmentId</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">end</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">            </span><span class="NAME">result.offset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>347</span> 
+<span class='line'>348</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">alignment.hasOwnProperty</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">result.alignmentId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">                </span><span class="NAME">result.offset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">result.start</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="PUNC">[</span><span class="NAME">result.alignmentId</span><span class="PUNC">]</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">start</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>351</span> 
+<span class='line'>352</span> </span><span class="WHIT">            </span><span class="NAME">result.alignment</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>354</span> 
+<span class='line'>355</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Current alignment"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="NAME">result</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>357</span> 
+<span class='line'>358</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">result</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>360</span> 
+<span class='line'>361</span> </span><span class="WHIT">    </span><span class="NAME">_showProtein3D</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>362</span> 
+<span class='line'>363</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alignment</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getCurrentAlignment</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>365</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">height</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._container.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this._header.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this._toolbar.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>366</span> 
+<span class='line'>367</span> </span><span class="WHIT">        </span><span class="NAME">self._content.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>368</span> </span><span class="WHIT">        </span><span class="NAME">self._beta.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>369</span> 
+<span class='line'>370</span> </span><span class="WHIT">        </span><span class="NAME">self._beta.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">,</span><span class="STRN">'biojs_protein3D_'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">self._content.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>371</span> 
+<span class='line'>372</span> </span><span class="WHIT">        </span><span class="COMM">// Calculate character width</span><span class="WHIT">
+<span class='line'>373</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">test</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">"&lt;span>X&lt;/span>"</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="NAME">self._content</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>374</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.round</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">self._content.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">/</span><span class="NAME">test.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">        </span><span class="NAME">test.remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>376</span> 
+<span class='line'>377</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sequence</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Biojs.Sequence</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>378</span> </span><span class="WHIT">            </span><span class="NAME">target</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self._content.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>379</span> </span><span class="WHIT">            </span><span class="NAME">format</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'FASTA'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>380</span> </span><span class="WHIT">            </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">alignment.accession</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>381</span> </span><span class="WHIT">            </span><span class="NAME">formatSelectorVisible</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>382</span> </span><span class="WHIT">            </span><span class="NAME">columns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">size</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">columns</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">spacedEach</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>383</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>384</span> 
+<span class='line'>385</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proteinStructure</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Biojs.Protein3DWS</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>386</span> </span><span class="WHIT">            </span><span class="NAME">id</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">alignment.pdbId</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>387</span> </span><span class="WHIT">            </span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self._beta.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>388</span> </span><span class="WHIT">            </span><span class="NAME">width</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Math.round</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">self._beta.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>389</span> </span><span class="WHIT">            </span><span class="NAME">height</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self._container.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>390</span> </span><span class="WHIT">            </span><span class="NAME">proxyUrl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.opt.proxyUrl</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>391</span> </span><span class="WHIT">            </span><span class="NAME">jmolFolder</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.opt.jmolFolder</span><span class="WHIT">
+<span class='line'>392</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>393</span> 
+<span class='line'>394</span> </span><span class="WHIT">        </span><span class="NAME">sequence.onSelectionChange</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>395</span> </span><span class="WHIT">            </span><span class="COMM">// [e.start, e.end] from the event data corresponds to the protein sequence positions</span><span class="WHIT">
+<span class='line'>396</span> </span><span class="WHIT">            </span><span class="COMM">// which need to be aligned with PDB structure</span><span class="WHIT">
+<span class='line'>397</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">selection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">start</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">e.start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">e.end</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>398</span> 
+<span class='line'>399</span> </span><span class="WHIT">            </span><span class="NAME">selection.start</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">alignment.offset</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>400</span> </span><span class="WHIT">            </span><span class="NAME">selection.end</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">alignment.offset</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>401</span> 
+<span class='line'>402</span> </span><span class="WHIT">            </span><span class="NAME">proteinStructure.setSelection</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">selection</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>403</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>404</span> 
+<span class='line'>405</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>406</span> 
+<span class='line'>407</span> </span><span class="WHIT">    </span><span class="NAME">_showSequence</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>408</span> 
+<span class='line'>409</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>410</span> 
+<span class='line'>411</span> </span><span class="WHIT">        </span><span class="NAME">this._content.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>412</span> 
+<span class='line'>413</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sequence</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Biojs.Sequence</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>414</span> </span><span class="WHIT">            </span><span class="NAME">target</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this._content.attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>415</span> </span><span class="WHIT">            </span><span class="NAME">format</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'FASTA'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>416</span> </span><span class="WHIT">            </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>417</span> </span><span class="WHIT">            </span><span class="NAME">formatSelectorVisible</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>418</span> </span><span class="WHIT">            </span><span class="NAME">columns</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">size</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Math.round</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">self._content.width</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">/</span><span class="NUMB">20</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">spacedEach</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>419</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>420</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>421</span> 
+<span class='line'>422</span> </span><span class="WHIT">    </span><span class="NAME">_showImage</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">pdbId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>423</span> 
+<span class='line'>424</span> </span><span class="WHIT">        </span><span class="NAME">this._beta.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>425</span> 
+<span class='line'>426</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">img</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;img src="http://www.ebi.ac.uk/pdbe-srv/view/images/entry/'</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pdbId</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'_cbc600.png"/>'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>427</span> </span><span class="WHIT">            </span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="NAME">this._beta</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>428</span> </span><span class="WHIT">            </span><span class="PUNC">.</span><span class="NAME">addClass</span><span class="PUNC">(</span><span class="STRN">'crop'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>429</span> 
+<span class='line'>430</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>431</span> 
+<span class='line'>432</span> </span><span class="WHIT">    </span><span class="NAME">_showFeatures</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>433</span> 
+<span class='line'>434</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> 
+<span class='line'>436</span> </span><span class="WHIT">        </span><span class="NAME">this._content.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>437</span> </span><span class="WHIT">        </span><span class="NAME">this._adjustContentSize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>438</span> 
+<span class='line'>439</span> </span><span class="WHIT">        </span><span class="NAME">this._requestFeatures</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">xml</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>440</span> 
+<span class='line'>441</span> </span><span class="WHIT">            </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Features received "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">xml</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> 
+<span class='line'>443</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xmlDoc</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>444</span> 
+<span class='line'>445</span> </span><span class="WHIT">            </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>446</span> </span><span class="WHIT">                </span><span class="NAME">xmlDoc</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.parseXML</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">xml</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>447</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>448</span> </span><span class="WHIT">                </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"XML parser error"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>450</span> 
+<span class='line'>451</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">features</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'&lt;ul class="features">&lt;/ul>'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">appendTo</span><span class="PUNC">(</span><span class="NAME">self._content</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>452</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">label</span><span class="PUNC">=</span><span class="STRN">""</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">=</span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>453</span> 
+<span class='line'>454</span> </span><span class="WHIT">            </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">xmlDoc</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">find</span><span class="PUNC">(</span><span class="STRN">'FEATURE'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">                </span><span class="PUNC">.</span><span class="NAME">each</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">                    </span><span class="COMM">//features.push( self._decodeFeature(this) );</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">                    </span><span class="NAME">label</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'&lt;span class="label">'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">'label'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/span>'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>458</span> </span><span class="WHIT">                    </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'&lt;span class="value">'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">children</span><span class="PUNC">(</span><span class="STRN">'NOTE:first'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">text</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/span>'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>459</span> 
+<span class='line'>460</span> </span><span class="WHIT">                    </span><span class="NAME">features.append</span><span class="PUNC">(</span><span class="STRN">'&lt;li>'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">label</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'&lt;/li>'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>461</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>462</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>463</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>464</span> 
+<span class='line'>465</span> </span><span class="WHIT">    </span><span class="COMM">/*
+<span class='line'>466</span>      * Function: Biojs.ProteinPortafolio._requestFeatures
+<span class='line'>467</span>      * Purpose:  Request data to the server
+<span class='line'>468</span>      * Returns:  -
+<span class='line'>469</span>      * Inputs:   opt -> {Object} options object.
+<span class='line'>470</span>      */</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">    </span><span class="NAME">_requestFeatures</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">action</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>472</span> 
+<span class='line'>473</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">self</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>474</span> 
+<span class='line'>475</span> </span><span class="WHIT">        </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Requesting features for '"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"'"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>476</span> 
+<span class='line'>477</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">httpRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>478</span> </span><span class="WHIT">            </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.opt.proxyUrl</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>479</span> </span><span class="WHIT">            </span><span class="NAME">data</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"url"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">self.opt.featuresUrl</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"?segment="</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>480</span> </span><span class="WHIT">            </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"GET"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>481</span> </span><span class="WHIT">            </span><span class="NAME">dataType</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"text"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>482</span> </span><span class="WHIT">            </span><span class="NAME">success</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">action</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>483</span> </span><span class="WHIT">            </span><span class="NAME">error</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>484</span> </span><span class="WHIT">                </span><span class="NAME">Biojs.console.log</span><span class="PUNC">(</span><span class="STRN">"Error requesting features for "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">accession</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>485</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>486</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>487</span> 
+<span class='line'>488</span> </span><span class="WHIT">        </span><span class="NAME">jQuery.ajax</span><span class="PUNC">(</span><span class="NAME">httpRequest</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>489</span> 
+<span class='line'>490</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>491</span> </span><span class="WHIT">    
+<span class='line'>492</span>     </span><span class="NAME">_adjustContentSize</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>493</span> 
+<span class='line'>494</span> </span><span class="WHIT">    	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this._beta.children</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>495</span> </span><span class="WHIT">    		</span><span class="NAME">this._alpha.addClass</span><span class="PUNC">(</span><span class="STRN">'alpha'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>496</span> </span><span class="WHIT">    		</span><span class="NAME">this._beta.addClass</span><span class="PUNC">(</span><span class="STRN">'beta'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>497</span> </span><span class="WHIT">    		</span><span class="NAME">this._content.height</span><span class="PUNC">(</span><span class="NAME">this._container.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this._header.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this._toolbar.height</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>498</span> </span><span class="WHIT">    		
+<span class='line'>499</span>     	</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>500</span> </span><span class="WHIT">    		</span><span class="NAME">this._alpha.removeClass</span><span class="PUNC">(</span><span class="STRN">'alpha'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">    		</span><span class="NAME">this._beta.removeClass</span><span class="PUNC">(</span><span class="STRN">'beta'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>502</span> </span><span class="WHIT">    		</span><span class="NAME">this._content.height</span><span class="PUNC">(</span><span class="STRN">'auto'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="WHIT">    	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>504</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>505</span> 
+<span class='line'>506</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>507</span> 
+<span class='line'>508</span> 
+<span class='line'>509</span> 
+<span class='line'>510</span> 
+<span class='line'>511</span> 
+<span class='line'>512</span> 
+<span class='line'>513</span> 
+<span class='line'>514</span> </span></pre></body></html>
